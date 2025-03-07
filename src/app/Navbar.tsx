@@ -78,7 +78,7 @@ const Navbar: React.FC = () => {
           <Link href="/" className="md:flex items-center justify-center flex-1">
             <div className="relative h-16 w-16 md:h-24 md:w-24"> {/* Smaller logo for mobile */}
               <Image
-                src="/logo.jpeg"
+                src="/logo.png"
                 alt="Logo"
                 fill
                 className="object-cover"
