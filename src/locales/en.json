@@ -1,0 +1,207 @@
+{
+    "navbar": {
+      "home": "Home",
+      "services": "Services",
+      "custom_pool_design": "Custom Pool Design",
+      "pool_maintenance": "Pool Maintenance & SAV",
+      "wholesale_sales": "Wholesale Pool Equipment & Mosaic",
+      "heating_cooling": "Heating & Cooling",
+      "projects": "Projects",
+      "contact": "Contact",
+      "account": "Account"
+    },
+    "services": {
+        "best_services": "Our best services",
+        "heading": "Our best pool services for you!",
+        "description": "No. 1 in Tunisia for concrete pools, 20 years of experience at your service. Discover all the possibilities available to you so that your construction, renovation, or landscaping project (equipment, decoration, connected pool) perfectly meets your requirements.",
+        "founder_name": "Bilel Abassi",
+        "founder_title": "Founder",
+        "founder_description": "Pool expert from father to son, specializing in the construction and equipment of public and private pools.",
+        "founder_experience": "For over 20 years, Bilel Abassi has been leading the family business in the construction, renovation, and equipment of luxury pools and spas.",
+        "custom_pool_design": "Custom Pool Design",
+        "custom_pool_description": "Contact us for a free quote for pool construction or renovation.",
+        "pool_maintenance": "Pool Maintenance & SAV",
+        "pool_maintenance_description": "Entrust the annual maintenance of your pool to a professional to ensure its proper functioning.",
+        "wholesale_sales": "Wholesale Pool Equipment & Mosaic",
+        "wholesale_sales_description": "Entrust your projects to a specialized supplier for high-quality pool equipment and mosaic.",
+        "heating_cooling": "Heating & Cooling",
+        "heating_cooling_description": "Entrust the installation and maintenance to a professional for optimal comfort.",
+        "learn_more": "Learn More"
+    },    
+    "about": {
+        "about_us": "About Us",
+        "heading": "Swim with peace of mind with Fildair & Brothers Tunisia",
+        "description": "Fildair & Brothers offers comprehensive services for your pool projects: custom design, renovation, annual maintenance, wholesale equipment and mosaic sales, as well as heating and cooling installation. With over 20 years of experience, we guarantee personalized and high-quality solutions to meet all your needs. Trust us with your project and get a free quote!",
+        "completed_projects": "Completed Projects",
+        "team_members": "Team Members",
+        "satisfied_clients": "Satisfied Clients"
+    },
+    "clients": {
+        "our_clients": "Our Clients",
+        "our_partners": "Our Partners"
+    },
+    "contact": {
+        "contact_us": "Contact Us",
+        "full_name": "Full Name",
+        "email_address": "Email Address",
+        "subject": "Subject",
+        "message": "Message",
+        "submit": "Send",
+        "submitting": "Sending...",
+        "placeholder": {
+        "name": "Enter your name",
+        "email": "Enter your email",
+        "subject": "Enter the subject of your message",
+        "message": "Write your message here..."
+        }
+    },
+    "projects": {
+        "latest_projects": "Our Latest Projects"
+    },
+    "footer": {
+        "follow_us": "Follow Us",
+        "contact_us": "Contact Us",
+        "customer_service": "Customer Service:",
+        "customer_number":"2242621509",
+        "email": "Email:",
+        "address": "Address:",
+        "location":"4623 N Kasson Ave Chicago, IL  60630 United States",
+        "copyright": "© 2025 Fildair & Brothers. All rights reserved.",
+        "developed_by": "Developed by Fildair & Brothers"
+    },    
+    "popup": {
+        "get_quote": "Get a discount",
+        "welcome": "Welcome!",
+        "message": "Enjoy 10% off your first pool installation or renovation!",
+        "get_quote_button": "Get a discount"
+    },
+    "map": {
+        "visit_us": "Visit Us!",
+        "popup_text": "FILDAIR FRERES",
+        "popup_aria_label": "Open Fildair Frères location on Google Maps"
+    },
+    "custom_pool_design": {
+        "heading": "Custom Pool Design",
+        "description_1": "We will explore in depth the different options and steps to bring your dream pool project to life. Whether you are considering a luxury pool, a mini pool, or even a natural pool, a semi-inground, inground, or above-ground pool, we are here to guide you every step of the way.",
+        "description_2": "Discover our advantages and Fildair Freres' preferred construction process, as well as the many customization options to make your pool unique. We will also cover the necessary permits, average construction timelines, budget considerations, and much more.",
+        "description_3": "Discover here the reinforced concrete method we use for your custom project and the major steps in its construction."
+    },
+    "heating_cooling": {
+        "heading": "Heating & Cooling",
+        "title": "Fildair FR",
+        "description": "With its in-house engineering department, Fildair Fr supports you from the preliminary project study to the turnkey delivery of your heating and cooling installations. We implement the appropriate technical solutions for the air conditioning of large tertiary complexes: luxury villas, hotels, offices, etc.",
+        "technical_direction": {
+        "title": "Technical Direction, Costing, and Project Management",
+        "items": [
+            "Assimilation and analysis of client requirements",
+            "Project supervision and organization",
+            "Execution studies"
+        ]
+        },
+        "construction_management": {
+        "title": "Construction Management and Site Supervision",
+        "items": [
+            "Site preparation",
+            "Monitoring of work progress and quality verification until handover",
+            "Financial management of the site"
+        ]
+        },
+        "public_private_market": {
+        "title": "Public & Private Market",
+        "description": "We operate in both the public and private sectors, with expertise tailored to each type of project."
+        }
+    },
+    "pool_maintenance": {
+        "heading": "Pool Maintenance & SAV",
+        "description": "Enjoy crystal-clear water effortlessly with our pool maintenance service! <strong>Fildair Frères</strong> takes care of cleaning, water treatment, and equipment maintenance to provide you with a flawless pool all year round. Entrust your pool to us and enjoy every swim with complete peace of mind! 💦✨",
+        "contact_us": "Contact Us",
+        "phone": "Phone: <strong>27 870 016</strong> / <strong>26 199 199</strong>"
+    },
+    "wholesale_sales": {
+        "heading": "Wholesale Pool Equipment & Mosaic",
+        "description_1": "We are delighted to welcome you to our showroom located in La Soukra, reserved for professionals and individuals. You will find all the necessary equipment for your construction project. Do not hesitate to contact us for any technical assistance in your quotes or to find equipment we may not have thought of.",
+        "description_2": "With over 20 years of experience, we place great importance on supporting you in your projects and seeing them through to completion.",
+        "description_3": "Thank you for your interest in our passion, <br /> The Fildair Fr Team",
+        "discover_equipment": "Discover our pool equipment",
+        "discover_mosaics": "Discover our pool mosaics",
+        "services": [
+        { "icon": "uil-truck", "title": "Reduced delivery fees" },
+        { "icon": "uil-sync", "title": "14-day return policy" },
+        { "icon": "uil-comments", "title": "Monday to Friday - 71865319" },
+        { "icon": "uil-lock", "title": "Secure payment" }
+        ]
+    },
+    "equipments": {
+        "heading": "Pool Equipment",
+        "filters": "Filters",
+        "categories": "Categories",
+        "loading": "Loading...",
+        "no_results": "No results found."
+    },
+    "mosaics": {
+        "heading": "Pool Mosaics",
+        "filters": "Filters",
+        "categories": "Categories",
+        "loading": "Loading...",
+        "no_results": "No results found."
+    },
+    "dashboard": {
+        "heading": "My Account",
+        "welcome": "Welcome, {firstName} !",
+        "login_prompt": "Please log in to access your account.",
+        "sign_in": "Sign In",
+        "sign_up": "Sign Up"
+    },
+    "form": {
+        "heading": "Personal Information",
+        "loading": "Loading your information...",
+        "sign_in_prompt": "You need to sign in to access this form.",
+        "labels": {
+        "email": "Email",
+        "name": "Name",
+        "phone": "Phone",
+        "address": "Address"
+        },
+        "update_button": "Update",
+        "update_success": "Your information has been updated successfully!"
+    },
+    "sign_out": {
+        "signing_out": "Signing Out...",
+        "sign_out": "Sign Out"
+    },
+    "testimonials": {
+        "heading": "Customer Reviews",
+        "testimonials": [
+        {
+            "id":1,
+            "name": "Karim Ben Fradj",
+            "role": "Hotel Manager",
+            "stars": 5,
+            "feedback": "From start to finish, Fildair Frères met all my expectations. They guided me in choosing the design and equipment, and the result exceeded my expectations. Top-notch customer service, highly recommended!"
+        },
+        {
+            "id":2,
+            "name": "Amin Trabelsi",
+            "role": "Teacher",
+            "stars": 4,
+            "feedback": "I was afraid that building a pool would take months, but with Fildair Frères, everything was done within the announced timeframe and with great attention to detail. Their team is serious and efficient. I now enjoy a beautiful pool at home. Thank you again!"
+        },
+        {
+            "id":3,
+            "name": "Chokri Mansour",
+            "role": "Real Estate Investor",
+            "stars": 5,
+            "feedback": "I called on Fildair Frères to build my pool, and I am delighted with the result! The team was very professional, meeting deadlines and providing valuable advice. The quality of materials and finish is impeccable. Thank you for this exceptional work!"
+        },
+        {
+            "id":4,
+            "name": "Amina Chaouech",
+            "role": "Businesswoman",
+            "stars": 5,
+            "feedback": "Not only did Fildair Frères create a superb pool for us, but their after-sales service is equally remarkable. They remain available for maintenance and respond quickly to all our questions. A trustworthy company that I highly recommend!"
+        }
+        ]
+    }
+    
+      
+}

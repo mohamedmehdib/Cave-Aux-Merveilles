@@ -1,0 +1,25 @@
+{
+    "name": "Fildair Frères",
+    "short_name": "Fildair Frères",
+    "icons": [
+      {
+        "src": "/favicon.ico",
+        "sizes": "16x16 32x32 48x48",
+        "type": "image/x-icon"
+      },
+      {
+        "src": "/icon-192x192.png",
+        "sizes": "192x192",
+        "type": "image/png"
+      },
+      {
+        "src": "/icon-512x512.png",
+        "sizes": "512x512",
+        "type": "image/png"
+      }
+    ],
+    "theme_color": "#274e9d",
+    "background_color": "#ffffff",
+    "display": "standalone",
+    "start_url": "/"
+  }

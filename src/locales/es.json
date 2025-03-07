@@ -1,0 +1,207 @@
+{
+    "navbar": {
+      "home": "Inicio",
+      "services": "Servicios",
+      "custom_pool_design": "Diseño de piscinas a medida",
+      "pool_maintenance": "Mantenimiento de piscinas y servicio técnico",
+      "wholesale_sales": "Venta al por mayor de equipos y mosaicos para piscinas",
+      "heating_cooling": "Calefacción y climatización",
+      "projects": "Proyectos",
+      "contact": "Contacto",
+      "account": "Cuenta"
+    },
+    "services": {
+      "best_services": "Nuestros mejores servicios",
+      "heading": "¡Nuestros mejores servicios de piscinas para usted!",
+      "description": "N°1 en Túnez para piscinas de hormigón, 20 años de experiencia a su servicio. Descubra todas las posibilidades que se le ofrecen para que su proyecto de construcción, renovación o equipamiento (decoración, piscina conectada) cumpla perfectamente con sus expectativas.",
+      "founder_name": "Bilel Abassi",
+      "founder_title": "Fundador",
+      "founder_description": "Experto en piscinas de padre a hijo, especializado en la construcción y equipamiento de piscinas públicas y privadas.",
+      "founder_experience": "Desde hace más de 20 años, Bilel Abassi lidera la empresa familiar en la construcción, renovación y equipamiento de piscinas y spas de lujo.",
+      "custom_pool_design": "Diseño de piscinas a medida",
+      "custom_pool_description": "Contáctenos para un presupuesto gratuito de construcción o renovación de piscinas.",
+      "pool_maintenance": "Mantenimiento de piscinas y servicio técnico",
+      "pool_maintenance_description": "Confíe el mantenimiento anual de su piscina a un profesional para garantizar su correcto funcionamiento.",
+      "wholesale_sales": "Venta al por mayor de equipos y mosaicos para piscinas",
+      "wholesale_sales_description": "Confíe sus proyectos a un proveedor especializado en equipos y mosaicos para piscinas de alta calidad.",
+      "heating_cooling": "Calefacción y climatización",
+      "heating_cooling_description": "Confíe la instalación y el mantenimiento a un profesional para un confort óptimo.",
+      "learn_more": "Saber más"
+    },
+    "about": {
+      "about_us": "Sobre nosotros",
+      "heading": "Nade con tranquilidad con Fildair Frères Túnez",
+      "description": "Fildair Frères le ofrece servicios completos para sus proyectos de piscinas: diseño personalizado, renovación, mantenimiento anual, venta al por mayor de equipos y mosaicos, así como instalación de calefacción y climatización. Con más de 20 años de experiencia, le garantizamos soluciones personalizadas y de calidad para satisfacer todas sus necesidades. ¡Confíenos su proyecto y obtenga un presupuesto gratuito!",
+      "completed_projects": "Proyectos completados",
+      "team_members": "Miembros del equipo",
+      "satisfied_clients": "Clientes satisfechos"
+    },
+    "clients": {
+      "our_clients": "Nuestros clientes",
+      "our_partners": "Nuestros socios"
+    },
+    "contact": {
+      "contact_us": "Contáctenos",
+      "full_name": "Nombre completo",
+      "email_address": "Dirección de correo electrónico",
+      "subject": "Asunto",
+      "message": "Mensaje",
+      "submit": "Enviar",
+      "submitting": "Enviando...",
+      "placeholder": {
+        "name": "Ingrese su nombre",
+        "email": "Ingrese su correo electrónico",
+        "subject": "Ingrese el asunto de su mensaje",
+        "message": "Escriba su mensaje aquí..."
+      }
+    },
+    "projects": {
+      "latest_projects": "Nuestros últimos proyectos"
+    },
+    "footer": {
+      "follow_us": "Síganos",
+      "contact_us": "Contáctenos",
+      "customer_service": "Servicio al cliente:",
+      "customer_number":"2242621509",
+      "email": "Correo electrónico:",
+      "location":"4623 N Kasson Ave Chicago, IL  60630 United States",
+      "address": "Dirección:",
+      "copyright": "© 2025 Fildair Freres. Todos los derechos reservados.",
+      "developed_by": "Desarrollado por Fildair Freres"
+    },
+    "popup": {
+      "get_quote": "Obtener un presupuesto",
+      "welcome": "¡Bienvenido!",
+      "message": "Gracias por visitar nuestro sitio web. ¡Aquí tiene una oferta especial para usted!",
+      "get_quote_button": "Obtener un presupuesto"
+    },
+    "map": {
+      "visit_us": "¡Visítenos!",
+      "popup_text": "FILDAIR FRERES",
+      "popup_aria_label": "Abrir la ubicación de Fildair Frères en Google Maps"
+    },
+    "custom_pool_design": {
+        "heading": "Diseño de piscinas a medida",
+        "description_1": "Exploraremos en profundidad las diferentes opciones y pasos para hacer realidad el proyecto de piscina que siempre ha soñado. Ya sea que esté considerando una piscina de lujo, una mini piscina o incluso una piscina natural, una piscina semienterrada, enterrada o sobre el suelo, estamos aquí para guiarle en cada paso del camino.",
+        "description_2": "Descubra nuestras ventajas y el proceso de construcción preferido de Piscinas Fildair Freres, así como las numerosas opciones de personalización para hacer que su piscina sea única. También cubriremos los permisos necesarios, los plazos promedio de construcción, consideraciones presupuestarias y mucho más.",
+        "description_3": "Descubra aquí el método de hormigón armado que utilizamos para su proyecto personalizado y los pasos principales en su construcción."
+    },
+    "heating_cooling": {
+        "heading": "Calefacción y Climatización",
+        "title": "Fildair FR",
+        "description": "Con su departamento de ingeniería interno, Fildair Fr le acompaña desde el estudio preliminar del proyecto hasta la entrega llave en mano de sus instalaciones de calefacción y climatización. Implementamos las soluciones técnicas adecuadas para la climatización de grandes complejos terciarios: villas de lujo, hoteles, oficinas, etc.",
+        "technical_direction": {
+        "title": "Dirección Técnica, Costeo y Gestión de Proyectos",
+        "items": [
+            "Asimilación y análisis de los requisitos del cliente",
+            "Supervisión y organización de proyectos",
+            "Realización de estudios de ejecución"
+        ]
+        },
+        "construction_management": {
+        "title": "Dirección de Obras y Supervisión de Obra",
+        "items": [
+            "Preparación del sitio",
+            "Seguimiento del progreso del trabajo y verificación de la calidad hasta la entrega",
+            "Gestión financiera del sitio"
+        ]
+        },
+        "public_private_market": {
+        "title": "Mercado Público y Privado",
+        "description": "Operamos tanto en el sector público como en el privado, con experiencia adaptada a cada tipo de proyecto."
+        }
+    },
+    "pool_maintenance": {
+        "heading": "Mantenimiento de Piscinas y Servicio Técnico",
+        "description": "¡Disfrute de agua cristalina sin esfuerzo con nuestro servicio de mantenimiento de piscinas! <strong>Fildair Frères</strong> se encarga de la limpieza, el tratamiento del agua y el mantenimiento de sus equipos para ofrecerle una piscina impecable durante todo el año. ¡Confíenos su piscina y disfrute de cada baño con total tranquilidad! 💦✨",
+        "contact_us": "Contáctenos",
+        "phone": "Teléfono: <strong>27 870 016</strong> / <strong>26 199 199</strong>"
+    },
+    "wholesale_sales": {
+        "heading": "Venta al por mayor de equipos y mosaicos para piscinas",
+        "description_1": "Estamos encantados de darle la bienvenida a nuestro showroom ubicado en La Soukra, reservado para profesionales y particulares. Encontrará todo el equipo necesario para su proyecto de construcción. No dude en contactarnos para cualquier asistencia técnica en sus presupuestos o para encontrar equipos que no hayamos considerado.",
+        "description_2": "Con más de 20 años de experiencia, damos gran importancia a apoyarle en sus proyectos y llevarlos a buen término.",
+        "description_3": "Gracias por su interés en nuestra pasión, <br /> El equipo de Fildair Fr",
+        "discover_equipment": "Descubra nuestros equipos para piscinas",
+        "discover_mosaics": "Descubra nuestros mosaicos para piscinas",
+        "services": [
+        { "icon": "uil-truck", "title": "Gastos de envío reducidos" },
+        { "icon": "uil-sync", "title": "Política de devolución de 14 días" },
+        { "icon": "uil-comments", "title": "De lunes a viernes - 71865319" },
+        { "icon": "uil-lock", "title": "Pago seguro" }
+        ]
+    },
+    "equipments": {
+        "heading": "Equipos para Piscinas",
+        "filters": "Filtros",
+        "categories": "Categorías",
+        "loading": "Cargando...",
+        "no_results": "No se encontraron resultados."
+    },
+    "mosaics": {
+        "heading": "Mosaicos para Piscinas",
+        "filters": "Filtros",
+        "categories": "Categorías",
+        "loading": "Cargando...",
+        "no_results": "No se encontraron resultados."
+    },
+    "dashboard": {
+        "heading": "Mi Cuenta",
+        "welcome": "Bienvenido, {firstName} !",
+        "login_prompt": "Por favor, inicie sesión para acceder a su cuenta.",
+        "sign_in": "Iniciar Sesión",
+        "sign_up": "Registrarse"
+    },
+    "form": {
+        "heading": "Información Personal",
+        "loading": "Cargando su información...",
+        "sign_in_prompt": "Debe iniciar sesión para acceder a este formulario.",
+        "labels": {
+        "email": "Correo Electrónico",
+        "name": "Nombre",
+        "phone": "Teléfono",
+        "address": "Dirección"
+        },
+        "update_button": "Actualizar",
+        "update_success": "¡Su información ha sido actualizada con éxito!"
+    },
+    "sign_out": {
+        "signing_out": "Cerrando sesión...",
+        "sign_out": "Cerrar Sesión"
+    },
+    "testimonials": {
+      "heading": "Opiniones de Clientes",
+      "testimonials": [
+        {
+          "id":1,
+          "name": "Karim Ben Fradj",
+          "role": "Director de hotel",
+          "stars": 5,
+          "feedback": "Desde el principio hasta el final del proyecto, Fildair Frères cumplió con todas mis expectativas. Me guiaron en la elección del diseño y los equipos, y el resultado superó mis expectativas. ¡Servicio al cliente de primera clase, muy recomendado!"
+        },
+        {
+          "id":2,
+          "name": "Amin Trabelsi",
+          "role": "Profesor",
+          "stars": 4,
+          "feedback": "Tenía miedo de que la construcción de una piscina tomara meses, pero con Fildair Frères, todo se hizo dentro del plazo anunciado y con gran atención al detalle. Su equipo es serio y eficiente. ¡Ahora disfruto de una hermosa piscina en casa. Gracias de nuevo!"
+        },
+        {
+          "id":3,
+          "name": "Chokri Mansour",
+          "role": "Inversionista inmobiliario",
+          "stars": 5,
+          "feedback": "¡Llamé a Fildair Frères para construir mi piscina, y estoy encantado con el resultado! El equipo fue muy profesional, cumpliendo los plazos y brindando consejos valiosos. La calidad de los materiales y el acabado son impecables. ¡Gracias por este trabajo excepcional!"
+        },
+        {
+          "id":4,
+          "name": "Amina Chaouech",
+          "role": "Empresaria",
+          "stars": 5,
+          "feedback": "No solo Fildair Frères creó una piscina magnífica para nosotros, sino que su servicio postventa es igualmente notable. Siguen disponibles para el mantenimiento y responden rápidamente a todas nuestras preguntas. ¡Una empresa confiable que recomiendo sin dudarlo!"
+        }
+      ]
+    }
+  
+    
+}
