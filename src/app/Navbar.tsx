@@ -3,11 +3,24 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 
-export default function Navbar() {
+// Define the menu items
+const menuItems = [
+  { id: "accueil", label: "Categorie 1" },
+  { id: "services", label: "Categorie 2", dropdown: [
+    { href: "/", label: "Sous categorie 1" },
+    { href: "/", label: "Sous categorie 2" },
+    { href: "/", label: "Sous categorie 3" },
+    { href: "/", label: "Sous categorie 4" },
+  ]},
+  { id: "projects", label: "Categorie 3" },
+];
+
+const Navbar: React.FC = () => {
   const [isScrolled, setIsScrolled] = useState<boolean>(false);
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
+  const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false);
+  const [isSearchOpen, setIsSearchOpen] = useState<boolean>(false);
 
-  // Use useEffect for side effects like adding event listeners
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 0);
@@ -18,6 +31,14 @@ export default function Navbar() {
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
+  };
+
+  const toggleDropdown = () => {
+    setIsDropdownOpen(!isDropdownOpen);
+  };
+
+  const toggleSearch = () => {
+    setIsSearchOpen(!isSearchOpen);
   };
 
   const scrollToSection = (id: string) => {
@@ -31,172 +52,177 @@ export default function Navbar() {
   };
 
   return (
-    <nav
-      className={`bg-[#274e9d] z-20 duration-500 fixed w-full flex justify-between items-center ${
-        isScrolled ? "h-20 shadow-lg px-4 md:px-10 lg:px-12" : "h-24 px-3 md:px-6 lg:px-16"
-      } transition-all`}
-    >
-      <Link href="/" className="w-16">
-        <Image src="/logo.png" alt="Logo" width={500} height={500} />
-      </Link>
-      <button
-        onClick={toggleMenu}
-        className="md:hidden text-white focus:outline-none"
-      >
-        {isMenuOpen ? (
-          <svg
-            className="w-8 h-8"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d="M6 18L18 6M6 6l12 12"
-            ></path>
-          </svg>
-        ) : (
-          <svg
-            className="w-8 h-8"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d="M4 6h16M4 12h16m-7 6h7"
-            ></path>
-          </svg>
-        )}
-      </button>
-      <ul className="hidden md:flex space-x-8 text-lg text-white">
-        <li>
-          <button
-            onClick={() => scrollToSection("accueil")}
-            className="hover:text-indigo-300 transition-colors"
-          >
-            Accueil
-          </button>
-        </li>
-        <li className="relative group">
-          <button
-            onClick={() => scrollToSection("services")}
-            className="hover:text-indigo-300 transition-colors"
-          >
-            Services
-          </button>
-          <ul className="absolute top-10 left-1/2 transform -translate-x-1/2 bg-[#274e9d] shadow-lg rounded-lg mt-2 py-2 w-72 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300">
-            <li>
-              <Link
-                href="/Conception-de-piscine-sur-mesure"
-                className="block w-full text-left px-4 py-2 hover:bg-[#305eb8]"
-              >
-                Conception de piscine sur mesure
-              </Link>
-            </li>
-            <li>
-              <Link
-                href="/Entretien-Piscine-&-SAV"
-                className="block w-full text-left px-4 py-2 hover:bg-[#305eb8]"
-              >
-                Entretien Piscine & SAV
-              </Link>
-            </li>
-            <li>
-              <Link
-                href="/Vente-en-gros-materiel-Piscines-&-Mosaique"
-                className="block w-full text-left px-4 py-2 hover:bg-[#305eb8]"
-              >
-                Vente en gros matériel Piscines & Mosaïque
-              </Link>
-            </li>
-            <li>
-              <Link
-                href="/Chauffage-&-climatisation"
-                className="block w-full text-left px-4 py-2 hover:bg-[#305eb8]"
-              >
-                Chauffage & Climatisation
-              </Link>
-            </li>
-          </ul>
-        </li>
-        <li>
-          <button
-            onClick={() => scrollToSection("projects")}
-            className="hover:text-indigo-300 transition-colors"
-          >
-            Projets
-          </button>
-        </li>
-        <li>
-          <button
-            onClick={() => scrollToSection("contact")}
-            className="hover:text-indigo-300 transition-colors"
-          >
-            Contact
-          </button>
-        </li>
-      </ul>
-      <Link
-        href="/Account"
-        className="hidden md:block bg-white text-[#274e9d] rounded-lg text-lg font-medium px-4 py-2 border-2 border-white hover:bg-[#274e9d] hover:text-white transition-colors"
-      >
-        Compte
-      </Link>
+    <>
+      <link
+        rel="stylesheet"
+        href="https://unicons.iconscout.com/release/v4.0.8/css/line.css"
+      />
+
+      {/* Top Part (Visible at the beginning, hides on scroll) */}
       <div
-        className={`md:hidden absolute top-full left-0 w-full bg-[#274e9d] shadow-lg overflow-hidden transition-all duration-500 ${
+        className={`bg-primary z-20 w-full transition-all duration-500 ease-in-out ${
+          isScrolled ? "opacity-0 h-0" : "opacity-100 h-20 md:h-32"
+        }`}
+      >
+        <div className="flex justify-between items-center h-20 md:h-32 px-4 md:px-10 lg:px-16">
+          {/* Left: Search Bar (Desktop) */}
+          <div className="hidden md:flex items-center flex-1">
+            <input
+              type="text"
+              placeholder="Search..."
+              className="bg-white text-primary rounded-lg px-4 py-2 focus:outline-none w-full max-w-xs shadow-sm transition-all duration-300 ease-in-out focus:ring-2 focus:ring-accent focus:border-transparent"
+            />
+          </div>
+
+          {/* Center: Logo */}
+          <Link href="/" className="md:flex items-center justify-center flex-1">
+            <div className="relative h-16 w-16 md:h-24 md:w-24"> {/* Smaller logo for mobile */}
+              <Image
+                src="/logo.jpeg"
+                alt="Logo"
+                fill
+                className="object-cover"
+              />
+            </div>
+          </Link>
+
+          {/* Right: Icons (Mobile) and Account/Cart (Desktop) */}
+          <div className="flex items-center space-x-4 justify-end flex-1">
+            {/* Search Icon (Mobile) */}
+            <button
+              onClick={toggleSearch}
+              className="md:hidden text-accent focus:outline-none"
+            >
+              <i className="uil uil-search text-2xl"></i>
+            </button>
+
+            {/* Cart Icon (Mobile) */}
+            <button className="md:hidden text-accent">
+              <i className="uil uil-shopping-cart text-2xl"></i>
+            </button>
+
+            {/* Menu Icon (Mobile) */}
+            <button
+              onClick={toggleMenu}
+              className="md:hidden text-accent focus:outline-none"
+            >
+              <i className="uil uil-bars text-2xl"></i>
+            </button>
+
+            {/* Account Button (Desktop) */}
+            <Link
+              href="/Account"
+              className="hidden md:block bg-sectext-accent text-prbg-primary rounded-lg text-lg font-medium px-4 py-2 border-2 border-sectext-accent hover:bg-primary hover:text-accent transition-colors duration-300 ease-in-out"
+            >
+              Account
+            </Link>
+
+            {/* Cart Icon (Desktop) */}
+            <button className="hidden md:block text-accent">
+              <i className="uil uil-shopping-cart text-2xl"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Search Input Overlay (Mobile) */}
+      {isSearchOpen && (
+        <div className="md:hidden fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 z-30 flex items-center justify-center p-4">
+          <div className="w-full max-w-md bg-white rounded-lg shadow-lg p-4 transition-all duration-500 ease-in-out">
+            <input
+              type="text"
+              placeholder="Search..."
+              className="w-full bg-white text-primary rounded-lg px-4 py-2 focus:outline-none shadow-sm transition-all duration-300 ease-in-out focus:ring-2 focus:ring-accent focus:border-transparent"
+            />
+            <button
+              onClick={toggleSearch}
+              className="mt-2 text-accent hover:text-indigo-300 transition-colors duration-300 ease-in-out"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Second Part: Sticky Menu Navigation (Visible at the beginning and sticks on scroll) */}
+      <div
+        className={`bg-primary z-20 sticky top-0 w-full shadow-lg transition-all duration-500 ease-in-out ${
+          isScrolled ? "h-16" : "h-16"
+        }`}
+      >
+        <div className="flex justify-center items-center h-full px-4 md:px-10 lg:px-16">
+          {/* Menu Navigation Links (Mobile and Desktop) */}
+          <ul className="flex space-x-4 md:space-x-8 text-sm md:text-lg text-accent">
+            {menuItems.map((item) => (
+              <li key={item.id} className="relative group">
+                {item.dropdown ? (
+                  <>
+                    <button
+                      onClick={toggleDropdown}
+                      className="hover:text-indigo-300 transition-colors duration-300 ease-in-out"
+                    >
+                      {item.label}
+                    </button>
+                    <ul
+                      className={`absolute top-10 left-1/2 transform -translate-x-1/2 bg-primary shadow-lg rounded-lg mt-2 py-2 w-72 opacity-0 invisible ${
+                        isDropdownOpen ? "opacity-100 visible" : "group-hover:opacity-100 group-hover:visible"
+                      } transition-all duration-300 ease-in-out`}
+                    >
+                      {item.dropdown.map((dropdownItem,index) => (
+                        <li key={index}>
+                          <Link
+                            href={dropdownItem.href}
+                            className="block w-full text-left px-4 py-2 hover:bg-[#305eb8] transition-colors duration-300 ease-in-out"
+                          >
+                            {dropdownItem.label}
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                  </>
+                ) : (
+                  <button
+                    onClick={() => scrollToSection(item.id)}
+                    className="hover:text-indigo-300 transition-colors duration-300 ease-in-out"
+                  >
+                    {item.label}
+                  </button>
+                )}
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+
+      {/* Mobile Menu (Visible on Mobile) */}
+      <div
+        className={`md:hidden fixed top-20 left-0 w-full bg-primary shadow-lg overflow-hidden transition-all duration-500 ease-in-out ${
           isMenuOpen ? "max-h-96" : "max-h-0"
         }`}
       >
-        <ul className="flex flex-col items-center space-y-4 py-4 text-white">
-          <li>
-            <button
-              onClick={() => scrollToSection("accueil")}
-              className="hover:text-indigo-300 transition-colors"
-            >
-              Accueil
-            </button>
-          </li>
-          <li>
-            <button
-              onClick={() => scrollToSection("services")}
-              className="hover:text-indigo-300 transition-colors"
-            >
-              Services
-            </button>
-          </li>
-          <li>
-            <button
-              onClick={() => scrollToSection("projects")}
-              className="hover:text-indigo-300 transition-colors"
-            >
-              Projets
-            </button>
-          </li>
-          <li>
-            <button
-              onClick={() => scrollToSection("contact")}
-              className="hover:text-indigo-300 transition-colors"
-            >
-              Contact
-            </button>
-          </li>
+        <ul className="flex flex-col items-center space-y-4 py-4 text-accent">
+          {menuItems.map((item) => (
+            <li key={item.id}>
+              <button
+                onClick={() => scrollToSection(item.id)}
+                className="hover:text-indigo-300 transition-colors duration-300 ease-in-out"
+              >
+                {item.label}
+              </button>
+            </li>
+          ))}
           <li>
             <Link
               href="/Account"
-              className="bg-white text-[#274e9d] rounded-lg text-lg font-medium px-4 py-2"
+              className="bg-sectext-accent text-prbg-primary rounded-lg text-lg font-medium px-4 py-2 transition-colors duration-300 ease-in-out"
             >
-              Compte
+              Account
             </Link>
           </li>
         </ul>
       </div>
-    </nav>
+    </>
   );
-}
+};
+
+export default Navbar;
