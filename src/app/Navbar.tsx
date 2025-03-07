@@ -17,7 +17,6 @@ const menuItems = [
 
 const Navbar: React.FC = () => {
   const [isScrolled, setIsScrolled] = useState<boolean>(false);
-  const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false);
   const [isSearchOpen, setIsSearchOpen] = useState<boolean>(false);
 
@@ -28,10 +27,6 @@ const Navbar: React.FC = () => {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
-
-  const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen);
-  };
 
   const toggleDropdown = () => {
     setIsDropdownOpen(!isDropdownOpen);
@@ -45,7 +40,6 @@ const Navbar: React.FC = () => {
     const element = document.getElementById(id);
     if (element) {
       element.scrollIntoView({ behavior: "smooth" });
-      setIsMenuOpen(false);
     } else {
       window.location.href = `/#${id}`;
     }
@@ -101,13 +95,13 @@ const Navbar: React.FC = () => {
               <i className="uil uil-shopping-cart text-2xl"></i>
             </button>
 
-            {/* Menu Icon (Mobile) */}
-            <button
-              onClick={toggleMenu}
+            {/* Account Icon (Mobile) */}
+            <Link
+              href="/Account"
               className="md:hidden text-accent focus:outline-none"
             >
-              <i className="uil uil-bars text-2xl"></i>
-            </button>
+              <i className="uil uil-user text-2xl"></i> {/* User Icon */}
+            </Link>
 
             {/* Account Button (Desktop) */}
             <Link
@@ -168,7 +162,7 @@ const Navbar: React.FC = () => {
                         isDropdownOpen ? "opacity-100 visible" : "group-hover:opacity-100 group-hover:visible"
                       } transition-all duration-300 ease-in-out`}
                     >
-                      {item.dropdown.map((dropdownItem,index) => (
+                      {item.dropdown.map((dropdownItem, index) => (
                         <li key={index}>
                           <Link
                             href={dropdownItem.href}
@@ -192,34 +186,6 @@ const Navbar: React.FC = () => {
             ))}
           </ul>
         </div>
-      </div>
-
-      {/* Mobile Menu (Visible on Mobile) */}
-      <div
-        className={`md:hidden fixed top-20 left-0 w-full bg-primary shadow-lg overflow-hidden transition-all duration-500 ease-in-out ${
-          isMenuOpen ? "max-h-96" : "max-h-0"
-        }`}
-      >
-        <ul className="flex flex-col items-center space-y-4 py-4 text-accent">
-          {menuItems.map((item) => (
-            <li key={item.id}>
-              <button
-                onClick={() => scrollToSection(item.id)}
-                className="hover:text-indigo-300 transition-colors duration-300 ease-in-out"
-              >
-                {item.label}
-              </button>
-            </li>
-          ))}
-          <li>
-            <Link
-              href="/Account"
-              className="bg-sectext-accent text-prbg-primary rounded-lg text-lg font-medium px-4 py-2 transition-colors duration-300 ease-in-out"
-            >
-              Account
-            </Link>
-          </li>
-        </ul>
       </div>
     </>
   );
