@@ -2,42 +2,13 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { loadTranslations } from "../utils/loadTranslations";
 
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState<boolean>(false);
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
-  const [translations, setTranslations] = useState<{
-    navbar: {
-      home: string;
-      services: string;
-      custom_pool_design: string;
-      pool_maintenance: string;
-      wholesale_sales: string;
-      heating_cooling: string;
-      projects: string;
-      contact: string;
-      account: string;
-    };
-  }>({
-    navbar: {
-      home: "Accueil",
-      services: "Services",
-      custom_pool_design: "Conception de piscine sur mesure",
-      pool_maintenance: "Entretien Piscine & SAV",
-      wholesale_sales: "Vente en gros matériel Piscines & Mosaïque",
-      heating_cooling: "Chauffage & Climatisation",
-      projects: "Projets",
-      contact: "Contact",
-      account: "Compte",
-    },
-  });
 
+  // Use useEffect for side effects like adding event listeners
   useEffect(() => {
-    const userLanguage = navigator.language || "fr";
-    const loadedTranslations = loadTranslations(userLanguage);
-    setTranslations(loadedTranslations);
-
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 0);
     };
@@ -110,7 +81,7 @@ export default function Navbar() {
             onClick={() => scrollToSection("accueil")}
             className="hover:text-indigo-300 transition-colors"
           >
-            {translations.navbar.home}
+            Accueil
           </button>
         </li>
         <li className="relative group">
@@ -118,7 +89,7 @@ export default function Navbar() {
             onClick={() => scrollToSection("services")}
             className="hover:text-indigo-300 transition-colors"
           >
-            {translations.navbar.services}
+            Services
           </button>
           <ul className="absolute top-10 left-1/2 transform -translate-x-1/2 bg-[#274e9d] shadow-lg rounded-lg mt-2 py-2 w-72 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300">
             <li>
@@ -126,7 +97,7 @@ export default function Navbar() {
                 href="/Conception-de-piscine-sur-mesure"
                 className="block w-full text-left px-4 py-2 hover:bg-[#305eb8]"
               >
-                {translations.navbar.custom_pool_design}
+                Conception de piscine sur mesure
               </Link>
             </li>
             <li>
@@ -134,7 +105,7 @@ export default function Navbar() {
                 href="/Entretien-Piscine-&-SAV"
                 className="block w-full text-left px-4 py-2 hover:bg-[#305eb8]"
               >
-                {translations.navbar.pool_maintenance}
+                Entretien Piscine & SAV
               </Link>
             </li>
             <li>
@@ -142,7 +113,7 @@ export default function Navbar() {
                 href="/Vente-en-gros-materiel-Piscines-&-Mosaique"
                 className="block w-full text-left px-4 py-2 hover:bg-[#305eb8]"
               >
-                {translations.navbar.wholesale_sales}
+                Vente en gros matériel Piscines & Mosaïque
               </Link>
             </li>
             <li>
@@ -150,7 +121,7 @@ export default function Navbar() {
                 href="/Chauffage-&-climatisation"
                 className="block w-full text-left px-4 py-2 hover:bg-[#305eb8]"
               >
-                {translations.navbar.heating_cooling}
+                Chauffage & Climatisation
               </Link>
             </li>
           </ul>
@@ -160,7 +131,7 @@ export default function Navbar() {
             onClick={() => scrollToSection("projects")}
             className="hover:text-indigo-300 transition-colors"
           >
-            {translations.navbar.projects}
+            Projets
           </button>
         </li>
         <li>
@@ -168,7 +139,7 @@ export default function Navbar() {
             onClick={() => scrollToSection("contact")}
             className="hover:text-indigo-300 transition-colors"
           >
-            {translations.navbar.contact}
+            Contact
           </button>
         </li>
       </ul>
@@ -176,7 +147,7 @@ export default function Navbar() {
         href="/Account"
         className="hidden md:block bg-white text-[#274e9d] rounded-lg text-lg font-medium px-4 py-2 border-2 border-white hover:bg-[#274e9d] hover:text-white transition-colors"
       >
-        {translations.navbar.account}
+        Compte
       </Link>
       <div
         className={`md:hidden absolute top-full left-0 w-full bg-[#274e9d] shadow-lg overflow-hidden transition-all duration-500 ${
@@ -189,7 +160,7 @@ export default function Navbar() {
               onClick={() => scrollToSection("accueil")}
               className="hover:text-indigo-300 transition-colors"
             >
-              {translations.navbar.home}
+              Accueil
             </button>
           </li>
           <li>
@@ -197,7 +168,7 @@ export default function Navbar() {
               onClick={() => scrollToSection("services")}
               className="hover:text-indigo-300 transition-colors"
             >
-              {translations.navbar.services}
+              Services
             </button>
           </li>
           <li>
@@ -205,7 +176,7 @@ export default function Navbar() {
               onClick={() => scrollToSection("projects")}
               className="hover:text-indigo-300 transition-colors"
             >
-              {translations.navbar.projects}
+              Projets
             </button>
           </li>
           <li>
@@ -213,7 +184,7 @@ export default function Navbar() {
               onClick={() => scrollToSection("contact")}
               className="hover:text-indigo-300 transition-colors"
             >
-              {translations.navbar.contact}
+              Contact
             </button>
           </li>
           <li>
@@ -221,7 +192,7 @@ export default function Navbar() {
               href="/Account"
               className="bg-white text-[#274e9d] rounded-lg text-lg font-medium px-4 py-2"
             >
-              {translations.navbar.account}
+              Compte
             </Link>
           </li>
         </ul>
