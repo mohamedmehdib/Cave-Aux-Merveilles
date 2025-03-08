@@ -116,7 +116,7 @@ const Navbar: React.FC = () => {
             {/* Account Button (Desktop) */}
             <Link
               href="/Account"
-              className="hidden md:block rounded-lg text-lg font-medium px-4 py-2 border-2 border-accent hover:bg-primary hover:text-accent transition-colors duration-300 ease-in-out"
+              className="hidden md:block rounded-lg text-lg font-medium px-4 py-2 border-2 border-accent hover:bg-accent hover:text-white transition-colors duration-300 ease-in-out"
             >
               Compte
             </Link>
@@ -131,21 +131,30 @@ const Navbar: React.FC = () => {
 
       {/* Search Input Overlay (Mobile) */}
       {isSearchOpen && (
-        <div className="md:hidden fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 z-30 flex items-center justify-center p-4">
-          <div className="w-full max-w-md bg-white rounded-lg shadow-lg p-4 transition-all duration-500 ease-in-out">
-            <input
-              type="text"
-              placeholder="Search..."
-              className="w-full bg-white text-primary rounded-lg px-4 py-2 focus:outline-none shadow-sm transition-all duration-300 ease-in-out focus:ring-2 focus:ring-accent focus:border-transparent"
-            />
-            <button
-              onClick={toggleSearch}
-              className="mt-2 text-accent hover:text-indigo-300 transition-colors duration-300 ease-in-out"
-            >
-              Close
-            </button>
+        <>
+          {/* Dark Background Overlay */}
+          <div
+            className="md:hidden fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 z-30 transition-opacity duration-500 ease-in-out"
+            onClick={toggleSearch} // Close search box when clicking outside
+          />
+
+          {/* Search Box */}
+          <div className="md:hidden fixed top-0 left-0 w-full h-full z-40 flex items-center justify-center p-4">
+            <div className="w-full max-w-md bg-white rounded-lg shadow-lg p-4 transition-all duration-500 ease-in-out transform translate-y-0 scale-100 opacity-100">
+              <input
+                type="text"
+                placeholder="Search..."
+                className="w-full bg-white text-primary rounded-lg px-4 py-2 focus:outline-none shadow-sm transition-all duration-300 ease-in-out focus:ring-2 focus:ring-accent focus:border-transparent"
+              />
+              <button
+                onClick={toggleSearch}
+                className="mt-2 text-accent hover:text-indigo-300 transition-colors duration-300 ease-in-out"
+              >
+                Close
+              </button>
+            </div>
           </div>
-        </div>
+        </>
       )}
 
       {/* Second Part: Follows the top section, becomes sticky after top section disappears */}
