@@ -85,6 +85,7 @@ const Navbar: React.FC = () => {
                 alt="Logo"
                 fill
                 className="object-cover"
+                unoptimized
               />
             </div>
           </Link>
