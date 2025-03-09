@@ -19,28 +19,41 @@ const menuItems = [
 ];
 
 const DesktopNavbar: React.FC = () => {
+  const [isTopSectionVisible, setIsTopSectionVisible] = useState<boolean>(true);
   const [isScrolled, setIsScrolled] = useState<boolean>(false);
   const [openDropdownId, setOpenDropdownId] = useState<string | null>(null);
-  const topSectionRef = useRef<HTMLDivElement>(null);
+  const lastScrollY = useRef<number>(0);
 
   useEffect(() => {
     const handleScroll = () => {
-      if (topSectionRef.current) {
-        const topSectionRect = topSectionRef.current.getBoundingClientRect();
-        if (topSectionRect.bottom <= 0) {
-          setIsScrolled(true);
-        } else {
-          setIsScrolled(false);
-        }
+      const currentScrollY = window.scrollY;
+
+      // Debug logs
+      console.log("Current Scroll:", currentScrollY, "Last Scroll:", lastScrollY.current);
+      console.log("Top Section Visible:", isTopSectionVisible, "Is Scrolled:", isScrolled);
+
+      // Show top section when scrolling up
+      if (currentScrollY < lastScrollY.current) {
+        setIsTopSectionVisible(true);
       }
+      // Hide top section when scrolling down past 100px
+      else if (currentScrollY > lastScrollY.current && currentScrollY > 100) {
+        setIsTopSectionVisible(false);
+      }
+
+      // Update last scroll position
+      lastScrollY.current = currentScrollY;
+
+      // Make the second section sticky when the top section is hidden
+      setIsScrolled(currentScrollY > 100);
     };
 
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  }, [isTopSectionVisible, isScrolled]);
 
   const toggleDropdown = (id: string) => {
-    setOpenDropdownId(openDropdownId === id ? null : id);
+    setOpenDropdownId((prev) => (prev === id ? null : id));
   };
 
   const scrollToSection = (id: string) => {
@@ -61,8 +74,9 @@ const DesktopNavbar: React.FC = () => {
 
       {/* Top Part */}
       <div
-        ref={topSectionRef}
-        className="bg-primary z-20 w-full h-32 transition-all duration-500 ease-in-out"
+        className={`bg-primary z-20 w-full h-32 transition-all duration-500 ease-in-out ${
+          isTopSectionVisible ? "translate-y-0" : "-translate-y-full"
+        }`}
       >
         <div className="flex justify-between items-center h-32 px-10">
           {/* Left: Search Bar */}
@@ -117,9 +131,10 @@ const DesktopNavbar: React.FC = () => {
                   <>
                     <button
                       onClick={() => toggleDropdown(item.id)}
-                      className="hover:text-indigo-300 transition-colors duration-300 ease-in-out"
+                      className="hover:text-indigo-300 transition-colors duration-300 ease-in-out flex items-center gap-1"
                     >
                       {item.label}
+                      <i className="uil uil-angle-down text-sm"></i> {/* Chevron Down Icon */}
                     </button>
                     <ul
                       className={`absolute top-10 left-1/2 transform -translate-x-1/2 bg-primary shadow-lg rounded-lg mt-2 py-2 w-72 opacity-0 invisible ${

@@ -1,6 +1,8 @@
 "use client";
+import Footer from "./Footer";
 import Hero from "./Hero";
 import Navbar from "./Navbar";
+import PopUp from "./PopUp";
 
 export default function Home() {
 
@@ -8,6 +10,8 @@ export default function Home() {
     <div className="min-h-screen bg-primary">
       <Navbar />
       <Hero />
+      <Footer />
+      <PopUp />
     </div>
   );
 }
