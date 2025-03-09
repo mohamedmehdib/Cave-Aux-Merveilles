@@ -20,46 +20,33 @@ const menuItems = [
 
 const DesktopNavbar: React.FC = () => {
   const [isTopSectionVisible, setIsTopSectionVisible] = useState<boolean>(true);
-  const [isScrolled, setIsScrolled] = useState<boolean>(false);
-  const [openDropdownId, setOpenDropdownId] = useState<string | null>(null);
   const lastScrollY = useRef<number>(0);
 
   useEffect(() => {
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
 
-      // Debug logs
-      console.log("Current Scroll:", currentScrollY, "Last Scroll:", lastScrollY.current);
-      console.log("Top Section Visible:", isTopSectionVisible, "Is Scrolled:", isScrolled);
-
       // Show top section when scrolling up
       if (currentScrollY < lastScrollY.current) {
         setIsTopSectionVisible(true);
       }
-      // Hide top section when scrolling down past 100px
-      else if (currentScrollY > lastScrollY.current && currentScrollY > 100) {
+      // Hide top section when scrolling down
+      else if (currentScrollY > lastScrollY.current) {
         setIsTopSectionVisible(false);
       }
 
       // Update last scroll position
       lastScrollY.current = currentScrollY;
-
-      // Make the second section sticky when the top section is hidden
-      setIsScrolled(currentScrollY > 100);
     };
 
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
-  }, [isTopSectionVisible, isScrolled]);
-
-  const toggleDropdown = (id: string) => {
-    setOpenDropdownId((prev) => (prev === id ? null : id));
-  };
+  }, []);
 
   const scrollToSection = (id: string) => {
     const element = document.getElementById(id);
     if (element) {
-      element.scrollIntoView({ behavior: "smooth" });
+      element.scrollIntoView({ behavior: "instant" });
     } else {
       window.location.href = `/#${id}`;
     }
@@ -74,7 +61,7 @@ const DesktopNavbar: React.FC = () => {
 
       {/* Top Part */}
       <div
-        className={`bg-primary z-20 w-full h-32 transition-all duration-500 ease-in-out ${
+        className={`bg-primary z-30 w-full fixed top-0 transition-transform duration-300 ease-in-out ${
           isTopSectionVisible ? "translate-y-0" : "-translate-y-full"
         }`}
       >
@@ -84,7 +71,7 @@ const DesktopNavbar: React.FC = () => {
             <input
               type="text"
               placeholder="Recherche..."
-              className="bg-white text-primary rounded-lg px-4 py-2 focus:outline-none w-full max-w-xs shadow-sm transition-all duration-300 ease-in-out focus:ring-2 focus:ring-accent focus:border-transparent"
+              className="bg-white text-primary rounded-lg px-4 py-2 focus:outline-none w-full max-w-xs shadow-sm"
             />
           </div>
 
@@ -105,7 +92,7 @@ const DesktopNavbar: React.FC = () => {
           <div className="flex items-center space-x-4 justify-end flex-1">
             <Link
               href="/Account"
-              className="rounded-lg text-lg font-medium px-4 py-2 border-2 border-accent hover:bg-accent hover:text-white transition-colors duration-300 ease-in-out"
+              className="rounded-lg text-lg font-medium px-4 py-2 border-2 border-accent hover:bg-accent hover:text-white"
             >
               Compte
             </Link>
@@ -116,36 +103,30 @@ const DesktopNavbar: React.FC = () => {
         </div>
       </div>
 
-      {/* Second Part: Sticky Navbar */}
-      <div
-        className={`bg-primary z-20 w-full shadow-lg transition-all duration-500 ease-in-out ${
-          isScrolled ? "fixed top-0" : "relative"
-        }`}
-      >
-        <div className="flex justify-center items-center h-16 px-10">
+      {/* Second Part: Fixed Navbar */}
+      <div className="bg-primary z-20 w-full fixed top-0 shadow-lg">
+        <div
+          className={`flex justify-center items-center h-16 px-10 transition-margin duration-300 ease-in-out ${
+            isTopSectionVisible ? "mt-32" : "mt-0"
+          }`}
+        >
           {/* Menu Navigation Links */}
           <ul className="flex space-x-8 text-lg text-accent">
             {menuItems.map((item) => (
               <li key={item.id} className="relative group">
                 {item.dropdown ? (
                   <>
-                    <button
-                      onClick={() => toggleDropdown(item.id)}
-                      className="hover:text-indigo-300 transition-colors duration-300 ease-in-out flex items-center gap-1"
-                    >
+                    <button className="hover:text-indigo-300 flex items-center gap-1">
                       {item.label}
-                      <i className="uil uil-angle-down text-sm"></i> {/* Chevron Down Icon */}
+                      <i className="uil uil-angle-down text-sm"></i>{" "}
+                      {/* Chevron Down Icon */}
                     </button>
-                    <ul
-                      className={`absolute top-10 left-1/2 transform -translate-x-1/2 bg-primary shadow-lg rounded-lg mt-2 py-2 w-72 opacity-0 invisible ${
-                        openDropdownId === item.id ? "opacity-100 visible" : "group-hover:opacity-100 group-hover:visible"
-                      } transition-all duration-300 ease-in-out`}
-                    >
+                    <ul className="absolute top-10 left-1/2 transform -translate-x-1/2 bg-primary shadow-lg rounded-lg mt-2 py-2 w-72 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 ease-in-out">
                       {item.dropdown.map((dropdownItem, index) => (
                         <li key={index}>
                           <Link
                             href={dropdownItem.href}
-                            className="block w-full text-left px-4 py-2 hover:bg-[#305eb8] transition-colors duration-300 ease-in-out"
+                            className="block w-full text-left px-4 py-2 hover:bg-accent hover:text-primary transition-colors duration-300 ease-in-out"
                           >
                             {dropdownItem.label}
                           </Link>
@@ -156,7 +137,7 @@ const DesktopNavbar: React.FC = () => {
                 ) : (
                   <button
                     onClick={() => scrollToSection(item.id)}
-                    className="hover:text-indigo-300 transition-colors duration-300 ease-in-out"
+                    className="hover:text-indigo-300"
                   >
                     {item.label}
                   </button>
