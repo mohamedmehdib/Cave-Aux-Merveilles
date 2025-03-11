@@ -1,11 +1,18 @@
-
-import React from 'react'
+import Image from 'next/image';
+import React from 'react';
 
 export default function Hero() {
   return (
-    <div className='h-screen'>
-        <div className='pt-52'>
-        </div>
-    </div>
-  )
+    
+      <div className=' md:pt-48 bg-black'>
+        <Image
+          src="/hero.jpg"
+          alt='Hero ( By freepik )'
+          height={50000}
+          width={50000}
+          className="mx-auto"
+        />
+      </div>
+   
+  );
 }
