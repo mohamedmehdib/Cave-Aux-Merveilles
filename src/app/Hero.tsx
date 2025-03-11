@@ -4,7 +4,7 @@ import React from 'react';
 export default function Hero() {
   return (
     
-      <div className=' md:pt-48 bg-black'>
+      <div className='md:pt-48'>
         <Image
           src="/hero.jpg"
           alt='Hero ( By freepik )'

@@ -24,7 +24,7 @@ export default function Footer() {
                 <Link
                   target="_blank"
                   rel="noopener noreferrer"
-                  href="https://www.facebook.com/share/18cy9Avd15/?mibextid=wwXIfr"
+                  href=""
                   className="text-gray-600 hover:text-accent transition flex items-center space-x-2"
                   aria-label="Suivez-nous sur Facebook"
                 >
@@ -36,7 +36,7 @@ export default function Footer() {
                 <Link
                   target="_blank"
                   rel="noopener noreferrer"
-                  href="https://www.instagram.com/fildair_bilel_abassi/"
+                  href=""
                   className="text-gray-600 hover:text-accent transition flex items-center space-x-2"
                   aria-label="Suivez-nous sur Instagram"
                 >
@@ -48,7 +48,7 @@ export default function Footer() {
                 <Link
                   target="_blank"
                   rel="noopener noreferrer"
-                  href="https://www.tiktok.com/@fildairbilelabass"
+                  href=""
                   className="text-gray-600 hover:text-accent transition flex items-center space-x-2"
                   aria-label="Suivez-nous sur TikTok"
                 >
@@ -60,7 +60,7 @@ export default function Footer() {
                 <Link
                   target="_blank"
                   rel="noopener noreferrer"
-                  href="https://wa.me/28700199"
+                  href=""
                   className="text-gray-600 hover:text-accent transition flex items-center space-x-2"
                   aria-label="Contactez-nous sur WhatsApp"
                 >
@@ -79,16 +79,16 @@ export default function Footer() {
               <li>
                 <span className="font-medium">Service client:</span>{" "}
                 <span className="hover:text-accent transition">
-                  71 865 319 / 27 870 016
+                  23 456 789
                 </span>
               </li>
               <li>
                 <span className="font-medium">Email:</span>{" "}
                 <a
-                  href="mailto:fildairfreres@gmail.com"
+                  href="mailto:cave_aux_merveilles@outlook.com"
                   className="hover:text-accent transition"
                 >
-                  fildairfreres@gmail.com
+                  cave_aux_merveilles@outlook.com
                 </a>
               </li>
             </ul>

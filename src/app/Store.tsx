@@ -212,7 +212,7 @@ export default function Store() {
           {sortedProducts.map((product) => (
             <div
               key={product.id}
-              className="bg-white shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300 group relative w-72"
+              className="hover:bg-white overflow-hidden hover:shadow-lg transition-shadow duration-300 relative w-72"
             >
               {/* Swiper Slider for Product Images */}
               <div className="relative w-full h-72 flex items-center justify-center pt-4">
@@ -241,7 +241,7 @@ export default function Store() {
 
                 {/* Custom Navigation Arrows */}
                 <div
-                  className={`swiper-button-prev-${product.id} absolute top-1/2 left-2 transform -translate-y-1/2 z-10 bg-white/80 p-2 rounded-full shadow-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 cursor-pointer hover:bg-white`}
+                  className={`swiper-button-prev-${product.id} absolute top-1/2 left-2 transform -translate-y-1/2 z-10 bg-white/80 p-2 shadow-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 cursor-pointer hover:bg-white`}
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -259,7 +259,7 @@ export default function Store() {
                   </svg>
                 </div>
                 <div
-                  className={`swiper-button-next-${product.id} absolute top-1/2 right-2 transform -translate-y-1/2 z-10 bg-white/80 p-2 rounded-full shadow-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 cursor-pointer hover:bg-white`}
+                  className={`swiper-button-next-${product.id} absolute top-1/2 right-2 transform -translate-y-1/2 z-10 bg-white/80 p-2 shadow-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 cursor-pointer hover:bg-white`}
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
