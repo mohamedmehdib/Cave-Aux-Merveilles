@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
+import Image from "next/image";
 
 interface Product {
   id: number;
@@ -67,7 +68,8 @@ export default function Store() {
             >
               {/* Display the first image of the product */}
               {product.image_urls.length > 0 && (
-                <img
+                <Image
+                  fill
                   src={product.image_urls[0]}
                   alt={product.title}
                   className="w-full h-48 object-cover"
