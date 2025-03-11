@@ -45,7 +45,7 @@ export default function PopUp() {
             </h2>
 
             <p className="text-sm sm:text-base mb-4">
-              Le délai de préparation pour les bougies personnalisées est de 1 semaine.Avec le code JANVIER1 bénéficiez de 5% de remise dès 16€ d'achat sur l'ensemble de la boutique
+              Le délai de préparation pour les bougies personnalisées est de 1 semaine.Avec le code JANVIER1 bénéficiez de 5% de remise dès 16€ d&apos;achat sur l&apos;ensemble de la boutique
             </p>
           </div>
         </div>
