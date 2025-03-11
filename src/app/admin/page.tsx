@@ -53,27 +53,27 @@ const AdminDashboard = () => {
 
   if (!isLoggedIn) {
     return (
-      <div className="flex justify-center items-center min-h-screen bg-gradient-to-r bg-blue-400">
+      <div className="flex justify-center items-center min-h-screen bg-gradient-to-r bg-primary">
         <div className="p-4 sm:p-8 bg-white shadow-xl rounded-lg w-full sm:w-96 space-y-6">
           <h2 className="text-2xl sm:text-3xl font-semibold text-center text-gray-800 mb-4">Admin Sign In</h2>
           {error && <div className="text-red-500 text-sm mb-4 text-center">{error}</div>}
           <input
             type="email"
             placeholder="Email"
-            className="w-full p-3 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+            className="w-full p-3 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-prbg-primary"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
           <input
             type="password"
             placeholder="Password"
-            className="w-full p-3 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+            className="w-full p-3 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-prbg-primary"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
           <button
             onClick={handleSignIn}
-            className={`w-full py-3 bg-blue-600 text-white rounded-lg font-semibold shadow-lg transition-opacity duration-300 ${loading ? "opacity-50" : ""}`}
+            className={`w-full py-3 bg-accent text-white rounded-lg font-semibold shadow-lg transition-opacity duration-300 ${loading ? "opacity-50" : ""}`}
             disabled={loading}
           >
             {loading ? "Signing In..." : "Sign In"}
@@ -91,7 +91,7 @@ const AdminDashboard = () => {
         <button
           onClick={() => setActiveComponent("ProductUpload")}
           className={`px-6 sm:px-10 py-3 sm:py-4 text-base sm:text-lg font-bold rounded-xl shadow-md transition-colors duration-300 ${
-            activeComponent === "ProductUpload" ? "bg-blue-600 text-white" : "bg-gray-300 text-gray-800 hover:bg-gray-400"
+            activeComponent === "ProductUpload" ? "bg-accent text-white" : "bg-gray-300 text-gray-800 hover:bg-gray-400"
           }`}
         >
           Projets

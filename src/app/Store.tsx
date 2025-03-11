@@ -54,11 +54,11 @@ export default function Store() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 py-8 px-4 sm:px-8">
-      <h1 className="text-3xl sm:text-4xl font-bold text-center text-gray-800 mb-8">Store</h1>
+    <div className="min-h-screen bg-primary py-8 px-4 sm:px-8">
+      <h1 className="text-3xl sm:text-4xl font-bold text-center text-accent mb-8">Store</h1>
 
       {products.length === 0 ? (
-        <div className="text-center text-gray-600">No products available.</div>
+        <div className="text-center text-accent">No products available.</div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {products.map((product) => (
@@ -77,8 +77,8 @@ export default function Store() {
               )}
 
               <div className="p-4">
-                <h2 className="text-xl font-semibold text-gray-800 mb-2">{product.title}</h2>
-                <p className="text-gray-600 mb-4">{product.description}</p>
+                <h2 className="text-xl font-semibold text-accent mb-2">{product.title}</h2>
+                <p className="text-accent mb-4">{product.description}</p>
                 <p className="text-lg font-bold text-blue-600">${product.price.toFixed(2)}</p>
               </div>
             </div>

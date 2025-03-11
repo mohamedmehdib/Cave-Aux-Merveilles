@@ -3,6 +3,7 @@ import Footer from "./Footer";
 import Hero from "./Hero";
 import Navbar from "./Navbar";
 import PopUp from "./PopUp";
+import Store from "./Store";
 
 export default function Home() {
 
@@ -10,6 +11,7 @@ export default function Home() {
     <div className="min-h-screen bg-primary">
       <Navbar />
       <Hero />
+      <Store />
       <Footer />
       <PopUp />
     </div>

@@ -159,7 +159,7 @@ const ProductUpload = () => {
         </div>
         <button
           type="submit"
-          className={`w-full py-3 bg-blue-600 text-white rounded-lg font-semibold shadow-lg transition-opacity duration-300 ${
+          className={`w-full py-3 bg-accent text-white rounded-lg font-semibold shadow-lg transition-opacity duration-300 ${
             loading ? "opacity-50" : ""
           }`}
           disabled={loading}
