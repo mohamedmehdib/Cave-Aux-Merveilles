@@ -1,16 +1,21 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabaseClient";
 
 const ProductUpload = () => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState<number | null>(null);
-  const [fileInputs, setFileInputs] = useState<File[]>([]); // Store files
+  const [fileInputs, setFileInputs] = useState<(File | null)[]>([]); // Allow File or null
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+
+  // Initialize with one empty file input
+  useEffect(() => {
+    setFileInputs([null]);
+  }, []);
 
   // Handle file upload for a specific input
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
@@ -25,11 +30,6 @@ const ProductUpload = () => {
       }
     }
   };
-
-  // Add an initial file input when the component mounts
-  useState(() => {
-    setFileInputs([null]); // Initialize with one empty file input
-  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
