@@ -8,8 +8,8 @@ export default function Hero() {
         <Image
           src="/hero.jpg"
           alt='Hero ( By freepik )'
-          height={50000}
-          width={50000}
+          height={5000}
+          width={5000}
           className="mx-auto"
           unoptimized
         />
