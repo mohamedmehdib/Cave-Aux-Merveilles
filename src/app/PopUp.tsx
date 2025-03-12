@@ -41,11 +41,11 @@ export default function PopUp() {
             </button>
 
             <h2 className="text-lg sm:text-xl font-bold mb-3 sm:mb-4">
-              Bienvenue!
+              Bienvenue sur notre site ! 
             </h2>
 
             <p className="text-sm sm:text-base mb-4">
-              Bienvenue sur notre site ! Nous sommes ravis de vous accueillir. Explorez nos services et découvrez tout ce que nous avons à offrir. Si vous avez des questions ou besoin d’aide, n’hésitez pas à nous contacter. Bonne navigation !
+              Nous sommes ravis de vous accueillir. Explorez nos services et découvrez tout ce que nous avons à offrir. Si vous avez des questions ou besoin d’aide, n’hésitez pas à nous contacter. Bonne navigation !
             </p>
           </div>
         </div>
