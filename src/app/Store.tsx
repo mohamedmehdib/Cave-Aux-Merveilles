@@ -13,6 +13,7 @@ interface Product {
 }
 
 export default function Store() {
+  // All hooks are called at the top level
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -22,6 +23,7 @@ export default function Store() {
   const [activeImageIndex, setActiveImageIndex] = useState<{ [key: number]: number }>({}); // State to manage active image index for each product
   const storeTopRef = useRef<HTMLDivElement>(null); // Ref for the top of the Store component
 
+  // Fetch products on component mount
   useEffect(() => {
     const fetchProducts = async () => {
       try {
@@ -270,7 +272,7 @@ export default function Store() {
                           : (activeImageIndex[product.id] || 0) - 1
                       )
                     }
-                    className="absolute left-2 sm:left-4 top-1/2 transform -translate-y-1/2 bg-white bg-opacity-75 p-2 shadow-md hover:bg-opacity-100 transition-all duration-300"
+                    className="absolute left-2 sm:left-4 top-1/2 transform -translate-y-1/2 bg-white bg-opacity-75 p-2 rounded-full shadow-md hover:bg-opacity-100 transition-all duration-300"
                   >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -296,7 +298,7 @@ export default function Store() {
                           : (activeImageIndex[product.id] || 0) + 1
                       )
                     }
-                    className="absolute right-2 sm:right-4 top-1/2 transform -translate-y-1/2 bg-white bg-opacity-75 p-2 shadow-md hover:bg-opacity-100 transition-all duration-300"
+                    className="absolute right-2 sm:right-4 top-1/2 transform -translate-y-1/2 bg-white bg-opacity-75 p-2 rounded-full shadow-md hover:bg-opacity-100 transition-all duration-300"
                   >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
