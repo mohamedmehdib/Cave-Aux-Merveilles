@@ -6,9 +6,9 @@ import Image from "next/image";
 
 // Import Swiper styles and modules
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Navigation } from "swiper/modules";
+import { Pagination } from "swiper/modules";
 import "swiper/css";
-import "swiper/css/navigation";
+import "swiper/css/pagination";
 
 interface Product {
   id: number;
@@ -72,6 +72,13 @@ export default function Store() {
         return 0;
     }
   });
+
+  // Group products into chunks of 8
+  const chunkSize = 8;
+  const productChunks = [];
+  for (let i = 0; i < sortedProducts.length; i += chunkSize) {
+    productChunks.push(sortedProducts.slice(i, i + chunkSize));
+  }
 
   if (loading) {
     return (
@@ -209,98 +216,75 @@ export default function Store() {
         <div className="text-center text-accent">No products available.</div>
       ) : (
         <div className="flex flex-wrap items-center justify-center gap-6">
-          {sortedProducts.map((product) => (
-            <div
-              key={product.id}
-              className="group overflow-hidden hover:shadow-lg transition-colors duration-300 relative w-72 hover:bg-white"
-            >
-              {/* Swiper Slider for Product Images */}
-              <div className="relative w-full h-72 flex items-center justify-center pt-4">
-                <Swiper
-                  modules={[Navigation]}
-                  navigation={{
-                    nextEl: `.swiper-button-next-${product.id}`,
-                    prevEl: `.swiper-button-prev-${product.id}`,
-                  }}
-                  loop={true} // Enable loop mode
-                  className="w-full h-full"
-                >
-                  {product.image_urls.map((imageUrl, index) => (
-                    <SwiperSlide key={index}>
-                      <div className="relative w-full h-full flex items-center justify-center">
-                        <Image
-                          src={imageUrl}
-                          alt={`${product.title} - Image ${index + 1}`}
-                          fill
-                          className="object-contain"
-                        />
-                      </div>
-                    </SwiperSlide>
-                  ))}
-                </Swiper>
-
-                {/* Custom Navigation Arrows */}
-                <div
-                  className={`swiper-button-prev-${product.id} absolute top-1/2 left-2 transform -translate-y-1/2 z-10 bg-white/80 p-2 shadow-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 cursor-pointer hover:bg-white`}
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-6 w-6 text-gray-800"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M15 19l-7-7 7-7"
-                    />
-                  </svg>
-                </div>
-                <div
-                  className={`swiper-button-next-${product.id} absolute top-1/2 right-2 transform -translate-y-1/2 z-10 bg-white/80 p-2 shadow-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 cursor-pointer hover:bg-white`}
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-6 w-6 text-gray-800"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M9 5l7 7-7 7"
-                    />
-                  </svg>
-                </div>
-              </div>
-
-              {/* Product Details */}
-              <div className="p-4 text-center">
-                <h2 className="text-xl font-semibold text-accent mb-2">{product.title}</h2>
-                <p>
-                  <span className="text-xs text-gray-600">A partir de </span>
-                  <span className="font-bold text-gray-700">{product.price.toFixed(2)} Dt</span>
-                </p>
-              </div>
-
-              {/* Add to Cart Button */}
-              <div className="p-4">
-                <button
-                  className="w-full py-2 bg-secondary text-white font-semibold hover:bg-accent transition-colors duration-300"
-                  onClick={() => {
-                    // Add to cart logic here
-                    console.log("Added to cart:", product.title);
-                  }}
-                >
-                  Ajouter au panier
-                </button>
-              </div>
+<Swiper
+  modules={[Pagination]}
+  pagination={{
+    clickable: true,
+    renderBullet: (index, className) => {
+      return `<span class="${className}">${index + 1}</span>`;
+    },
+  }}
+  slidesPerView={1}
+  slidesPerGroup={1}
+  spaceBetween={20}
+  className="w-full"
+>
+  {productChunks.map((chunk, index) => (
+    <SwiperSlide key={index}>
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
+        {chunk.map((product) => (
+          <div
+            key={product.id}
+            className="group overflow-hidden hover:shadow-lg transition-colors duration-300 relative w-full hover:bg-white"
+          >
+            {/* Swiper Slider for Product Images */}
+            <div className="relative w-full h-72 flex items-center justify-center pt-4">
+              <Swiper
+                loop={true} // Enable loop mode
+                className="w-full h-full"
+              >
+                {product.image_urls.map((imageUrl, index) => (
+                  <SwiperSlide key={index}>
+                    <div className="relative w-full h-full flex items-center justify-center">
+                      <Image
+                        src={imageUrl}
+                        alt={`${product.title} - Image ${index + 1}`}
+                        fill
+                        className="object-contain"
+                      />
+                    </div>
+                  </SwiperSlide>
+                ))}
+              </Swiper>
             </div>
-          ))}
+
+            {/* Product Details */}
+            <div className="p-4 text-center">
+              <h2 className="text-xl font-semibold text-accent mb-2">{product.title}</h2>
+              <p>
+                <span className="text-xs text-gray-600">A partir de </span>
+                <span className="font-bold text-gray-700">{product.price.toFixed(2)} Dt</span>
+              </p>
+            </div>
+
+            {/* Add to Cart Button */}
+            <div className="p-4">
+              <button
+                className="w-full py-2 bg-secondary text-white font-semibold hover:bg-accent transition-colors duration-300"
+                onClick={() => {
+                  // Add to cart logic here
+                  console.log("Added to cart:", product.title);
+                }}
+              >
+                Ajouter au panier
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
+    </SwiperSlide>
+  ))}
+</Swiper>
         </div>
       )}
     </div>
