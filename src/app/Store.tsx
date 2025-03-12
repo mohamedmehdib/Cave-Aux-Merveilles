@@ -4,12 +4,6 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import Image from "next/image";
 
-// Import Swiper styles and modules
-import { Swiper, SwiperSlide } from "swiper/react";
-import { Pagination } from "swiper/modules";
-import "swiper/css";
-import "swiper/css/pagination";
-
 interface Product {
   id: number;
   title: string;
@@ -24,6 +18,7 @@ export default function Store() {
   const [error, setError] = useState("");
   const [sortBy, setSortBy] = useState("recent"); // Default sorting: most recent first
   const [isFilterOpen, setIsFilterOpen] = useState(false); // State to manage filter box visibility
+  const [currentPage, setCurrentPage] = useState(0); // State to manage current page
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -79,6 +74,10 @@ export default function Store() {
   for (let i = 0; i < sortedProducts.length; i += chunkSize) {
     productChunks.push(sortedProducts.slice(i, i + chunkSize));
   }
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
 
   if (loading) {
     return (
@@ -215,76 +214,66 @@ export default function Store() {
       {sortedProducts.length === 0 ? (
         <div className="text-center text-accent">No products available.</div>
       ) : (
-        <div className="flex flex-wrap items-center justify-center gap-6">
-<Swiper
-  modules={[Pagination]}
-  pagination={{
-    clickable: true,
-    renderBullet: (index, className) => {
-      return `<span class="${className}">${index + 1}</span>`;
-    },
-  }}
-  slidesPerView={1}
-  slidesPerGroup={1}
-  spaceBetween={20}
-  className="w-full"
->
-  {productChunks.map((chunk, index) => (
-    <SwiperSlide key={index}>
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
-        {chunk.map((product) => (
-          <div
-            key={product.id}
-            className="group overflow-hidden hover:shadow-lg transition-colors duration-300 relative w-full hover:bg-white"
-          >
-            {/* Swiper Slider for Product Images */}
-            <div className="relative w-full h-72 flex items-center justify-center pt-4">
-              <Swiper
-                loop={true} // Enable loop mode
-                className="w-full h-full"
+        <div className="flex flex-col items-center justify-center gap-6">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
+            {productChunks[currentPage].map((product) => (
+              <div
+                key={product.id}
+                className="group overflow-hidden hover:shadow-lg transition-colors duration-300 relative w-full hover:bg-white"
               >
-                {product.image_urls.map((imageUrl, index) => (
-                  <SwiperSlide key={index}>
-                    <div className="relative w-full h-full flex items-center justify-center">
-                      <Image
-                        src={imageUrl}
-                        alt={`${product.title} - Image ${index + 1}`}
-                        fill
-                        className="object-contain"
-                      />
-                    </div>
-                  </SwiperSlide>
-                ))}
-              </Swiper>
-            </div>
+                {/* Product Images */}
+                <div className="relative w-full h-72 flex items-center justify-center pt-4">
+                  <div className="relative w-full h-full flex items-center justify-center">
+                    <Image
+                      src={product.image_urls[0]}
+                      alt={`${product.title} - Image 1`}
+                      fill
+                      className="object-contain"
+                    />
+                  </div>
+                </div>
 
-            {/* Product Details */}
-            <div className="p-4 text-center">
-              <h2 className="text-xl font-semibold text-accent mb-2">{product.title}</h2>
-              <p>
-                <span className="text-xs text-gray-600">A partir de </span>
-                <span className="font-bold text-gray-700">{product.price.toFixed(2)} Dt</span>
-              </p>
-            </div>
+                {/* Product Details */}
+                <div className="p-4 text-center">
+                  <h2 className="text-xl font-semibold text-accent mb-2">{product.title}</h2>
+                  <p>
+                    <span className="text-xs text-gray-600">A partir de </span>
+                    <span className="font-bold text-gray-700">{product.price.toFixed(2)} Dt</span>
+                  </p>
+                </div>
 
-            {/* Add to Cart Button */}
-            <div className="p-4">
-              <button
-                className="w-full py-2 bg-secondary text-white font-semibold hover:bg-accent transition-colors duration-300"
-                onClick={() => {
-                  // Add to cart logic here
-                  console.log("Added to cart:", product.title);
-                }}
-              >
-                Ajouter au panier
-              </button>
-            </div>
+                {/* Add to Cart Button */}
+                <div className="p-4">
+                  <button
+                    className="w-full py-2 bg-secondary text-white font-semibold hover:bg-accent transition-colors duration-300"
+                    onClick={() => {
+                      // Add to cart logic here
+                      console.log("Added to cart:", product.title);
+                    }}
+                  >
+                    Ajouter au panier
+                  </button>
+                </div>
+              </div>
+            ))}
           </div>
-        ))}
-      </div>
-    </SwiperSlide>
-  ))}
-</Swiper>
+
+          {/* Custom Pagination */}
+          <div className="flex justify-center gap-2 mt-8">
+            {productChunks.map((_, index) => (
+              <button
+                key={index}
+                onClick={() => handlePageChange(index)}
+                className={`w-10 h-10 flex items-center justify-center border ${
+                  currentPage === index
+                    ? "bg-secondary text-white border-secondary"
+                    : "bg-white text-gray-700 border-gray-300"
+                } rounded-lg shadow-sm hover:bg-gray-50 transition-colors duration-300`}
+              >
+                {index + 1}
+              </button>
+            ))}
+          </div>
         </div>
       )}
     </div>
