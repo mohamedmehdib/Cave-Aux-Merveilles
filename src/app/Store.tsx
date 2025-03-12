@@ -272,7 +272,7 @@ export default function Store() {
                           : (activeImageIndex[product.id] || 0) - 1
                       )
                     }
-                    className="absolute left-2 sm:left-4 top-1/2 transform -translate-y-1/2 bg-white bg-opacity-75 p-2 rounded-full shadow-md hover:bg-opacity-100 transition-all duration-300"
+                    className="absolute left-2 sm:left-4 top-1/2 transform -translate-y-1/2 bg-white bg-opacity-75 p-2 shadow-md hover:bg-opacity-100 transition-all duration-300"
                   >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -298,7 +298,7 @@ export default function Store() {
                           : (activeImageIndex[product.id] || 0) + 1
                       )
                     }
-                    className="absolute right-2 sm:right-4 top-1/2 transform -translate-y-1/2 bg-white bg-opacity-75 p-2 rounded-full shadow-md hover:bg-opacity-100 transition-all duration-300"
+                    className="absolute right-2 sm:right-4 top-1/2 transform -translate-y-1/2 bg-white bg-opacity-75 p-2 shadow-md hover:bg-opacity-100 transition-all duration-300"
                   >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -352,7 +352,7 @@ export default function Store() {
                   currentPage === index
                     ? "bg-secondary text-white border-secondary"
                     : "bg-white text-gray-700 border-gray-300"
-                } rounded-lg shadow-sm hover:bg-gray-50 transition-colors duration-300`}
+                } rounded-lg shadow-sm hover:bg-gray-50 hover:text-secondary transition-colors duration-300`}
               >
                 {index + 1}
               </button>
