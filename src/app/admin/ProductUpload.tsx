@@ -24,7 +24,7 @@ export default function Store() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
-  const [sortBy, setSortBy] = useState("recent"); // Default sorting: most recent first
+  const [sortBy] = useState("recent"); // Default sorting: most recent first
   const [editingProduct, setEditingProduct] = useState<Product | null>(null); // Product being edited
   const [title, setTitle] = useState("");
   const [price, setPrice] = useState<number | null>(null);
