@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import Image from "next/image";
 
@@ -19,6 +19,8 @@ export default function Store() {
   const [sortBy, setSortBy] = useState("recent"); // Default sorting: most recent first
   const [isFilterOpen, setIsFilterOpen] = useState(false); // State to manage filter box visibility
   const [currentPage, setCurrentPage] = useState(0); // State to manage current page
+  const [activeImageIndex, setActiveImageIndex] = useState<{ [key: number]: number }>({}); // State to manage active image index for each product
+  const storeTopRef = useRef<HTMLDivElement>(null); // Ref for the top of the Store component
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -79,6 +81,20 @@ export default function Store() {
     setCurrentPage(page);
   };
 
+  const handleImageChange = (productId: number, index: number) => {
+    setActiveImageIndex((prev) => ({
+      ...prev,
+      [productId]: index,
+    }));
+  };
+
+  // Scroll to the top of the Store component when the page changes
+  useEffect(() => {
+    if (storeTopRef.current) {
+      storeTopRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [currentPage]);
+
   if (loading) {
     return (
       <div className="min-h-screen bg-primary py-8 px-4 sm:px-8">
@@ -112,7 +128,7 @@ export default function Store() {
   }
 
   return (
-    <div className="min-h-screen bg-primary py-8 px-4 sm:px-8">
+    <div ref={storeTopRef} className="min-h-screen bg-primary py-8 px-4 sm:px-8">
       <h1 className="text-3xl sm:text-4xl font-bold text-center text-accent mb-8">Magasin</h1>
 
       {/* Filter Button and Options */}
@@ -215,27 +231,93 @@ export default function Store() {
         <div className="text-center text-accent">No products available.</div>
       ) : (
         <div className="flex flex-col items-center justify-center gap-6">
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 w-full max-w-7xl">
             {productChunks[currentPage].map((product) => (
               <div
                 key={product.id}
                 className="group overflow-hidden hover:shadow-lg transition-colors duration-300 relative w-full hover:bg-white"
               >
-                {/* Product Images */}
-                <div className="relative w-full h-72 flex items-center justify-center pt-4">
-                  <div className="relative w-full h-full flex items-center justify-center">
-                    <Image
-                      src={product.image_urls[0]}
-                      alt={`${product.title} - Image 1`}
-                      fill
-                      className="object-contain"
-                    />
+                {/* Product Images Slider */}
+                <div className="relative w-full h-64 sm:h-72 md:h-80 lg:h-96 flex items-center justify-center pt-4 overflow-hidden">
+                  <div
+                    className="flex transition-transform duration-500 ease-in-out"
+                    style={{
+                      transform: `translateX(-${(activeImageIndex[product.id] || 0) * 100}%)`,
+                      width: `${product.image_urls.length * 100}%`,
+                    }}
+                  >
+                    {product.image_urls.map((imageUrl, index) => (
+                      <div
+                        key={index}
+                        className="relative w-full h-64 sm:h-72 md:h-80 lg:h-96 flex-shrink-0"
+                      >
+                        <Image
+                          src={imageUrl}
+                          alt={`${product.title} - Image ${index + 1}`}
+                          fill
+                          className="object-contain"
+                        />
+                      </div>
+                    ))}
                   </div>
+                  {/* Image Navigation Arrows */}
+                  <button
+                    onClick={() =>
+                      handleImageChange(
+                        product.id,
+                        (activeImageIndex[product.id] || 0) - 1 < 0
+                          ? product.image_urls.length - 1
+                          : (activeImageIndex[product.id] || 0) - 1
+                      )
+                    }
+                    className="absolute left-2 sm:left-4 top-1/2 transform -translate-y-1/2 bg-white bg-opacity-75 p-2 shadow-md hover:bg-opacity-100 transition-all duration-300"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-5 w-5 sm:h-6 sm:w-6 text-gray-700"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M15 19l-7-7 7-7"
+                      />
+                    </svg>
+                  </button>
+                  <button
+                    onClick={() =>
+                      handleImageChange(
+                        product.id,
+                        (activeImageIndex[product.id] || 0) + 1 >= product.image_urls.length
+                          ? 0
+                          : (activeImageIndex[product.id] || 0) + 1
+                      )
+                    }
+                    className="absolute right-2 sm:right-4 top-1/2 transform -translate-y-1/2 bg-white bg-opacity-75 p-2 shadow-md hover:bg-opacity-100 transition-all duration-300"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-5 w-5 sm:h-6 sm:w-6 text-gray-700"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M9 5l7 7-7 7"
+                      />
+                    </svg>
+                  </button>
                 </div>
 
                 {/* Product Details */}
                 <div className="p-4 text-center">
-                  <h2 className="text-xl font-semibold text-accent mb-2">{product.title}</h2>
+                  <h2 className="text-lg sm:text-xl font-semibold text-accent mb-2">{product.title}</h2>
                   <p>
                     <span className="text-xs text-gray-600">A partir de </span>
                     <span className="font-bold text-gray-700">{product.price.toFixed(2)} Dt</span>
@@ -264,7 +346,7 @@ export default function Store() {
               <button
                 key={index}
                 onClick={() => handlePageChange(index)}
-                className={`w-10 h-10 flex items-center justify-center border ${
+                className={`w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center border ${
                   currentPage === index
                     ? "bg-secondary text-white border-secondary"
                     : "bg-white text-gray-700 border-gray-300"

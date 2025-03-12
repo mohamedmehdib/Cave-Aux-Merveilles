@@ -92,7 +92,7 @@ const DesktopNavbar: React.FC = () => {
           <div className="flex items-center space-x-4 justify-end flex-1">
             <Link
               href="/Account"
-              className="rounded-lg text-lg font-medium px-4 py-2 border-2 border-accent hover:bg-accent hover:text-white"
+              className="rounded-lg text-lg font-medium px-4 py-2 border-2 border-accent hover:bg-accent hover:text-white duration-300"
             >
               Compte
             </Link>
