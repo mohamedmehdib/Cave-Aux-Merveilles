@@ -11,6 +11,7 @@ export default function Hero() {
           height={50000}
           width={50000}
           className="mx-auto"
+          unoptimized
         />
       </div>
    

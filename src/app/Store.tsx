@@ -258,6 +258,7 @@ export default function Store() {
                           alt={`${product.title} - Image ${index + 1}`}
                           fill
                           className="object-contain"
+                          unoptimized
                         />
                       </div>
                     ))}
