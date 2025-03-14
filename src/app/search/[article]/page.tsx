@@ -7,6 +7,7 @@ import { use } from "react";
 import Navbar from "@/app/Navbar";
 import Loading from "@/app/Loading";
 import Footer from "@/app/Footer";
+import Link from "next/link";
 
 interface Product {
   id: number;
@@ -91,8 +92,8 @@ export default function SearchPage({ params }: SearchPageProps) {
         <Loading />
       ) : (
         <div className="mx-auto px-4 md:pt-48 pt-20">
-          <h1 className="text-3xl font-bold text-gray-800 mb-8">
-            Search Results for: <span className="text-accent">{decodedQuery}</span>
+          <h1 className="text-3xl font-bold text-gray-800 my-8 text-center">
+            Résultats de la recherche pour: <span className="text-accent">{decodedQuery}</span>
           </h1>
 
           {products.length > 0 ? (
@@ -120,7 +121,7 @@ export default function SearchPage({ params }: SearchPageProps) {
                             src={imageUrl}
                             alt={`${product.title} - Image ${index + 1}`}
                             fill
-                            className="object-contain"
+                            className="object-contain p-7"
                             unoptimized
                           />
                         </div>
@@ -182,7 +183,7 @@ export default function SearchPage({ params }: SearchPageProps) {
                   </div>
 
                   {/* Product Details */}
-                  <div className="p-4 text-center">
+                  <Link href={`/${product.title.replace(/\s+/g, "-").toLowerCase()}`} className="p-4 text-center">
                     <h2 className="text-lg sm:text-xl font-semibold text-accent mb-2">
                       {product.title}
                     </h2>
@@ -190,7 +191,7 @@ export default function SearchPage({ params }: SearchPageProps) {
                       <span className="text-xs text-gray-600">A partir de </span>
                       <span className="font-bold text-gray-700">{product.price.toFixed(2)} Dt</span>
                     </p>
-                  </div>
+                  </Link>
 
                   {/* Add to Cart Button */}
                   <div className="p-4">

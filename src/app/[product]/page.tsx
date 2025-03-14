@@ -95,11 +95,11 @@ export default function ProductPage() {
   return (
     <div className="min-h-screen bg-primary">
       <Navbar />
-      <div className="max-w-6xl mx-auto bg-white shadow-lg rounded-lg p-6 my-8 md:pt-48 pt-20 flex flex-col md:flex-row gap-8">
+      <div className="max-w-6xl mx-auto p-6 my-8 md:pt-48 pt-20 flex flex-col md:flex-row gap-8">
         {/* Image Slider Section */}
-        <div className="flex-1 flex flex-col md:flex-row gap-4">
+        <div className="flex-1 flex flex-col-reverse md:flex-row gap-4">
           {/* Thumbnails (Left Side) */}
-          <div className="flex md:flex-col gap-2 overflow-x-auto md:overflow-y-auto max-h-[500px]">
+          <div className="flex md:flex-col gap-2 overflow-x-auto md:overflow-y-auto max-h-[500px] mx-auto">
             {productData.image_urls.map((imageUrl, index) => (
               <div
                 key={index}
@@ -129,7 +129,7 @@ export default function ProductPage() {
               alt={`${productData.title} - Main Image`}
               width={500}
               height={500}
-              className="object-contain w-full h-full rounded-lg shadow-md border border-gray-200 p-2"
+              className="object-contain w-full h-full"
               unoptimized
             />
           </div>
