@@ -83,7 +83,7 @@ const Cart = () => {
   return (
     <div className="bg-gray-100 min-h-screen">
       <Navbar />
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 md:pt-48 pt-20">
         <h1 className="text-3xl font-bold text-gray-800 mb-6 text-center">
           Your Cart
         </h1>

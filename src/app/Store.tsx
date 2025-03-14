@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import Image from "next/image";
 import Link from "next/link";
@@ -13,6 +13,12 @@ interface Product {
   created_at: string; // Add created_at for date-based sorting
 }
 
+interface User {
+  id: string;
+  email?: string;
+  // Add other properties as needed
+}
+
 export default function Store() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
@@ -21,7 +27,7 @@ export default function Store() {
   const [isFilterOpen, setIsFilterOpen] = useState(false); // State to manage filter box visibility
   const [currentPage, setCurrentPage] = useState(0); // State to manage current page
   const [activeImageIndex, setActiveImageIndex] = useState<{ [key: number]: number }>({}); // State to manage active image index for each product
-  const [user, setUser] = useState<any>(null); // State to store the authenticated user
+  const [user, setUser] = useState<User | null>(null); // State to store the authenticated user
   const storeTopRef = useRef<HTMLDivElement>(null); // Ref for the top of the Store component
 
   // Fetch the authenticated user
