@@ -14,7 +14,6 @@ interface Product {
 }
 
 export default function Store() {
-  // All hooks are called at the top level
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -22,7 +21,18 @@ export default function Store() {
   const [isFilterOpen, setIsFilterOpen] = useState(false); // State to manage filter box visibility
   const [currentPage, setCurrentPage] = useState(0); // State to manage current page
   const [activeImageIndex, setActiveImageIndex] = useState<{ [key: number]: number }>({}); // State to manage active image index for each product
+  const [user, setUser] = useState<any>(null); // State to store the authenticated user
   const storeTopRef = useRef<HTMLDivElement>(null); // Ref for the top of the Store component
+
+  // Fetch the authenticated user
+  useEffect(() => {
+    const fetchUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      setUser(user);
+    };
+
+    fetchUser();
+  }, []);
 
   // Fetch products on component mount
   useEffect(() => {
@@ -52,6 +62,51 @@ export default function Store() {
 
     fetchProducts();
   }, []);
+
+  // Add to Cart Functionality
+  const addToCart = async (product: Product) => {
+    try {
+      // Fetch the current user's cart
+      const { data: userData, error: userError } = await supabase
+        .from("users")
+        .select("cart")
+        .eq("email", user?.email) // Assuming you have access to the authenticated user
+        .single();
+
+      if (userError) throw userError;
+
+      // Parse the current cart or initialize an empty array
+      const currentCart = userData?.cart || [];
+
+      // Check if the product is already in the cart
+      const existingProductIndex = currentCart.findIndex(
+        (item: Product) => item.id === product.id
+      );
+
+      if (existingProductIndex !== -1) {
+        // If the product is already in the cart, update its quantity (if applicable)
+        // For example, increment the quantity
+        currentCart[existingProductIndex].quantity += 1;
+      } else {
+        // If the product is not in the cart, add it with a quantity of 1
+        currentCart.push({ ...product, quantity: 1 });
+      }
+
+      // Update the cart in the database
+      const { error: updateError } = await supabase
+        .from("users")
+        .update({ cart: currentCart })
+        .eq("email", user?.email);
+
+      if (updateError) throw updateError;
+
+      console.log("Product added to cart:", product.title);
+      alert("Product added to cart!");
+    } catch (error) {
+      console.error("Error adding to cart:", error);
+      alert("Failed to add product to cart.");
+    }
+  };
 
   // Sort products based on the selected criteria
   const sortedProducts = [...products].sort((a, b) => {
@@ -332,10 +387,7 @@ export default function Store() {
                 <div className="p-4">
                   <button
                     className="w-full py-2 bg-secondary text-white font-semibold hover:bg-accent transition-colors duration-300"
-                    onClick={() => {
-                      // Add to cart logic here
-                      console.log("Added to cart:", product.title);
-                    }}
+                    onClick={() => addToCart(product)}
                   >
                     Ajouter au panier
                   </button>

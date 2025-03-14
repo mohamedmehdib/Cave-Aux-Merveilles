@@ -3,6 +3,8 @@ import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation"; // Import useRouter for navigation
+import { useAuth } from "@/lib/useAuth"; // Import useAuth to get the authenticated user
+import { supabase } from "@/lib/supabaseClient"; // Import supabase client
 
 const menuItems = [
   { id: "accueil", label: "Categorie 1" },
@@ -20,13 +22,49 @@ const menuItems = [
 ];
 
 const Navbar: React.FC = () => {
+  const { user } = useAuth(); // Get the authenticated user
   const [isTopSectionVisible, setIsTopSectionVisible] = useState<boolean>(true);
   const [isSearchOpen, setIsSearchOpen] = useState<boolean>(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
   const [openDropdownId, setOpenDropdownId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState<string>(""); // State for search query
+  const [cartCount, setCartCount] = useState<number>(0); // State for cart count
   const lastScrollY = useRef<number>(0);
   const router = useRouter(); // Initialize useRouter
+
+  // Function to fetch cart data
+  const fetchCart = async () => {
+    if (user) {
+      try {
+        const { data, error } = await supabase
+          .from("users")
+          .select("cart")
+          .eq("email", user.email)
+          .single();
+
+        if (error) throw error;
+
+        // Set cart count based on the number of items in the cart
+        if (data?.cart) {
+          setCartCount(data.cart.length);
+        } else {
+          setCartCount(0);
+        }
+      } catch (err) {
+        console.error("Error fetching cart data:", err);
+      }
+    } else {
+      setCartCount(0); // Reset cart count if no user is logged in
+    }
+  };
+
+  // Fetch cart data every 0.5 seconds
+  useEffect(() => {
+    const interval = setInterval(fetchCart, 500); // Refresh every 0.5 seconds
+
+    // Cleanup interval on component unmount
+    return () => clearInterval(interval);
+  }, [user]); // Re-run effect when the user changes
 
   useEffect(() => {
     const handleScroll = () => {
@@ -117,9 +155,12 @@ const Navbar: React.FC = () => {
             </button>
 
             {/* Cart Icon */}
-            <button className="text-accent">
+            <Link href="/Cart" className="text-accent relative">
               <i className="uil uil-shopping-cart text-2xl"></i>
-            </button>
+              <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full px-1.5 py-0.5">
+                {cartCount}
+              </span>
+            </Link>
 
             {/* Account Icon */}
             <Link href="/Account" className="text-accent focus:outline-none">
@@ -281,9 +322,12 @@ const Navbar: React.FC = () => {
               >
                 Compte
               </Link>
-              <button className="text-accent">
+              <Link href="/Cart" className="text-accent relative">
                 <i className="uil uil-shopping-cart text-2xl"></i>
-              </button>
+                <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full px-1.5 py-0.5">
+                  {cartCount}
+                </span>
+              </Link>
             </div>
           </div>
         </div>
