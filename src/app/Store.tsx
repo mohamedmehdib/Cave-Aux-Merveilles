@@ -3,6 +3,7 @@
 import { useEffect, useState, useRef } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import Image from "next/image";
+import Link from "next/link";
 
 interface Product {
   id: number;
@@ -257,7 +258,7 @@ export default function Store() {
                           src={imageUrl}
                           alt={`${product.title} - Image ${index + 1}`}
                           fill
-                          className="object-contain"
+                          className="object-contain p-7"
                           unoptimized
                         />
                       </div>
@@ -319,13 +320,13 @@ export default function Store() {
                 </div>
 
                 {/* Product Details */}
-                <div className="p-4 text-center">
+                <Link href={`/${product.title.replace(/\s+/g, "-").toLowerCase()}`} className="p-4 text-center">
                   <h2 className="text-lg sm:text-xl font-semibold text-accent mb-2">{product.title}</h2>
                   <p>
                     <span className="text-xs text-gray-600">A partir de </span>
                     <span className="font-bold text-gray-700">{product.price.toFixed(2)} Dt</span>
                   </p>
-                </div>
+                </Link>
 
                 {/* Add to Cart Button */}
                 <div className="p-4">
