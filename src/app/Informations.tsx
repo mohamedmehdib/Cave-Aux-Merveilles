@@ -17,7 +17,7 @@ export default function Informations() {
             key={index}
             className='flex flex-col items-center space-y-2 py-4 text-accent text-sm hover:text-secondary duration-200 w-full sm:w-1/2 md:w-1/3 lg:w-1/4 text-center'
           >
-            <Image src={item.image} alt='Item' height={50} width={50} />
+            <Image src={item.image} alt='Item' height={50} width={50} unoptimized/>
             <h3 className='font-semibold'>{item.h3}</h3>
             <p>{item.p}</p>
           </li>
