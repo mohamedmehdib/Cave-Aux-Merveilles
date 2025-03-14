@@ -95,78 +95,69 @@ export default function ProductPage() {
   return (
     <div className="min-h-screen bg-primary">
       <Navbar />
-      <div className="max-w-6xl mx-auto my-8 md:pt-48 pt-20 px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col md:flex-row gap-8">
-          {/* Image Slider Section */}
-          <div className="flex-1 flex flex-col md:flex-row gap-4">
-            {/* Thumbnails (Left Side) */}
-            <div className="flex md:flex-col gap-2 overflow-x-auto md:overflow-y-auto md:max-h-[500px] pb-2 md:pb-0">
-              {productData.image_urls.map((imageUrl, index) => (
-                <div
-                  key={index}
-                  className={`w-16 h-16 md:w-20 md:h-20 cursor-pointer border-2 ${
-                    selectedImageIndex === index
-                      ? "border-accent"
-                      : "border-transparent"
-                  } rounded-lg overflow-hidden flex-shrink-0`}
-                  onClick={() => handleThumbnailClick(index)}
-                >
-                  <Image
-                    src={imageUrl}
-                    alt={`${productData.title} - Thumbnail ${index + 1}`}
-                    width={80}
-                    height={80}
-                    className="object-cover w-full h-full"
-                    unoptimized
-                  />
-                </div>
-              ))}
-            </div>
-
-            {/* Main Image (Right Side) */}
-            <div className="flex-1 relative w-full h-[300px] sm:h-[400px] md:h-[500px]">
-  {productData.image_urls[selectedImageIndex] ? (
-    <Image
-      src={productData.image_urls[selectedImageIndex]}
-      alt={`${productData.title} - Main Image`}
-      fill
-      className="object-contain"
-      unoptimized
-      onLoadingComplete={() => console.log("Image loaded successfully")}
-      onError={(e) => console.error("Image failed to load", e)}
-    />
-  ) : (
-    <div className="flex items-center justify-center bg-gray-100 text-gray-500">
-      Image not available
-    </div>
-  )}
-</div>
+      <div className="max-w-6xl mx-auto bg-white shadow-lg rounded-lg p-6 my-8 md:pt-48 pt-20 flex flex-col md:flex-row gap-8">
+        {/* Image Slider Section */}
+        <div className="flex-1 flex flex-col md:flex-row gap-4">
+          {/* Thumbnails (Left Side) */}
+          <div className="flex md:flex-col gap-2 overflow-x-auto md:overflow-y-auto max-h-[500px]">
+            {productData.image_urls.map((imageUrl, index) => (
+              <div
+                key={index}
+                className={`w-16 h-16 md:w-20 md:h-20 cursor-pointer border-2 ${
+                  selectedImageIndex === index
+                    ? "border-accent"
+                    : "border-transparent"
+                } rounded-lg overflow-hidden transition-all duration-300 hover:border-accent`}
+                onClick={() => handleThumbnailClick(index)}
+              >
+                <Image
+                  src={imageUrl}
+                  alt={`${productData.title} - Thumbnail ${index + 1}`}
+                  width={80}
+                  height={80}
+                  className="object-cover w-full h-full rounded-md"
+                  unoptimized
+                />
+              </div>
+            ))}
           </div>
 
-          {/* Product Information Section */}
-          <div className="flex-1">
-            <h1 className="text-3xl sm:text-4xl font-bold text-accent mb-8">
-              {productData.title}
-            </h1>
-
-            {/* Product Details */}
-            <div className="mb-8">
-              <p className="text-lg text-gray-700 mb-4">
-                {productData.description}
-              </p>
-              <p className="text-xl font-bold text-gray-700">
-                {productData.price.toFixed(2)} Dt
-              </p>
-            </div>
-
-            {/* Add to Cart Button */}
-            <button
-              className="w-full py-3 bg-secondary text-white font-semibold hover:bg-accent transition-colors duration-300 rounded-lg"
-              onClick={handleAddToCart}
-            >
-              Ajouter au panier
-            </button>
+          {/* Main Image (Right Side) */}
+          <div className="flex-1 relative w-full h-[300px] md:h-[500px] overflow-hidden">
+            <Image
+              src={productData.image_urls[selectedImageIndex]}
+              alt={`${productData.title} - Main Image`}
+              width={500}
+              height={500}
+              className="object-contain w-full h-full rounded-lg shadow-md border border-gray-200 p-2"
+              unoptimized
+            />
           </div>
+        </div>
+
+        {/* Product Information Section */}
+        <div className="flex-1">
+          <h1 className="text-3xl sm:text-4xl font-bold text-accent mb-8">
+            {productData.title}
+          </h1>
+
+          {/* Product Details */}
+          <div className="mb-8">
+            <p className="text-lg text-gray-700 mb-4">
+              {productData.description}
+            </p>
+            <p className="text-xl font-bold text-gray-700">
+              {productData.price.toFixed(2)} Dt
+            </p>
+          </div>
+
+          {/* Add to Cart Button */}
+          <button
+            className="w-full py-3 bg-secondary text-white font-semibold hover:bg-accent transition-colors duration-300 rounded-lg"
+            onClick={handleAddToCart}
+          >
+            Ajouter au panier
+          </button>
         </div>
       </div>
       <Informations />
