@@ -2,6 +2,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { useRouter } from "next/navigation"; // Import useRouter for navigation
 
 const menuItems = [
   { id: "accueil", label: "Categorie 1" },
@@ -23,7 +24,9 @@ const Navbar: React.FC = () => {
   const [isSearchOpen, setIsSearchOpen] = useState<boolean>(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
   const [openDropdownId, setOpenDropdownId] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState<string>(""); // State for search query
   const lastScrollY = useRef<number>(0);
+  const router = useRouter(); // Initialize useRouter
 
   useEffect(() => {
     const handleScroll = () => {
@@ -61,6 +64,14 @@ const Navbar: React.FC = () => {
       element.scrollIntoView({ behavior: "smooth" });
     } else {
       window.location.href = `/#${id}`;
+    }
+  };
+
+  // Handle search submission
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      router.push(`/search/${encodeURIComponent(searchQuery.trim())}`); // Redirect to search/article
     }
   };
 
@@ -121,19 +132,27 @@ const Navbar: React.FC = () => {
       {/* Search Box (Mobile) */}
       {isSearchOpen && (
         <div className="md:hidden fixed top-0 left-0 w-full z-50 h-20 bg-white shadow-lg">
-          <div className="flex items-center gap-2 h-full px-2">
+          <form onSubmit={handleSearch} className="flex items-center gap-2 h-full px-2">
             <input
               type="text"
               placeholder="Search..."
-              className="w-full bg-gray-100 text-primary rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent transition-all duration-300 ease-in-out placeholder-gray-500"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full bg-gray-100 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent transition-all duration-300 ease-in-out placeholder-gray-500"
             />
+            <button
+              type="submit"
+              className="p-2 text-gray-600 hover:text-accent transition-colors duration-300 ease-in-out"
+            >
+              <i className="uil uil-search text-2xl"></i>
+            </button>
             <button
               onClick={toggleSearch}
               className="p-2 text-gray-600 hover:text-accent transition-colors duration-300 ease-in-out"
             >
               <i className="uil uil-times text-2xl"></i>
             </button>
-          </div>
+          </form>
         </div>
       )}
 
@@ -224,11 +243,21 @@ const Navbar: React.FC = () => {
           <div className="flex justify-between items-center h-32 px-10">
             {/* Left: Search Bar */}
             <div className="flex items-center flex-1">
-              <input
-                type="text"
-                placeholder="Recherche..."
-                className="bg-white text-primary rounded-lg px-4 py-2 focus:outline-none w-full max-w-xs shadow-sm"
-              />
+              <form onSubmit={handleSearch} className="relative w-full max-w-xs">
+                <input
+                  type="text"
+                  placeholder="Recherche..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="bg-white rounded-lg px-4 py-2 focus:outline-none w-full shadow-sm pr-10"
+                />
+                <button
+                  type="submit"
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-600 hover:text-accent transition-colors duration-300 ease-in-out"
+                >
+                  <i className="uil uil-search text-xl"></i>
+                </button>
+              </form>
             </div>
 
             {/* Center: Logo */}
@@ -304,8 +333,6 @@ const Navbar: React.FC = () => {
           </div>
         </div>
       </>
-
-    
     </>
   );
 };
