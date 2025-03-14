@@ -64,7 +64,7 @@ const Navbar: React.FC = () => {
 
     // Cleanup interval on component unmount
     return () => clearInterval(interval);
-  }, [user]); // Re-run effect when the user changes
+  }, [user , fetchCart]); // Re-run effect when the user changes
 
   useEffect(() => {
     const handleScroll = () => {
