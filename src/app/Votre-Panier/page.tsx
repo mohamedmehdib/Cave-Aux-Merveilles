@@ -129,12 +129,12 @@ const Cart = () => {
                       height={200}
                       width={200}
                       unoptimized
-                      className="object-cover "
+                      className="object-cover mx-auto md:mx-0"
                     />
                   </div>
                   <div className="flex-1 text-center sm:text-left">
                     <h2 className="text-xl font-semibold text-gray-800">{item.title}</h2>
-                    <p className="text-gray-600">Price: {item.price} Dt</p>
+                    <p className="text-gray-600">Prix: {item.price} Dt</p>
                   </div>
                   <div className="flex items-center gap-4">
                     <input
@@ -162,17 +162,17 @@ const Cart = () => {
             </div>
 
             <div className="mt-6 flex justify-between items-center text-lg font-semibold text-gray-800">
-              <h2>Total</h2>
+              <h2>Totale</h2>
               <p>{totalPrice.toFixed(2)} Dt</p>
             </div>
 
             <div className="mt-2 flex justify-between items-center text-lg font-semibold text-gray-800">
-              <h2>Delivery Fee</h2>
+              <h2>Frais de livraison</h2>
               <p>{deliveryFee} Dt</p>
             </div>
 
             <div className="mt-6 flex justify-between items-center text-lg font-semibold text-gray-800">
-              <h2>Final Total</h2>
+              <h2>Total final</h2>
               <p>{finalPrice.toFixed(2)} Dt</p>
             </div>
 
