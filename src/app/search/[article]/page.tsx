@@ -53,6 +53,7 @@ export default function SearchPage({ params }: SearchPageProps) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [activeImageIndex, setActiveImageIndex] = useState<{ [key: number]: number }>({}); // Track active image index for each product
+  const [isButtonDisabled, setIsButtonDisabled] = useState(false); // State to manage button disabled state
 
   // Handle image change for the product slider
   const handleImageChange = (productId: number, newIndex: number) => {
@@ -62,6 +63,7 @@ export default function SearchPage({ params }: SearchPageProps) {
     }));
   };
 
+
   // Add to Cart Functionality
   const addToCart = async (product: Product) => {
     try {
@@ -69,6 +71,9 @@ export default function SearchPage({ params }: SearchPageProps) {
         alert("Please log in to add products to your cart.");
         return;
       }
+
+      // Disable the button
+      setIsButtonDisabled(true);
 
       // Fetch the current user's cart
       const { data: userData, error: userError } = await supabase
@@ -105,10 +110,14 @@ export default function SearchPage({ params }: SearchPageProps) {
       if (updateError) throw updateError;
 
       console.log("Product added to cart:", product.title);
-      alert("Product added to cart!");
     } catch (error) {
       console.error("Error adding to cart:", error);
       alert("Failed to add product to cart.");
+    } finally {
+      // Re-enable the button after 3 seconds
+      setTimeout(() => {
+        setIsButtonDisabled(false);
+      }, 3000);
     }
   };
 
@@ -247,10 +256,11 @@ export default function SearchPage({ params }: SearchPageProps) {
                   {/* Add to Cart Button */}
                   <div className="p-4">
                     <button
-                      className="w-full py-2 bg-secondary text-white font-semibold hover:bg-accent transition-colors duration-300"
+                      className="w-full py-3 bg-secondary text-white font-semibold hover:bg-accent transition-colors duration-300 rounded-lg disabled:cursor-not-allowed disabled:bg-accent"
                       onClick={() => addToCart(product)}
+                      disabled={isButtonDisabled}
                     >
-                      Ajouter au panier
+                      {isButtonDisabled ? "Ajouté avec succès!" : "Ajouter au panier"}
                     </button>
                   </div>
                 </div>

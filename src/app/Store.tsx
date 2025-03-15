@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback, useMemo } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import Image from "next/image";
 import Link from "next/link";
@@ -10,25 +10,34 @@ interface Product {
   title: string;
   price: number;
   image_urls: string[];
-  created_at: string; // Add created_at for date-based sorting
+  created_at: string;
 }
 
 interface User {
   id: string;
   email?: string;
-  // Add other properties as needed
 }
+
+const filterOptions = [
+  { value: "price_asc", label: "Du - cher au + cher" },
+  { value: "price_desc", label: "Du + cher au - cher" },
+  { value: "name_asc", label: "De A à Z" },
+  { value: "name_desc", label: "De Z à A" },
+  { value: "recent", label: "Du + récent au + ancien" },
+  { value: "oldest", label: "Du + ancien au + récent" },
+];
 
 export default function Store() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [sortBy, setSortBy] = useState("recent"); // Default sorting: most recent first
-  const [isFilterOpen, setIsFilterOpen] = useState(false); // State to manage filter box visibility
-  const [currentPage, setCurrentPage] = useState(0); // State to manage current page
-  const [activeImageIndex, setActiveImageIndex] = useState<{ [key: number]: number }>({}); // State to manage active image index for each product
-  const [user, setUser] = useState<User | null>(null); // State to store the authenticated user
-  const storeTopRef = useRef<HTMLDivElement>(null); // Ref for the top of the Store component
+  const [sortBy, setSortBy] = useState("recent");
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [currentPage, setCurrentPage] = useState(0);
+  const [activeImageIndex, setActiveImageIndex] = useState<{ [key: number]: number }>({});
+  const [user, setUser] = useState<User | null>(null);
+  const [disabledButtons, setDisabledButtons] = useState<{ [key: number]: boolean }>({}); // Track disabled state per product
+  const storeTopRef = useRef<HTMLDivElement>(null);
 
   // Fetch the authenticated user
   useEffect(() => {
@@ -36,7 +45,6 @@ export default function Store() {
       const { data: { user } } = await supabase.auth.getUser();
       setUser(user);
     };
-
     fetchUser();
   }, []);
 
@@ -44,119 +52,103 @@ export default function Store() {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        // Fetch products from the 'products' table
         const { data, error } = await supabase
           .from("products")
           .select("*")
-          .order("created_at", { ascending: false }); // Default sorting by most recent
+          .order("created_at", { ascending: false });
 
-        if (error) {
-          throw error;
-        }
-
+        if (error) throw error;
         setProducts(data || []);
       } catch (err) {
-        if (err instanceof Error) {
-          setError(err.message);
-        } else {
-          setError("An unexpected error occurred.");
-        }
+        setError(err instanceof Error ? err.message : "An unexpected error occurred.");
       } finally {
         setLoading(false);
       }
     };
-
     fetchProducts();
   }, []);
 
   // Add to Cart Functionality
-  const addToCart = async (product: Product) => {
+  const addToCart = useCallback(async (product: Product) => {
     try {
-      // Fetch the current user's cart
+      if (!user) {
+        alert("Please log in to add products to your cart.");
+        return;
+      }
+
+      // Disable the button for this specific product
+      setDisabledButtons((prev) => ({ ...prev, [product.id]: true }));
+
       const { data: userData, error: userError } = await supabase
         .from("users")
         .select("cart")
-        .eq("email", user?.email) // Assuming you have access to the authenticated user
+        .eq("email", user.email)
         .single();
 
       if (userError) throw userError;
 
-      // Parse the current cart or initialize an empty array
       const currentCart = userData?.cart || [];
-
-      // Check if the product is already in the cart
-      const existingProductIndex = currentCart.findIndex(
-        (item: Product) => item.id === product.id
-      );
+      const existingProductIndex = currentCart.findIndex((item: Product) => item.id === product.id);
 
       if (existingProductIndex !== -1) {
-        // If the product is already in the cart, update its quantity (if applicable)
-        // For example, increment the quantity
         currentCart[existingProductIndex].quantity += 1;
       } else {
-        // If the product is not in the cart, add it with a quantity of 1
         currentCart.push({ ...product, quantity: 1 });
       }
 
-      // Update the cart in the database
       const { error: updateError } = await supabase
         .from("users")
         .update({ cart: currentCart })
-        .eq("email", user?.email);
+        .eq("email", user.email);
 
       if (updateError) throw updateError;
-
       console.log("Product added to cart:", product.title);
     } catch (error) {
       console.error("Error adding to cart:", error);
       alert("Failed to add product to cart.");
+    } finally {
+      // Re-enable the button for this specific product after 3 seconds
+      setTimeout(() => {
+        setDisabledButtons((prev) => ({ ...prev, [product.id]: false }));
+      }, 3000);
     }
-  };
+  }, [user]);
 
-  // Sort products based on the selected criteria
-  const sortedProducts = [...products].sort((a, b) => {
-    switch (sortBy) {
-      case "price_asc":
-        return a.price - b.price; // Du - cher au + cher
-      case "price_desc":
-        return b.price - a.price; // Du + cher au - cher
-      case "name_asc":
-        return a.title.localeCompare(b.title); // De A à Z
-      case "name_desc":
-        return b.title.localeCompare(a.title); // De Z à A
-      case "recent":
-        return new Date(b.created_at).getTime() - new Date(a.created_at).getTime(); // Du + récent au + ancien
-      case "oldest":
-        return new Date(a.created_at).getTime() - new Date(b.created_at).getTime(); // Du + ancien au + récent
-      default:
-        return 0;
-    }
-  });
+  // Sort products
+  const sortedProducts = useMemo(() => {
+    return [...products].sort((a, b) => {
+      switch (sortBy) {
+        case "price_asc": return a.price - b.price;
+        case "price_desc": return b.price - a.price;
+        case "name_asc": return a.title.localeCompare(b.title);
+        case "name_desc": return b.title.localeCompare(a.title);
+        case "recent": return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+        case "oldest": return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+        default: return 0;
+      }
+    });
+  }, [products, sortBy]);
 
-  // Group products into chunks of 8
+  // Pagination
   const chunkSize = 8;
-  const productChunks = [];
-  for (let i = 0; i < sortedProducts.length; i += chunkSize) {
-    productChunks.push(sortedProducts.slice(i, i + chunkSize));
-  }
+  const productChunks = useMemo(() => {
+    const chunks = [];
+    for (let i = 0; i < sortedProducts.length; i += chunkSize) {
+      chunks.push(sortedProducts.slice(i, i + chunkSize));
+    }
+    return chunks;
+  }, [sortedProducts]);
 
-  const handlePageChange = (page: number) => {
+  const handlePageChange = useCallback((page: number) => {
     setCurrentPage(page);
-  };
-
-  const handleImageChange = (productId: number, index: number) => {
-    setActiveImageIndex((prev) => ({
-      ...prev,
-      [productId]: index,
-    }));
-  };
-
-  // Scroll to the top of the Store component when the page changes
-  useEffect(() => {
     if (storeTopRef.current) {
       storeTopRef.current.scrollIntoView({ behavior: "smooth" });
     }
-  }, [currentPage]);
+  }, []);
+
+  const handleImageChange = useCallback((productId: number, index: number) => {
+    setActiveImageIndex((prev) => ({ ...prev, [productId]: index }));
+  }, []);
 
   if (loading) {
     return (
@@ -164,10 +156,7 @@ export default function Store() {
         <h1 className="text-3xl sm:text-4xl font-bold text-center text-accent mb-8">Magasin</h1>
         <div className="flex flex-wrap items-center justify-center gap-6">
           {[...Array(4)].map((_, index) => (
-            <div
-              key={index}
-              className="bg-white shadow-md overflow-hidden animate-pulse w-72"
-            >
+            <div key={index} className="bg-white shadow-md overflow-hidden animate-pulse w-72">
               <div className="w-full h-48 bg-gray-200"></div>
               <div className="p-4">
                 <div className="h-6 bg-gray-200 rounded w-3/4 mb-2"></div>
@@ -199,6 +188,7 @@ export default function Store() {
         <button
           onClick={() => setIsFilterOpen(!isFilterOpen)}
           className="flex items-center justify-between px-4 py-2 bg-white border border-gray-300 rounded-lg shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-secondary focus:border-secondary transition-all duration-300"
+          aria-label="Open filter options"
         >
           <span className="text-sm font-medium text-gray-700">Trier par</span>
           <svg
@@ -215,76 +205,23 @@ export default function Store() {
           </svg>
         </button>
 
-        {/* Filter Options Box */}
         {isFilterOpen && (
           <div className="absolute top-full right-0 mt-2 w-64 bg-white shadow-lg rounded-lg p-4 z-50">
             <div className="text-lg font-semibold mb-4">Trier par</div>
-            <div
-              onClick={() => {
-                setSortBy("price_asc");
-                setIsFilterOpen(false); // Close the filter box after selection
-              }}
-              className={`px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer transition-colors duration-300 ${
-                sortBy === "price_asc" ? "bg-gray-100" : ""
-              }`}
-            >
-              Du - cher au + cher
-            </div>
-            <div
-              onClick={() => {
-                setSortBy("price_desc");
-                setIsFilterOpen(false); // Close the filter box after selection
-              }}
-              className={`px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer transition-colors duration-300 ${
-                sortBy === "price_desc" ? "bg-gray-100" : ""
-              }`}
-            >
-              Du + cher au - cher
-            </div>
-            <div
-              onClick={() => {
-                setSortBy("name_asc");
-                setIsFilterOpen(false); // Close the filter box after selection
-              }}
-              className={`px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer transition-colors duration-300 ${
-                sortBy === "name_asc" ? "bg-gray-100" : ""
-              }`}
-            >
-              De A à Z
-            </div>
-            <div
-              onClick={() => {
-                setSortBy("name_desc");
-                setIsFilterOpen(false); // Close the filter box after selection
-              }}
-              className={`px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer transition-colors duration-300 ${
-                sortBy === "name_desc" ? "bg-gray-100" : ""
-              }`}
-            >
-              De Z à A
-            </div>
-            <div
-              onClick={() => {
-                setSortBy("recent");
-                setIsFilterOpen(false); // Close the filter box after selection
-              }}
-              className={`px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer transition-colors duration-300 ${
-                sortBy === "recent" ? "bg-gray-100" : ""
-              }`}
-            >
-              Du + récent au + ancien
-            </div>
-            <div
-              onClick={() => {
-                setSortBy("oldest");
-                setIsFilterOpen(false); // Close the filter box after selection
-              }}
-              className={`px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer transition-colors duration-300 ${
-                sortBy === "oldest" ? "bg-gray-100" : ""
-              }`}
-            >
-              Du + ancien au + récent
-            </div>
+            {filterOptions.map((option) => (
+              <div
+                key={option.value}
+                onClick={() => {
+                  setSortBy(option.value);
+                  setIsFilterOpen(false);
+                }}
+                className={`px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer transition-colors duration-300 ${
+                  sortBy === option.value ? "bg-gray-100" : ""
+                }`}
+              >
+                {option.label}
+              </div>
+            ))}
           </div>
         )}
       </div>
@@ -320,6 +257,7 @@ export default function Store() {
                           fill
                           className="object-contain p-7"
                           unoptimized
+                          priority={index === 0}
                         />
                       </div>
                     ))}
@@ -335,6 +273,7 @@ export default function Store() {
                       )
                     }
                     className="absolute left-2 sm:left-4 top-1/2 transform -translate-y-1/2 bg-white bg-opacity-75 p-2 shadow-md hover:bg-opacity-100 transition-all duration-300"
+                    aria-label="Previous image"
                   >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -361,6 +300,7 @@ export default function Store() {
                       )
                     }
                     className="absolute right-2 sm:right-4 top-1/2 transform -translate-y-1/2 bg-white bg-opacity-75 p-2 shadow-md hover:bg-opacity-100 transition-all duration-300"
+                    aria-label="Next image"
                   >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -391,10 +331,12 @@ export default function Store() {
                 {/* Add to Cart Button */}
                 <div className="p-4">
                   <button
-                    className="w-full py-2 bg-secondary text-white font-semibold hover:bg-accent transition-colors duration-300"
+                    className="w-full py-3 bg-secondary text-white font-semibold hover:bg-accent transition-colors duration-300 rounded-lg disabled:cursor-not-allowed disabled:bg-accent"
                     onClick={() => addToCart(product)}
+                    disabled={disabledButtons[product.id] || false} // Disable only the clicked product's button
+                    aria-label="Add to cart"
                   >
-                    Ajouter au panier
+                    {disabledButtons[product.id] ? "Ajouté avec succès!" : "Ajouter au panier"}
                   </button>
                 </div>
               </div>
@@ -412,6 +354,7 @@ export default function Store() {
                     ? "bg-secondary text-white border-secondary"
                     : "bg-white text-gray-700 border-gray-300"
                 } rounded-lg shadow-sm hover:bg-gray-50 hover:text-secondary transition-colors duration-300`}
+                aria-label={`Go to page ${index + 1}`}
               >
                 {index + 1}
               </button>
