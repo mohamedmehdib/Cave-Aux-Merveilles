@@ -97,16 +97,16 @@ const Success = () => {
   }, [user, orderProcessed, loading]);
 
   return (
-    <div className="bg-gray-100 min-h-screen pt-20">
+    <div className="bg-primary min-h-screen md:pt-48 pt-20">
       <Navbar />
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        <div className="bg-white p-6 rounded-lg shadow-lg text-center space-y-4">
+        <div className="text-center space-y-4">
           <h1 className="text-3xl font-bold text-green-600">Success!</h1>
           <p className="text-xl text-gray-600">The order was confirmed!</p>
           <div>
             <Link
               href="/"
-              className="mt-4 px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
+              className="mt-4 px-6 py-2 bg-secondary/85 text-white rounded hover:bg-secondary transition"
             >
               Continue Shopping
             </Link>
