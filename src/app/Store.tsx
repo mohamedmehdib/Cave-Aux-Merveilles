@@ -107,7 +107,6 @@ export default function Store() {
       if (updateError) throw updateError;
 
       console.log("Product added to cart:", product.title);
-      alert("Product added to cart!");
     } catch (error) {
       console.error("Error adding to cart:", error);
       alert("Failed to add product to cart.");

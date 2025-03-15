@@ -155,7 +155,7 @@ const Navbar: React.FC = () => {
             </button>
 
             {/* Cart Icon */}
-            <Link href="/Cart" className="text-accent relative">
+            <Link href="/Votre-Panier" className="text-accent relative">
               <i className="uil uil-shopping-cart text-2xl"></i>
               <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full px-1.5 py-0.5">
                 {cartCount}
@@ -322,7 +322,7 @@ const Navbar: React.FC = () => {
               >
                 Compte
               </Link>
-              <Link href="/Cart" className="text-accent relative">
+              <Link href="/Votre-Panier" className="text-accent relative">
                 <i className="uil uil-shopping-cart text-2xl"></i>
                 <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full px-1.5 py-0.5">
                   {cartCount}

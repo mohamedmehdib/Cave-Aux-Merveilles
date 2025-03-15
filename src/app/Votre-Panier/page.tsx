@@ -81,41 +81,41 @@ const Cart = () => {
   const finalPrice = totalPrice + deliveryFee;
 
   return (
-    <div className="bg-gray-100 min-h-screen">
+    <div className="bg-primary min-h-screen">
       <Navbar />
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 md:pt-48 pt-20">
-        <h1 className="text-3xl font-bold text-gray-800 mb-6 text-center">
-          Your Cart
+        <h1 className="text-3xl font-bold text-gray-800 my-10 text-center">
+          Votre Panier
         </h1>
 
         {!user ? (
-          <div className="bg-white p-6 rounded-lg shadow-lg text-center">
+          <div className="bg-primary p-6 text-center">
             <p className="text-xl text-gray-600 py-5">
-              You need to be logged in to view your cart.
+              Vous devez être connecté pour voir votre panier.
             </p>
             <Link
-              href="/SignIn"
-              className="mt-4 px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
+              href="/Se-Connecter"
+              className="mt-4 px-6 py-2 bg-secondary/85 text-white rounded hover:bg-secondary transition"
             >
-              Sign In
+              Se Connecter
             </Link>
           </div>
         ) : isLoading ? (
-          <div className="bg-white p-6 rounded-lg shadow-lg text-center">
-            <p className="text-xl text-gray-600 py-5">Loading cart items...</p>
+          <div className="bg-primary p-6 text-center">
+            <p className="text-xl text-gray-600 py-5">Chargement des articles du panier...</p>
           </div>
         ) : cartItems.length === 0 ? (
-          <div className="bg-white p-6 rounded-lg shadow-lg text-center">
-            <p className="text-xl text-gray-600 py-5">Your cart is empty.</p>
+          <div className="bg-primary p-6 text-center">
+            <p className="text-xl text-gray-600 py-5">Votre panier est vide.</p>
             <Link
               href="/"
-              className="mt-4 px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
+              className="mt-4 px-6 py-2 bg-secondary/85 text-white rounded hover:bg-secondary transition"
             >
-              Continue Shopping
+              Continuer les achats
             </Link>
           </div>
         ) : (
-          <div className="bg-white p-6 rounded-lg shadow-lg">
+          <div className="bg-primary p-6  ">
             <div className="space-y-4">
               {cartItems.map((item, index) => (
                 <div
@@ -129,7 +129,7 @@ const Cart = () => {
                       height={200}
                       width={200}
                       unoptimized
-                      className="object-cover rounded-lg"
+                      className="object-cover "
                     />
                   </div>
                   <div className="flex-1 text-center sm:text-left">
@@ -154,7 +154,7 @@ const Cart = () => {
                       className="bg-red-500 px-4 py-2 rounded text-white hover:bg-red-600 text-sm"
                       aria-label="Remove item"
                     >
-                      Remove
+                      Retirer
                     </button>
                   </div>
                 </div>
