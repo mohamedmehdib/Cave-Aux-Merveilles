@@ -161,11 +161,6 @@ const Navbar: React.FC = () => {
                 {cartCount}
               </span>
             </Link>
-
-            {/* Account Icon */}
-            <Link href="/Account" className="text-accent focus:outline-none">
-              <i className="uil uil-user text-2xl"></i>
-            </Link>
           </div>
         </div>
       </div>
@@ -316,12 +311,6 @@ const Navbar: React.FC = () => {
 
             {/* Right: Account and Cart */}
             <div className="flex items-center space-x-4 justify-end flex-1">
-              <Link
-                href="/Account"
-                className="rounded-lg text-lg font-medium px-4 py-2 border-2 border-accent hover:bg-accent hover:text-white duration-300"
-              >
-                Compte
-              </Link>
               <Link href="/Votre-Panier" className="text-accent relative">
                 <i className="uil uil-shopping-cart text-2xl"></i>
                 <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full px-1.5 py-0.5">
