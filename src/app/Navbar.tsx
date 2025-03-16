@@ -4,7 +4,6 @@ import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation"; // Import useRouter for navigation
-import { useAuth } from "@/lib/useAuth"; // Import useAuth to get the authenticated user
 
 const menuItems = [
   { id: "accueil", label: "Categorie 1" },
@@ -22,7 +21,6 @@ const menuItems = [
 ];
 
 const Navbar: React.FC = () => {
-  const { user } = useAuth(); // Get the authenticated user
   const [isTopSectionVisible, setIsTopSectionVisible] = useState<boolean>(true);
   const [isSearchOpen, setIsSearchOpen] = useState<boolean>(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
