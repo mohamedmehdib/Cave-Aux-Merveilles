@@ -13,11 +13,6 @@ interface Product {
   created_at: string;
 }
 
-interface User {
-  id: string;
-  email?: string;
-}
-
 const filterOptions = [
   { value: "price_asc", label: "Du - cher au + cher" },
   { value: "price_desc", label: "Du + cher au - cher" },
@@ -35,18 +30,7 @@ export default function Store() {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(0);
   const [activeImageIndex, setActiveImageIndex] = useState<{ [key: number]: number }>({});
-  const [user, setUser] = useState<User | null>(null);
-  const [disabledButtons, setDisabledButtons] = useState<{ [key: number]: boolean }>({}); // Track disabled state per product
   const storeTopRef = useRef<HTMLDivElement>(null);
-
-  // Fetch the authenticated user
-  useEffect(() => {
-    const fetchUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      setUser(user);
-    };
-    fetchUser();
-  }, []);
 
   // Fetch products on component mount
   useEffect(() => {
@@ -68,51 +52,20 @@ export default function Store() {
     fetchProducts();
   }, []);
 
-  // Add to Cart Functionality
-  const addToCart = useCallback(async (product: Product) => {
-    try {
-      if (!user) {
-        alert("Please log in to add products to your cart.");
-        return;
-      }
+  // Add to LocalStorage Functionality
+  const addToLocalStorage = useCallback((product: Product) => {
+    const cart = JSON.parse(localStorage.getItem("cart") || "[]");
+    const existingProductIndex = cart.findIndex((item: Product) => item.id === product.id);
 
-      // Disable the button for this specific product
-      setDisabledButtons((prev) => ({ ...prev, [product.id]: true }));
-
-      const { data: userData, error: userError } = await supabase
-        .from("users")
-        .select("cart")
-        .eq("email", user.email)
-        .single();
-
-      if (userError) throw userError;
-
-      const currentCart = userData?.cart || [];
-      const existingProductIndex = currentCart.findIndex((item: Product) => item.id === product.id);
-
-      if (existingProductIndex !== -1) {
-        currentCart[existingProductIndex].quantity += 1;
-      } else {
-        currentCart.push({ ...product, quantity: 1 });
-      }
-
-      const { error: updateError } = await supabase
-        .from("users")
-        .update({ cart: currentCart })
-        .eq("email", user.email);
-
-      if (updateError) throw updateError;
-      console.log("Product added to cart:", product.title);
-    } catch (error) {
-      console.error("Error adding to cart:", error);
-      alert("Failed to add product to cart.");
-    } finally {
-      // Re-enable the button for this specific product after 3 seconds
-      setTimeout(() => {
-        setDisabledButtons((prev) => ({ ...prev, [product.id]: false }));
-      }, 3000);
+    if (existingProductIndex !== -1) {
+      cart[existingProductIndex].quantity += 1;
+    } else {
+      cart.push({ ...product, quantity: 1 });
     }
-  }, [user]);
+
+    localStorage.setItem("cart", JSON.stringify(cart));
+    console.log("Product added to localStorage:", product.title);
+  }, []);
 
   // Sort products
   const sortedProducts = useMemo(() => {
@@ -331,12 +284,11 @@ export default function Store() {
                 {/* Add to Cart Button */}
                 <div className="p-4">
                   <button
-                    className="w-full py-3 bg-secondary text-white font-semibold hover:bg-accent transition-colors duration-300 rounded-lg disabled:cursor-not-allowed disabled:bg-accent"
-                    onClick={() => addToCart(product)}
-                    disabled={disabledButtons[product.id] || false} // Disable only the clicked product's button
+                    className="w-full py-3 bg-secondary text-white font-semibold hover:bg-accent transition-colors duration-300 rounded-lg"
+                    onClick={() => addToLocalStorage(product)}
                     aria-label="Add to cart"
                   >
-                    {disabledButtons[product.id] ? "Ajouté avec succès!" : "Ajouter au panier"}
+                    Ajouter au panier
                   </button>
                 </div>
               </div>

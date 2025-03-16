@@ -8,7 +8,6 @@ import Navbar from "@/app/Navbar";
 import Loading from "@/app/Loading";
 import Footer from "@/app/Footer";
 import Link from "next/link";
-import { useAuth } from "@/lib/useAuth"; // Import useAuth to get the authenticated user
 
 interface Product {
   id: number;
@@ -46,14 +45,12 @@ async function fetchProducts(query: string) {
 }
 
 export default function SearchPage({ params }: SearchPageProps) {
-  const { user } = useAuth(); // Get the authenticated user
   const { article } = use(params); // `params` is already a Promise
   const decodedQuery = decodeURIComponent(article); // Decode the search query
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [activeImageIndex, setActiveImageIndex] = useState<{ [key: number]: number }>({}); // Track active image index for each product
-  const [disabledButtons, setDisabledButtons] = useState<{ [key: number]: boolean }>({}); // Track disabled state per product
 
   // Handle image change for the product slider
   const handleImageChange = (productId: number, newIndex: number) => {
@@ -63,61 +60,19 @@ export default function SearchPage({ params }: SearchPageProps) {
     }));
   };
 
-  // Add to Cart Functionality
-  const addToCart = async (product: Product) => {
-    try {
-      if (!user) {
-        alert("Please log in to add products to your cart.");
-        return;
-      }
+  // Add to LocalStorage Functionality
+  const addToLocalStorage = (product: Product) => {
+    const cart = JSON.parse(localStorage.getItem("cart") || "[]");
+    const existingProductIndex = cart.findIndex((item: Product) => item.id === product.id);
 
-      // Disable the button for this specific product
-      setDisabledButtons((prev) => ({ ...prev, [product.id]: true }));
-
-      // Fetch the current user's cart
-      const { data: userData, error: userError } = await supabase
-        .from("users")
-        .select("cart")
-        .eq("email", user.email)
-        .single();
-
-      if (userError) throw userError;
-
-      // Parse the current cart or initialize an empty array
-      const currentCart = userData?.cart || [];
-
-      // Check if the product is already in the cart
-      const existingProductIndex = currentCart.findIndex(
-        (item: Product) => item.id === product.id
-      );
-
-      if (existingProductIndex !== -1) {
-        // If the product is already in the cart, update its quantity (if applicable)
-        // For example, increment the quantity
-        currentCart[existingProductIndex].quantity += 1;
-      } else {
-        // If the product is not in the cart, add it with a quantity of 1
-        currentCart.push({ ...product, quantity: 1 });
-      }
-
-      // Update the cart in the database
-      const { error: updateError } = await supabase
-        .from("users")
-        .update({ cart: currentCart })
-        .eq("email", user.email);
-
-      if (updateError) throw updateError;
-
-      console.log("Product added to cart:", product.title);
-    } catch (error) {
-      console.error("Error adding to cart:", error);
-      alert("Failed to add product to cart.");
-    } finally {
-      // Re-enable the button for this specific product after 3 seconds
-      setTimeout(() => {
-        setDisabledButtons((prev) => ({ ...prev, [product.id]: false }));
-      }, 3000);
+    if (existingProductIndex !== -1) {
+      cart[existingProductIndex].quantity += 1;
+    } else {
+      cart.push({ ...product, quantity: 1 });
     }
+
+    localStorage.setItem("cart", JSON.stringify(cart));
+    console.log("Product added to localStorage:", product.title);
   };
 
   // Fetch products when the component mounts or the search query changes
@@ -255,11 +210,10 @@ export default function SearchPage({ params }: SearchPageProps) {
                   {/* Add to Cart Button */}
                   <div className="p-4">
                     <button
-                      className="w-full py-3 bg-secondary text-white font-semibold hover:bg-accent transition-colors duration-300 rounded-lg disabled:cursor-not-allowed disabled:bg-accent"
-                      onClick={() => addToCart(product)}
-                      disabled={disabledButtons[product.id] || false} // Disable only the clicked product's button
+                      className="w-full py-3 bg-secondary text-white font-semibold hover:bg-accent transition-colors duration-300 rounded-lg"
+                      onClick={() => addToLocalStorage(product)}
                     >
-                      {disabledButtons[product.id] ? "Ajouté avec succès!" : "Ajouter au panier"}
+                      Ajouter au panier
                     </button>
                   </div>
                 </div>

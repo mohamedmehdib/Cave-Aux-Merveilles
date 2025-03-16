@@ -17,79 +17,40 @@ interface Product {
   description: string;
 }
 
-interface User {
-  id: string;
-  email?: string;
-  // Add other properties as needed
-}
-
 export default function ProductPage() {
   const { product } = useParams(); // Get the formatted product title from the URL
   const [productData, setProductData] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [selectedImageIndex, setSelectedImageIndex] = useState(0); // Track the selected image
-  const [user, setUser] = useState<User | null>(null); // State to store the authenticated user
   const [isButtonDisabled, setIsButtonDisabled] = useState(false); // State to manage button disabled state
 
-  // Fetch the authenticated user
-  useEffect(() => {
-    const fetchUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      setUser(user);
-    };
-
-    fetchUser();
-  }, []);
-
-  // Add to Cart Functionality
-  const addToCart = async (product: Product) => {
+  // Add to LocalStorage Functionality
+  const addToLocalStorage = (product: Product) => {
     try {
-      if (!user) {
-        alert("Please log in to add products to your cart.");
-        return;
-      }
-
       // Disable the button
       setIsButtonDisabled(true);
 
-      // Fetch the current user's cart
-      const { data: userData, error: userError } = await supabase
-        .from("users")
-        .select("cart")
-        .eq("email", user.email)
-        .single();
-
-      if (userError) throw userError;
-
-      // Parse the current cart or initialize an empty array
-      const currentCart = userData?.cart || [];
+      // Fetch the current cart from localStorage
+      const cart = JSON.parse(localStorage.getItem("cart") || "[]");
 
       // Check if the product is already in the cart
-      const existingProductIndex = currentCart.findIndex(
-        (item: Product) => item.id === product.id
-      );
+      const existingProductIndex = cart.findIndex((item: Product) => item.id === product.id);
 
       if (existingProductIndex !== -1) {
-        // If the product is already in the cart, update its quantity (if applicable)
-        // For example, increment the quantity
-        currentCart[existingProductIndex].quantity += 1;
+        // If the product is already in the cart, update its quantity
+        cart[existingProductIndex].quantity += 1;
       } else {
         // If the product is not in the cart, add it with a quantity of 1
-        currentCart.push({ ...product, quantity: 1 });
+        cart.push({ ...product, quantity: 1 });
       }
 
-      // Update the cart in the database
-      const { error: updateError } = await supabase
-        .from("users")
-        .update({ cart: currentCart })
-        .eq("email", user.email);
+      // Update the cart in localStorage
+      localStorage.setItem("cart", JSON.stringify(cart));
 
-      if (updateError) throw updateError;
-
-      console.log("Product added to cart:", product.title);
+      console.log("Product added to localStorage:", product.title);
     } catch (error) {
-      console.error("Error adding to cart:", error);
+      console.error("Error adding to localStorage:", error);
       alert("Failed to add product to cart.");
     } finally {
       // Re-enable the button after 3 seconds
@@ -99,6 +60,7 @@ export default function ProductPage() {
     }
   };
 
+  // Fetch product data
   useEffect(() => {
     const fetchProduct = async () => {
       try {
@@ -223,7 +185,7 @@ export default function ProductPage() {
           {/* Add to Cart Button */}
           <button
             className="w-full py-3 bg-secondary text-white font-semibold hover:bg-accent transition-colors duration-300 rounded-lg disabled:cursor-not-allowed disabled:bg-accent"
-            onClick={() => addToCart(productData)}
+            onClick={() => addToLocalStorage(productData)}
             disabled={isButtonDisabled}
           >
             {isButtonDisabled ? "Ajouté avec succès!" : "Ajouter au panier"}

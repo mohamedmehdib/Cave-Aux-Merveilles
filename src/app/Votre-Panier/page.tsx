@@ -6,7 +6,6 @@ import Navbar from "../Navbar";
 import Footer from "../Footer";
 import Image from "next/image";
 import { useAuth } from "@/lib/useAuth";
-import { supabase } from "@/lib/supabaseClient";
 
 interface CartItem {
   id: number;
@@ -22,25 +21,13 @@ const Cart = () => {
   const [isPaymentLoading, setIsPaymentLoading] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
+  // Fetch cart items from localStorage
   useEffect(() => {
     if (user) {
-      const fetchCartItems = async () => {
-        setIsLoading(true);
-        const { data, error } = await supabase
-          .from("users")
-          .select("cart")
-          .eq("email", user.email)
-          .single();
-
-        if (error) {
-          console.error("Error fetching cart items:", error.message);
-        } else if (data?.cart) {
-          setCartItems(data.cart);
-        }
-        setIsLoading(false);
-      };
-
-      fetchCartItems();
+      setIsLoading(true);
+      const cart = JSON.parse(localStorage.getItem("cart") || "[]");
+      setCartItems(cart);
+      setIsLoading(false);
     }
   }, [user]);
 
@@ -50,26 +37,18 @@ const Cart = () => {
       item.id === itemId ? { ...item, quantity: newQuantity } : item
     );
     setCartItems(updatedCart);
-    updateCartInDb(updatedCart);
+    updateCartInLocalStorage(updatedCart);
   };
 
   const handleRemoveItem = (itemId: number) => {
     const updatedCart = cartItems.filter((item) => item.id !== itemId);
     setCartItems(updatedCart);
-    updateCartInDb(updatedCart);
+    updateCartInLocalStorage(updatedCart);
   };
 
-  const updateCartInDb = async (updatedCart: CartItem[]) => {
-    if (user) {
-      const { error } = await supabase
-        .from("users")
-        .update({ cart: updatedCart })
-        .eq("email", user.email);
-
-      if (error) {
-        console.error("Error updating cart in database:", error.message);
-      }
-    }
+  // Update cart in localStorage
+  const updateCartInLocalStorage = (updatedCart: CartItem[]) => {
+    localStorage.setItem("cart", JSON.stringify(updatedCart));
   };
 
   const totalPrice = cartItems.reduce(
