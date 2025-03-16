@@ -53,7 +53,7 @@ export default function SearchPage({ params }: SearchPageProps) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [activeImageIndex, setActiveImageIndex] = useState<{ [key: number]: number }>({}); // Track active image index for each product
-  const [isButtonDisabled, setIsButtonDisabled] = useState(false); // State to manage button disabled state
+  const [disabledButtons, setDisabledButtons] = useState<{ [key: number]: boolean }>({}); // Track disabled state per product
 
   // Handle image change for the product slider
   const handleImageChange = (productId: number, newIndex: number) => {
@@ -63,7 +63,6 @@ export default function SearchPage({ params }: SearchPageProps) {
     }));
   };
 
-
   // Add to Cart Functionality
   const addToCart = async (product: Product) => {
     try {
@@ -72,8 +71,8 @@ export default function SearchPage({ params }: SearchPageProps) {
         return;
       }
 
-      // Disable the button
-      setIsButtonDisabled(true);
+      // Disable the button for this specific product
+      setDisabledButtons((prev) => ({ ...prev, [product.id]: true }));
 
       // Fetch the current user's cart
       const { data: userData, error: userError } = await supabase
@@ -114,9 +113,9 @@ export default function SearchPage({ params }: SearchPageProps) {
       console.error("Error adding to cart:", error);
       alert("Failed to add product to cart.");
     } finally {
-      // Re-enable the button after 3 seconds
+      // Re-enable the button for this specific product after 3 seconds
       setTimeout(() => {
-        setIsButtonDisabled(false);
+        setDisabledButtons((prev) => ({ ...prev, [product.id]: false }));
       }, 3000);
     }
   };
@@ -258,9 +257,9 @@ export default function SearchPage({ params }: SearchPageProps) {
                     <button
                       className="w-full py-3 bg-secondary text-white font-semibold hover:bg-accent transition-colors duration-300 rounded-lg disabled:cursor-not-allowed disabled:bg-accent"
                       onClick={() => addToCart(product)}
-                      disabled={isButtonDisabled}
+                      disabled={disabledButtons[product.id] || false} // Disable only the clicked product's button
                     >
-                      {isButtonDisabled ? "Ajouté avec succès!" : "Ajouter au panier"}
+                      {disabledButtons[product.id] ? "Ajouté avec succès!" : "Ajouter au panier"}
                     </button>
                   </div>
                 </div>
