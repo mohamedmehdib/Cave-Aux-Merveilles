@@ -82,7 +82,7 @@ const SignUp = () => {
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-100">
       <div className="p-8 bg-white shadow-xl rounded-lg w-80">
-        <h2 className="text-2xl font-semibold mb-4">Sign Up</h2>
+        <h2 className="text-2xl font-semibold mb-4">S&apos;inscrire</h2>
         {error && <div className="text-red-500 text-sm mb-4">{error}</div>}
         {success && <div className="text-green-500 text-sm mb-4">{success}</div>}
         <input
@@ -92,22 +92,25 @@ const SignUp = () => {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           aria-label="Email"
+          required
         />
         <input
           type="password"
-          placeholder="Password"
+          placeholder="Mot de Passe"
           className="w-full p-2 border mb-4 rounded"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           aria-label="Password"
+          required
         />
         <input
           type="text"
-          placeholder="Name"
+          placeholder="Nom"
           className="w-full p-2 border mb-4 rounded"
           value={name}
           onChange={(e) => setName(e.target.value)}
           aria-label="Name"
+          required
         />
         <input
           type="text"
@@ -116,14 +119,16 @@ const SignUp = () => {
           value={phone}
           onChange={(e) => setPhone(e.target.value)}
           aria-label="Phone"
+          required
         />
         <input
           type="text"
-          placeholder="Address"
+          placeholder="Addresse"
           className="w-full p-2 border mb-4 rounded"
           value={address}
           onChange={(e) => setAddress(e.target.value)}
-          aria-label="Address"
+          aria-label="Addresse"
+          required
         />
 
         <button
@@ -134,7 +139,7 @@ const SignUp = () => {
           disabled={loading}
           aria-disabled={loading}
         >
-          {loading ? "Signing Up..." : "Sign Up"}
+          {loading ? "En cours..." : "S'inscrire"}
         </button>
       </div>
     </div>

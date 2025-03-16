@@ -52,7 +52,7 @@ const SignIn = () => {
   return (
     <div className="flex justify-center items-center min-h-screen">
       <div className="p-8 bg-white shadow-xl rounded-lg w-80">
-        <h2 className="text-2xl font-semibold mb-4">Sign In</h2>
+        <h2 className="text-2xl font-semibold mb-4">Se Connecter</h2>
         <input
           type="email"
           placeholder="Email"
@@ -62,7 +62,7 @@ const SignIn = () => {
         />
         <input
           type="password"
-          placeholder="Password"
+          placeholder="Mot de passe"
           className="w-full p-2 border mb-4 rounded"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
@@ -72,7 +72,7 @@ const SignIn = () => {
           className={`w-full py-2 bg-secondary text-white rounded ${loading ? 'opacity-50' : ''}`}
           disabled={loading}
         >
-          {loading ? 'Signing In...' : 'Sign In'}
+          {loading ? 'En cours...' : 'Se Connecter'}
         </button>
 
         {errorMessage && (
@@ -81,12 +81,12 @@ const SignIn = () => {
 
         <div className="mt-4 text-center">
           <p className="text-sm text-gray-600">
-            Don&apos;t have an account?{' '}
+            Vous n&apos;avez pas de compte ?{' '}
             <span
               onClick={() => router.push("/Inscrire")} // Fixed path
               className="text-accent cursor-pointer"
             >
-              Sign Up
+              S&apos;Inscrire
             </span>
           </p>
           <p className="text-sm text-gray-600 mt-2">
@@ -94,7 +94,7 @@ const SignIn = () => {
               onClick={() => router.push('/Reset')}
               className="text-accent cursor-pointer"
             >
-              Reset Password
+                Réinitialiser le mot de passe
             </span>
           </p>
         </div>
