@@ -118,7 +118,7 @@ export default function ProductPage() {
     return (
       <div className="min-h-screen bg-primary flex flex-col items-center justify-center">
         <Navbar />
-        <div className="text-center text-accent text-xl">Product not found.</div>
+        <div className="text-center text-accent text-xl">Produit non trouvé.</div>
       </div>
     );
   }

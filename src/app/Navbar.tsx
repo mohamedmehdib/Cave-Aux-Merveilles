@@ -1,10 +1,10 @@
 "use client";
+
 import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation"; // Import useRouter for navigation
 import { useAuth } from "@/lib/useAuth"; // Import useAuth to get the authenticated user
-import { supabase } from "@/lib/supabaseClient"; // Import supabase client
 
 const menuItems = [
   { id: "accueil", label: "Categorie 1" },
@@ -32,39 +32,20 @@ const Navbar: React.FC = () => {
   const lastScrollY = useRef<number>(0);
   const router = useRouter(); // Initialize useRouter
 
-  // Function to fetch cart data
-  const fetchCart = async () => {
-    if (user) {
-      try {
-        const { data, error } = await supabase
-          .from("users")
-          .select("cart")
-          .eq("email", user.email)
-          .single();
-
-        if (error) throw error;
-
-        // Set cart count based on the number of items in the cart
-        if (data?.cart) {
-          setCartCount(data.cart.length);
-        } else {
-          setCartCount(0);
-        }
-      } catch (err) {
-        console.error("Error fetching cart data:", err);
-      }
-    } else {
-      setCartCount(0); // Reset cart count if no user is logged in
-    }
+  // Fetch cart count from localStorage
+  const fetchCartCount = () => {
+    const cart = JSON.parse(localStorage.getItem("cart") || "[]");
+    setCartCount(cart.length);
   };
 
-  // Fetch cart data every 0.5 seconds
+  // Fetch cart count every 3 seconds
   useEffect(() => {
-    const interval = setInterval(fetchCart, 500); // Refresh every 0.5 seconds
+    fetchCartCount(); // Initial fetch
+    const interval = setInterval(fetchCartCount, 500); // Refresh every 3 seconds
 
     // Cleanup interval on component unmount
     return () => clearInterval(interval);
-  }, [user , fetchCart]); // Re-run effect when the user changes
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => {
