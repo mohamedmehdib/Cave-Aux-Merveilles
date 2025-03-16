@@ -5,7 +5,6 @@ import Link from "next/link";
 import Navbar from "../Navbar";
 import Footer from "../Footer";
 import Image from "next/image";
-import { useAuth } from "@/lib/useAuth";
 
 interface CartItem {
   id: number;
@@ -16,20 +15,18 @@ interface CartItem {
 }
 
 const Cart = () => {
-  const { user } = useAuth();
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [isPaymentLoading, setIsPaymentLoading] = useState<boolean>(false);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [name, setName] = useState<string>(""); // State for name
+  const [phoneNumber, setPhoneNumber] = useState<string>(""); // State for phone number
+  const [address, setAddress] = useState<string>(""); // State for address
+  const [formError, setFormError] = useState<string>(""); // State for form validation errors
 
   // Fetch cart items from localStorage
   useEffect(() => {
-    if (user) {
-      setIsLoading(true);
-      const cart = JSON.parse(localStorage.getItem("cart") || "[]");
-      setCartItems(cart);
-      setIsLoading(false);
-    }
-  }, [user]);
+    const cart = JSON.parse(localStorage.getItem("cart") || "[]");
+    setCartItems(cart);
+  }, []);
 
   const handleQuantityChange = (itemId: number, newQuantity: number) => {
     if (newQuantity < 1) return;
@@ -59,6 +56,32 @@ const Cart = () => {
   const deliveryFee = 8;
   const finalPrice = totalPrice + deliveryFee;
 
+  // Handle form submission
+  const handleConfirmationSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+
+    // Validate form fields
+    if (!name || !phoneNumber || !address) {
+      setFormError("Tous les champs sont obligatoires.");
+      return;
+    }
+
+    // Clear any previous errors
+    setFormError("");
+
+    // Simulate payment processing
+    setIsPaymentLoading(true);
+    setTimeout(() => {
+      setIsPaymentLoading(false);
+      alert("Commande confirmée avec succès!");
+      localStorage.removeItem("cart"); // Clear the cart
+      setCartItems([]); // Clear the cart items in state
+      setName(""); // Reset name field
+      setPhoneNumber(""); // Reset phone number field
+      setAddress(""); // Reset address field
+    }, 2000);
+  };
+
   return (
     <div className="bg-primary min-h-screen">
       <Navbar />
@@ -67,23 +90,7 @@ const Cart = () => {
           Votre Panier
         </h1>
 
-        {!user ? (
-          <div className="bg-primary p-6 text-center">
-            <p className="text-xl text-gray-600 py-5">
-              Vous devez être connecté pour voir votre panier.
-            </p>
-            <Link
-              href="/Se-Connecter"
-              className="mt-4 px-6 py-2 bg-secondary/85 text-white rounded hover:bg-secondary transition"
-            >
-              Se Connecter
-            </Link>
-          </div>
-        ) : isLoading ? (
-          <div className="bg-primary p-6 text-center">
-            <p className="text-xl text-gray-600 py-5">Chargement des articles du panier...</p>
-          </div>
-        ) : cartItems.length === 0 ? (
+        {cartItems.length === 0 ? (
           <div className="bg-primary p-6 text-center">
             <p className="text-xl text-gray-600 py-5">Votre panier est vide.</p>
             <Link
@@ -94,7 +101,7 @@ const Cart = () => {
             </Link>
           </div>
         ) : (
-          <div className="bg-primary p-6  ">
+          <div className="bg-primary p-6">
             <div className="space-y-4">
               {cartItems.map((item, index) => (
                 <div
@@ -151,22 +158,65 @@ const Cart = () => {
             </div>
 
             <div className="mt-6 flex justify-between items-center text-lg font-semibold text-gray-800">
-              <h2>Total final</h2>
+              <h2>Finale totale</h2>
               <p>{finalPrice.toFixed(2)} Dt</p>
             </div>
 
-            <div className="mt-6 text-center">
-              <Link
-                href="/Success"
-                className={`px-6 py-3 bg-secondary/85 text-white rounded hover:bg-secondary transition ${
-                  isPaymentLoading ? "opacity-50 cursor-not-allowed" : ""
-                }`}
-                onClick={() => setIsPaymentLoading(true)}
-              >
-                {isPaymentLoading
-                  ? "Processing Payment..."
-                  : "Confirm the order"}
-              </Link>
+            {/* Confirmation Form (Always Visible) */}
+            <div className="mt-6 bg-white p-6 rounded-lg shadow-md">
+              <h2 className="text-xl font-semibold text-gray-800 mb-4">
+                Informations de livraison
+              </h2>
+              {formError && (
+                <p className="text-red-500 text-sm mb-4">{formError}</p>
+              )}
+              <form onSubmit={handleConfirmationSubmit}>
+                <div className="mb-4">
+                  <label className="block text-sm font-medium text-gray-700">
+                    Nom complet
+                  </label>
+                  <input
+                    type="text"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-secondary"
+                    required
+                  />
+                </div>
+                <div className="mb-4">
+                  <label className="block text-sm font-medium text-gray-700">
+                    Numéro de téléphone
+                  </label>
+                  <input
+                    type="tel"
+                    value={phoneNumber}
+                    onChange={(e) => setPhoneNumber(e.target.value)}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-secondary"
+                    required
+                  />
+                </div>
+                <div className="mb-4">
+                  <label className="block text-sm font-medium text-gray-700">
+                    Adresse de livraison
+                  </label>
+                  <input
+                    type="text"
+                    value={address}
+                    onChange={(e) => setAddress(e.target.value)}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-secondary"
+                    required
+                  />
+                </div>
+                <button
+                  type="submit"
+                  className={`w-full px-6 py-3 bg-secondary text-white font-semibold rounded-lg hover:bg-accent transition-colors duration-300 ${
+                    isPaymentLoading ? "opacity-50 cursor-not-allowed" : ""
+                  }`}
+                  disabled={isPaymentLoading}
+                >
+                  {isPaymentLoading ? "Traitement en cours..." : "Confirmer la commande"}
+                </button>
+              </form>
             </div>
           </div>
         )}
