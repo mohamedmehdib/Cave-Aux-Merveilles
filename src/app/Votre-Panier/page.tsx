@@ -5,6 +5,7 @@ import Link from "next/link";
 import Navbar from "../Navbar";
 import Footer from "../Footer";
 import Image from "next/image";
+import { supabase } from "@/lib/supabaseClient"; // Import Supabase client
 
 interface CartItem {
   id: number;
@@ -17,10 +18,10 @@ interface CartItem {
 const Cart = () => {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [isPaymentLoading, setIsPaymentLoading] = useState<boolean>(false);
-  const [name, setName] = useState<string>(""); // State for name
-  const [phoneNumber, setPhoneNumber] = useState<string>(""); // State for phone number
-  const [address, setAddress] = useState<string>(""); // State for address
-  const [formError, setFormError] = useState<string>(""); // State for form validation errors
+  const [name, setName] = useState<string>("");
+  const [phoneNumber, setPhoneNumber] = useState<string>("");
+  const [address, setAddress] = useState<string>("");
+  const [formError, setFormError] = useState<string>("");
 
   // Fetch cart items from localStorage
   useEffect(() => {
@@ -57,29 +58,61 @@ const Cart = () => {
   const finalPrice = totalPrice + deliveryFee;
 
   // Handle form submission
-  const handleConfirmationSubmit = (e: React.FormEvent) => {
+  const handleConfirmationSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
+  
     // Validate form fields
     if (!name || !phoneNumber || !address) {
       setFormError("Tous les champs sont obligatoires.");
       return;
     }
-
+  
     // Clear any previous errors
     setFormError("");
-
+  
     // Simulate payment processing
     setIsPaymentLoading(true);
-    setTimeout(() => {
-      setIsPaymentLoading(false);
+  
+    try {
+      // Prepare the order data
+      const orderData = {
+        name: name,
+        phone: phoneNumber,
+        address: address,
+        items: JSON.stringify(cartItems),
+        total_price: finalPrice,
+        status: "pending", // Default status
+      };
+  
+      console.log("Order Data:", orderData); // Debugging
+  
+      // Insert the order into the orders table
+      const { error } = await supabase
+        .from("orders")
+        .insert([orderData]);
+  
+      if (error) {
+        console.error("Error inserting order:", error.message);
+        setFormError("Une erreur s'est produite lors de la confirmation de la commande.");
+        setIsPaymentLoading(false);
+        return;
+      }
+  
+      // Clear the cart and form fields
+      localStorage.removeItem("cart");
+      setCartItems([]);
+      setName("");
+      setPhoneNumber("");
+      setAddress("");
+  
+      // Show success message
       alert("Commande confirmée avec succès!");
-      localStorage.removeItem("cart"); // Clear the cart
-      setCartItems([]); // Clear the cart items in state
-      setName(""); // Reset name field
-      setPhoneNumber(""); // Reset phone number field
-      setAddress(""); // Reset address field
-    }, 2000);
+    } catch (error) {
+      console.error("Unexpected error:", error);
+      setFormError("Une erreur inattendue s'est produite.");
+    } finally {
+      setIsPaymentLoading(false);
+    }
   };
 
   return (
