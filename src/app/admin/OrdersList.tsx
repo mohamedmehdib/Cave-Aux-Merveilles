@@ -3,6 +3,12 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabaseClient"; // Import Supabase client
 
+interface CartItem {
+  title: string;
+  quantity: number;
+  price: number;
+}
+
 interface Order {
   id: number;
   name: string;
@@ -90,7 +96,7 @@ const OrdersList = () => {
             <div className="mt-4">
               <h4 className="text-md font-semibold text-gray-800">Items:</h4>
               <ul className="list-disc list-inside text-gray-600">
-                {JSON.parse(order.items).map((item: any, index: number) => (
+                {JSON.parse(order.items).map((item: CartItem, index: number) => (
                   <li key={index}>
                     {item.title} - {item.quantity} x {item.price} Dt
                   </li>
