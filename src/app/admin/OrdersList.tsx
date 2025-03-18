@@ -39,8 +39,14 @@ const OrdersList = () => {
 
       setOrders(data || []);
     } catch (error) {
-      console.error("Error fetching orders:", error.message);
-      setError("Failed to fetch orders. Please try again later.");
+      // Type-check the error object
+      if (error instanceof Error) {
+        console.error("Error fetching orders:", error.message);
+        setError("Failed to fetch orders. Please try again later.");
+      } else {
+        console.error("An unknown error occurred:", error);
+        setError("An unknown error occurred. Please try again later.");
+      }
     } finally {
       setLoading(false);
     }
