@@ -58,47 +58,49 @@ const OrdersList = () => {
   }, []);
 
   if (loading) {
-    return <p>Loading orders...</p>;
+    return <p className="text-center text-gray-600">Loading orders...</p>;
   }
 
   if (error) {
-    return <p className="text-red-500">{error}</p>;
+    return <p className="text-center text-red-500">{error}</p>;
   }
 
   if (orders.length === 0) {
-    return <p>No orders found.</p>;
+    return <p className="text-center text-gray-600">No orders found.</p>;
   }
 
   return (
-    <div className="bg-white p-6 rounded-lg shadow-md">
-      <h2 className="text-2xl font-bold text-gray-800 mb-6">Orders List</h2>
+    <div className="bg-white p-4 sm:p-6 rounded-lg shadow-md">
+      <h2 className="text-2xl font-bold text-gray-800 mb-4 sm:mb-6">Orders List</h2>
       <div className="space-y-4">
         {orders.map((order) => (
           <div
             key={order.id}
-            className="border border-gray-200 p-4 rounded-lg"
+            className="border border-gray-200 p-4 rounded-lg hover:shadow-lg transition-shadow duration-300"
           >
-            <div className="flex justify-between items-center mb-2">
-              <h3 className="text-lg font-semibold text-gray-800">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-2">
+              <h3 className="text-lg font-semibold text-gray-800 mb-2 sm:mb-0">
                 Order #{order.id}
               </h3>
+              <p className="text-gray-600">
+                <strong>Order Date:</strong>{" "}
+                {new Date(order.created_at).toLocaleString()}
+              </p>
             </div>
-            <p className="text-gray-600">
-              <strong>Name:</strong> {order.name}
-            </p>
-            <p className="text-gray-600">
-              <strong>Phone:</strong> {order.phone}
-            </p>
-            <p className="text-gray-600">
-              <strong>Address:</strong> {order.address}
-            </p>
-            <p className="text-gray-600">
-              <strong>Total Price:</strong> {order.total_price} Dt
-            </p>
-            <p className="text-gray-600">
-              <strong>Order Date:</strong>{" "}
-              {new Date(order.created_at).toLocaleString()}
-            </p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <p className="text-gray-600">
+                <strong>Name:</strong> {order.name}
+              </p>
+              <p className="text-gray-600">
+                <strong>Phone:</strong> {order.phone}
+              </p>
+              <p className="text-gray-600 col-span-2">
+                <strong>Address:</strong> {order.address}
+              </p>
+              <p className="text-gray-600">
+                <strong>Total Price:</strong> {order.total_price} Dt
+              </p>
+            </div>
             <div className="mt-4">
               <h4 className="text-md font-semibold text-gray-800">Items:</h4>
               <ul className="list-disc list-inside text-gray-600">
