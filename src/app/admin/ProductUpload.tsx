@@ -32,6 +32,7 @@ export default function Store() {
   const [description, setDescription] = useState(""); // Added description state
   const [colors, setColors] = useState<string[]>([]); // Added colors state
   const [fileInputs, setFileInputs] = useState<(File | null)[]>([null]); // Initialize with one null value
+  const [existingImageUrls, setExistingImageUrls] = useState<string[]>([]); // Store existing image URLs
 
   // Optional: Ref for scrolling to the form
   const formRef = useRef<HTMLDivElement>(null);
@@ -91,6 +92,7 @@ export default function Store() {
     setPrice(product.price);
     setDescription(product.description); // Set the description
     setColors(product.colors || []); // Set the colors (or empty array if none)
+    setExistingImageUrls(product.image_urls || []); // Store existing image URLs
     setFileInputs([null]); // Reset file inputs
     setError(""); // Clear any previous errors
     setSuccess(""); // Clear any previous success messages
@@ -111,16 +113,23 @@ export default function Store() {
 
     try {
       // Validate input
-      if (!title || price === null || !description || fileInputs.length === 0) {
+      if (!title || price === null || !description || (fileInputs.length === 0 && existingImageUrls.length === 0)) {
         setError("Please fill out all fields and upload at least one image.");
+        return;
+      }
+
+      // Validate colors (ensure no empty strings)
+      const validColors = colors.filter((color) => color.trim() !== "");
+      if (validColors.length !== colors.length) {
+        alert("Please ensure all color fields are filled out.");
         return;
       }
 
       // Filter out null values (empty file inputs)
       const validFiles = fileInputs.filter((file) => file !== null) as File[];
 
-      // Upload images to Supabase Storage
-      const imageUrls = await Promise.all(
+      // Upload new images to Supabase Storage
+      const newImageUrls = await Promise.all(
         validFiles.map(async (file) => {
           const filePath = `products/${Date.now()}-${file.name}`;
           const { data, error } = await supabase.storage
@@ -140,6 +149,9 @@ export default function Store() {
         })
       );
 
+      // Combine old and new image URLs
+      const allImageUrls = [...existingImageUrls, ...newImageUrls];
+
       if (editingProduct) {
         // Update existing product
         const { error } = await supabase
@@ -148,8 +160,8 @@ export default function Store() {
             title,
             price,
             description,
-            image_urls: imageUrls,
-            colors: colors.length > 0 ? colors : null, // Set colors if provided, otherwise null
+            image_urls: allImageUrls,
+            colors: validColors.length > 0 ? validColors : null, // Set colors if provided, otherwise null
           })
           .eq("id", editingProduct.id);
 
@@ -161,12 +173,12 @@ export default function Store() {
         setProducts((prevProducts) =>
           prevProducts.map((p) =>
             p.id === editingProduct.id
-              ? { ...p, title, price, description, image_urls: imageUrls, colors }
+              ? { ...p, title, price, description, image_urls: allImageUrls, colors: validColors }
               : p
           )
         );
 
-        setSuccess("Product updated successfully!");
+        setSuccess("Produit mis à jour avec succès !");
       } else {
         // Insert new product
         const { error } = await supabase.from("products").insert([
@@ -174,8 +186,8 @@ export default function Store() {
             title,
             price,
             description,
-            image_urls: imageUrls,
-            colors: colors.length > 0 ? colors : null, // Set colors if provided, otherwise null
+            image_urls: allImageUrls,
+            colors: validColors.length > 0 ? validColors : null, // Set colors if provided, otherwise null
             created_at: new Date().toISOString(),
           },
         ]);
@@ -188,7 +200,7 @@ export default function Store() {
         const { data } = await supabase.from("products").select("*");
         setProducts(data || []);
 
-        setSuccess("Product added successfully!");
+        setSuccess("Produit ajouté avec succès !");
       }
 
       // Reset form
@@ -197,6 +209,7 @@ export default function Store() {
       setDescription("");
       setColors([]); // Reset colors
       setFileInputs([null]); // Reset to one empty file input
+      setExistingImageUrls([]); // Reset existing image URLs
       setEditingProduct(null); // Reset editing mode
     } catch (error) {
       if (error instanceof Error) {
@@ -232,6 +245,11 @@ export default function Store() {
 
   // Add a new color input field
   const addColorField = () => {
+    // Ensure the last color input is not empty before adding a new one
+    if (colors.length > 0 && colors[colors.length - 1].trim() === "") {
+      alert("Please fill out the current color field before adding a new one.");
+      return;
+    }
     setColors([...colors, ""]); // Add an empty string to the colors array
   };
 
@@ -240,6 +258,13 @@ export default function Store() {
     const newColors = [...colors];
     newColors.splice(index, 1); // Remove the color at the specified index
     setColors(newColors);
+  };
+
+  // Remove an existing image
+  const removeExistingImage = (index: number) => {
+    const newImageUrls = [...existingImageUrls];
+    newImageUrls.splice(index, 1); // Remove the image at the specified index
+    setExistingImageUrls(newImageUrls);
   };
 
   // Handle product deletion
@@ -271,7 +296,7 @@ export default function Store() {
   if (loading) {
     return (
       <div className="min-h-screen py-8 px-4 sm:px-8">
-        <h1 className="text-3xl sm:text-4xl font-bold text-center text-accent mb-8">Store</h1>
+        <h1 className="text-3xl sm:text-4xl font-bold text-center text-accent mb-8">Magasin</h1>
         <div className="flex flex-wrap items-center justify-center gap-6">
           {[...Array(4)].map((_, index) => (
             <div
@@ -294,7 +319,7 @@ export default function Store() {
   if (error) {
     return (
       <div className="min-h-screen py-8 px-4 sm:px-8">
-        <h1 className="text-3xl sm:text-4xl font-bold text-center text-accent mb-8">Store</h1>
+        <h1 className="text-3xl sm:text-4xl font-bold text-center text-accent mb-8">Magasin</h1>
         <div className="text-center text-red-500">{error}</div>
       </div>
     );
@@ -302,7 +327,7 @@ export default function Store() {
 
   return (
     <div className="min-h-screen py-8 px-4 sm:px-8">
-      <h1 className="text-3xl sm:text-4xl font-bold text-center text-accent mb-8">Store</h1>
+      <h1 className="text-3xl sm:text-4xl font-bold text-center text-accent mb-8">Magasin</h1>
 
       {/* Success Message */}
       {success && (
@@ -312,11 +337,11 @@ export default function Store() {
       {/* Always Visible Add/Edit Product Form */}
       <div ref={formRef} className="bg-white p-6 sm:p-8 rounded-lg shadow-lg w-full max-w-2xl mx-auto mb-8">
         <h2 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-6">
-          {editingProduct ? "Edit Product" : "Add Product"}
+          {editingProduct ? "Modifier un Produit" : "Ajouter un Produit"}
         </h2>
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Title</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Titre</label>
             <input
               type="text"
               placeholder="Product Title"
@@ -327,7 +352,7 @@ export default function Store() {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Price</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Prix</label>
             <input
               type="number"
               placeholder="Product Price"
@@ -348,7 +373,7 @@ export default function Store() {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Colors</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Couleurs</label>
             {colors.map((color, index) => (
               <div key={index} className="flex items-center gap-2 mb-2">
                 <input
@@ -357,13 +382,14 @@ export default function Store() {
                   className="w-full p-3 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
                   value={color}
                   onChange={(e) => handleColorChange(e, index)}
+                  required // Ensure the input is not empty
                 />
                 <button
                   type="button"
                   className="p-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors duration-300"
                   onClick={() => removeColorField(index)}
                 >
-                  Remove
+                  Supprimer
                 </button>
               </div>
             ))}
@@ -372,11 +398,32 @@ export default function Store() {
               className="w-full py-2 bg-blue-500 text-white rounded-lg font-semibold hover:bg-blue-600 transition-colors duration-300"
               onClick={addColorField}
             >
-              Add Color
+              Ajouter Couleur
             </button>
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">Images</label>
+            {/* Display existing images with remove button */}
+            {existingImageUrls.map((imageUrl, index) => (
+              <div key={index} className="mb-4 flex items-center gap-2">
+                <Image
+                  src={imageUrl}
+                  alt={`Existing Image ${index + 1}`}
+                  width={100}
+                  height={100}
+                  className="object-cover rounded-lg"
+                  unoptimized
+                />
+                <button
+                  type="button"
+                  className="p-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors duration-300"
+                  onClick={() => removeExistingImage(index)}
+                >
+                  Remove
+                </button>
+              </div>
+            ))}
+            {/* File inputs for new images */}
             {fileInputs.map((file, index) => (
               <div key={index} className="mb-4">
                 <input
@@ -406,8 +453,8 @@ export default function Store() {
                 ? "Updating..."
                 : "Uploading..."
               : editingProduct
-              ? "Update Product"
-              : "Add Product"}
+              ? "Modifier un Produit"
+              : "Ajouter un Produit"}
           </button>
           {editingProduct && (
             <button
@@ -420,6 +467,7 @@ export default function Store() {
                 setDescription("");
                 setColors([]); // Reset colors
                 setFileInputs([null]); // Reset to one empty file input
+                setExistingImageUrls([]); // Reset existing image URLs
               }}
             >
               Cancel Edit
@@ -531,13 +579,13 @@ export default function Store() {
                   className="w-full py-2 bg-blue-500 text-white font-semibold hover:bg-blue-600 transition-colors duration-300"
                   onClick={() => handleEdit(product)}
                 >
-                  Edit
+                  Modifier
                 </button>
                 <button
                   className="w-full py-2 bg-red-500 text-white font-semibold hover:bg-red-600 transition-colors duration-300 mt-2"
                   onClick={() => handleDelete(product.id!)}
                 >
-                  Delete
+                  Supprimer
                 </button>
               </div>
             </div>

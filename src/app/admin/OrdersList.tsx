@@ -52,6 +52,33 @@ const OrdersList = () => {
     }
   };
 
+  // Delete an order
+  const deleteOrder = async (orderId: number) => {
+    if (window.confirm("Are you sure you want to delete this order?")) {
+      try {
+        const { error } = await supabase
+          .from("orders")
+          .delete()
+          .eq("id", orderId);
+
+        if (error) {
+          throw error;
+        }
+
+        // Remove the order from the local state
+        setOrders((prevOrders) => prevOrders.filter((order) => order.id !== orderId));
+      } catch (error) {
+        if (error instanceof Error) {
+          console.error("Error deleting order:", error.message);
+          setError("Failed to delete order. Please try again later.");
+        } else {
+          console.error("An unknown error occurred:", error);
+          setError("An unknown error occurred. Please try again later.");
+        }
+      }
+    }
+  };
+
   // Fetch orders on component mount
   useEffect(() => {
     fetchOrders();
@@ -78,16 +105,16 @@ const OrdersList = () => {
             key={order.id}
             className="border border-gray-200 p-4 rounded-lg hover:shadow-lg transition-shadow duration-300"
           >
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-2">
-              <h3 className="text-lg font-semibold text-gray-800 mb-2 sm:mb-0">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4">
+              <h3 className="text-lg font-semibold text-gray-800">
                 Order #{order.id}
               </h3>
-              <p className="text-gray-600">
+              <p className="text-gray-600 sm:text-right">
                 <strong>Order Date:</strong>{" "}
                 {new Date(order.created_at).toLocaleString()}
               </p>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="space-y-2 mb-4">
               <p className="text-gray-600">
                 <strong>Name:</strong> {order.name}
               </p>
@@ -102,7 +129,7 @@ const OrdersList = () => {
               </p>
             </div>
             <div className="mt-4">
-              <h4 className="text-md font-semibold text-gray-800">Items:</h4>
+              <h4 className="text-md font-semibold text-gray-800 mb-2">Items:</h4>
               <ul className="list-disc list-inside text-gray-600">
                 {JSON.parse(order.items).map((item: CartItem, index: number) => (
                   <li key={index}>
@@ -110,6 +137,14 @@ const OrdersList = () => {
                   </li>
                 ))}
               </ul>
+            </div>
+            <div className="mt-4 flex justify-end">
+              <button
+                onClick={() => deleteOrder(order.id)}
+                className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors duration-300"
+              >
+                Delete Order
+              </button>
             </div>
           </div>
         ))}

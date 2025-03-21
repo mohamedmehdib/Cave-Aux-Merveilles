@@ -10,6 +10,7 @@ interface Product {
   title: string;
   price: number;
   image_urls: string[];
+  colors?: string[]; // Add colors field
   created_at: string;
 }
 
@@ -30,7 +31,9 @@ export default function Store() {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(0);
   const [activeImageIndex, setActiveImageIndex] = useState<{ [key: number]: number }>({});
-  const [disabledButtons, setDisabledButtons] = useState<{ [key: number]: boolean }>({}); // Track disabled state per product
+  const [disabledButtons, setDisabledButtons] = useState<{ [key: number]: boolean }>({});
+  const [selectedColors, setSelectedColors] = useState<{ [key: number]: string }>({}); // Track selected color for each product
+  const [openColorDropdown, setOpenColorDropdown] = useState<number | null>(null); // Track which product's color dropdown is open
   const storeTopRef = useRef<HTMLDivElement>(null);
 
   // Fetch products on component mount
@@ -55,6 +58,12 @@ export default function Store() {
 
   // Add to LocalStorage Functionality
   const addToLocalStorage = useCallback((product: Product) => {
+    const selectedColor = selectedColors[product.id];
+    if (product.colors && product.colors.length > 0 && !selectedColor) {
+      alert("Svp sélectionnez une couleur avant ajouter au panier.");
+      return;
+    }
+
     // Disable the button for this specific product
     setDisabledButtons((prev) => ({ ...prev, [product.id]: true }));
 
@@ -64,7 +73,7 @@ export default function Store() {
     if (existingProductIndex !== -1) {
       cart[existingProductIndex].quantity += 1;
     } else {
-      cart.push({ ...product, quantity: 1 });
+      cart.push({ ...product, quantity: 1, selectedColor });
     }
 
     localStorage.setItem("cart", JSON.stringify(cart));
@@ -74,7 +83,7 @@ export default function Store() {
     setTimeout(() => {
       setDisabledButtons((prev) => ({ ...prev, [product.id]: false }));
     }, 3000);
-  }, []);
+  }, [selectedColors]);
 
   // Sort products
   const sortedProducts = useMemo(() => {
@@ -110,6 +119,15 @@ export default function Store() {
 
   const handleImageChange = useCallback((productId: number, index: number) => {
     setActiveImageIndex((prev) => ({ ...prev, [productId]: index }));
+  }, []);
+
+  const handleColorChange = useCallback((productId: number, color: string) => {
+    setSelectedColors((prev) => ({ ...prev, [productId]: color }));
+    setOpenColorDropdown(null); // Close the dropdown after selection
+  }, []);
+
+  const toggleColorDropdown = useCallback((productId: number) => {
+    setOpenColorDropdown((prev) => (prev === productId ? null : productId));
   }, []);
 
   if (loading) {
@@ -197,7 +215,7 @@ export default function Store() {
             {productChunks[currentPage].map((product) => (
               <div
                 key={product.id}
-                className="group overflow-hidden hover:shadow-lg transition-colors duration-300 relative w-full hover:bg-white"
+                className="group hover:shadow-lg transition-colors duration-300 relative w-full hover:bg-white"
               >
                 {/* Product Images Slider */}
                 <div className="relative w-full h-64 sm:h-72 md:h-80 lg:h-96 flex items-center justify-center pt-4 overflow-hidden">
@@ -289,6 +307,55 @@ export default function Store() {
                     <span className="font-bold text-gray-700">{product.price.toFixed(2)} Dt</span>
                   </p>
                 </Link>
+
+                {/* Color Selection Dropdown */}
+                {product.colors && product.colors.length > 0 && (
+                  <div className="p-4 relative">
+                    <button
+                      onClick={() => toggleColorDropdown(product.id)}
+                      className="flex items-center justify-between w-full px-4 py-2 bg-white border border-gray-300 rounded-lg shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-secondary focus:border-secondary transition-all duration-300"
+                      aria-label="Open color options"
+                    >
+                      <span className="text-sm font-medium text-gray-700">
+                        {selectedColors[product.id] || "Sélectionnez une couleur"}
+                      </span>
+                      <svg
+                        className={`h-5 w-5 ml-2 text-gray-700 transform transition-transform duration-300 ${
+                          openColorDropdown === product.id ? "rotate-180" : ""
+                        }`}
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                          clipRule="evenodd"
+                        />
+                      </svg>
+                    </button>
+
+                    {openColorDropdown === product.id && (
+                      <div className="absolute top-full left-0 right-0 mt-2 bg-white shadow-lg rounded-lg p-2 z-50">
+                        <div className="flex flex-col gap-2">
+                          {product.colors.map((color) => (
+                            <div
+                              key={color}
+                              onClick={() => handleColorChange(product.id, color)}
+                              className={`px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer transition-colors duration-300 rounded-lg ${
+                                selectedColors[product.id] === color
+                                  ? "bg-secondary text-white"
+                                  : "bg-gray-50"
+                              }`}
+                            >
+                              {color}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
 
                 {/* Add to Cart Button */}
                 <div className="p-4">
