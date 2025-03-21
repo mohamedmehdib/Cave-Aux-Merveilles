@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import Image from "next/image";
 
@@ -16,6 +16,7 @@ interface Product {
   price: number;
   description: string; // Added description field
   image_urls: string[];
+  colors?: string[]; // Optional colors field
   created_at?: string; // Optional for new products
 }
 
@@ -29,7 +30,11 @@ export default function Store() {
   const [title, setTitle] = useState("");
   const [price, setPrice] = useState<number | null>(null);
   const [description, setDescription] = useState(""); // Added description state
+  const [colors, setColors] = useState<string[]>([]); // Added colors state
   const [fileInputs, setFileInputs] = useState<(File | null)[]>([null]); // Initialize with one null value
+
+  // Optional: Ref for scrolling to the form
+  const formRef = useRef<HTMLDivElement>(null);
 
   // Fetch products from Supabase
   useEffect(() => {
@@ -85,9 +90,16 @@ export default function Store() {
     setTitle(product.title);
     setPrice(product.price);
     setDescription(product.description); // Set the description
-    setFileInputs([null]); // Reset file inputs (you can pre-fill with existing images if needed)
+    setColors(product.colors || []); // Set the colors (or empty array if none)
+    setFileInputs([null]); // Reset file inputs
     setError(""); // Clear any previous errors
     setSuccess(""); // Clear any previous success messages
+
+    // Scroll to the top of the page
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth", // Optional: Adds a smooth scrolling effect
+    });
   };
 
   // Handle form submission (for both add and edit)
@@ -137,6 +149,7 @@ export default function Store() {
             price,
             description,
             image_urls: imageUrls,
+            colors: colors.length > 0 ? colors : null, // Set colors if provided, otherwise null
           })
           .eq("id", editingProduct.id);
 
@@ -148,7 +161,7 @@ export default function Store() {
         setProducts((prevProducts) =>
           prevProducts.map((p) =>
             p.id === editingProduct.id
-              ? { ...p, title, price, description, image_urls: imageUrls }
+              ? { ...p, title, price, description, image_urls: imageUrls, colors }
               : p
           )
         );
@@ -162,6 +175,7 @@ export default function Store() {
             price,
             description,
             image_urls: imageUrls,
+            colors: colors.length > 0 ? colors : null, // Set colors if provided, otherwise null
             created_at: new Date().toISOString(),
           },
         ]);
@@ -181,6 +195,7 @@ export default function Store() {
       setTitle("");
       setPrice(null);
       setDescription("");
+      setColors([]); // Reset colors
       setFileInputs([null]); // Reset to one empty file input
       setEditingProduct(null); // Reset editing mode
     } catch (error) {
@@ -206,6 +221,25 @@ export default function Store() {
         setFileInputs([...newFiles, null]); // Add a new empty slot
       }
     }
+  };
+
+  // Handle color input change
+  const handleColorChange = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
+    const newColors = [...colors];
+    newColors[index] = e.target.value;
+    setColors(newColors);
+  };
+
+  // Add a new color input field
+  const addColorField = () => {
+    setColors([...colors, ""]); // Add an empty string to the colors array
+  };
+
+  // Remove a color input field
+  const removeColorField = (index: number) => {
+    const newColors = [...colors];
+    newColors.splice(index, 1); // Remove the color at the specified index
+    setColors(newColors);
   };
 
   // Handle product deletion
@@ -276,7 +310,7 @@ export default function Store() {
       )}
 
       {/* Always Visible Add/Edit Product Form */}
-      <div className="bg-white p-6 sm:p-8 rounded-lg shadow-lg w-full max-w-2xl mx-auto mb-8">
+      <div ref={formRef} className="bg-white p-6 sm:p-8 rounded-lg shadow-lg w-full max-w-2xl mx-auto mb-8">
         <h2 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-6">
           {editingProduct ? "Edit Product" : "Add Product"}
         </h2>
@@ -312,6 +346,34 @@ export default function Store() {
               onChange={(e) => setDescription(e.target.value)}
               required
             />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Colors</label>
+            {colors.map((color, index) => (
+              <div key={index} className="flex items-center gap-2 mb-2">
+                <input
+                  type="text"
+                  placeholder="Enter a color"
+                  className="w-full p-3 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  value={color}
+                  onChange={(e) => handleColorChange(e, index)}
+                />
+                <button
+                  type="button"
+                  className="p-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors duration-300"
+                  onClick={() => removeColorField(index)}
+                >
+                  Remove
+                </button>
+              </div>
+            ))}
+            <button
+              type="button"
+              className="w-full py-2 bg-blue-500 text-white rounded-lg font-semibold hover:bg-blue-600 transition-colors duration-300"
+              onClick={addColorField}
+            >
+              Add Color
+            </button>
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">Images</label>
@@ -356,6 +418,7 @@ export default function Store() {
                 setTitle(""); // Reset form fields
                 setPrice(null);
                 setDescription("");
+                setColors([]); // Reset colors
                 setFileInputs([null]); // Reset to one empty file input
               }}
             >
@@ -444,6 +507,18 @@ export default function Store() {
               <div className="p-4 text-center flex-grow">
                 <h2 className="text-xl font-semibold text-accent mb-2">{product.title}</h2>
                 <p className="text-sm text-gray-600 mb-4">{product.description}</p>
+                {product.colors && product.colors.length > 0 && (
+                  <div className="flex flex-wrap gap-2 justify-center mb-4">
+                    {product.colors.map((color, index) => (
+                      <span
+                        key={index}
+                        className="px-3 py-1 bg-gray-200 text-gray-800 rounded-full text-sm"
+                      >
+                        {color}
+                      </span>
+                    ))}
+                  </div>
+                )}
                 <p>
                   <span className="text-xs text-gray-600">A partir de </span>
                   <span className="font-bold text-gray-700">{product.price.toFixed(2)} Dt</span>
