@@ -46,43 +46,40 @@ export default function SubcategoryPage({ params }: PageProps) {
   const [currentPage, setCurrentPage] = useState(0);
   const [activeImageIndex, setActiveImageIndex] = useState<{ [key: number]: number }>({});
   const [disabledButtons, setDisabledButtons] = useState<{ [key: number]: boolean }>({});
-  const [selectedColors, setSelectedColors] = useState<{ [key: number]: string }>({}); // Track selected color for each product
-  const [openColorDropdown, setOpenColorDropdown] = useState<number | null>(null); // Track which product's color dropdown is open
+  const [selectedColors, setSelectedColors] = useState<{ [key: number]: string }>({});
+  const [openColorDropdown, setOpenColorDropdown] = useState<number | null>(null);
   const storeTopRef = useRef<HTMLDivElement>(null);
 
+  const { category, subcategory } = params;
+
   useEffect(() => {
-    // Unwrap the `params` Promise manually
-    Promise.resolve(params).then((resolvedParams) => {
-      const { category, subcategory } = resolvedParams;
+    // Decode the category and subcategory names and replace hyphens with spaces
+    const decodedCat = decodeURIComponent(category).replace(/-/g, " ");
+    const decodedSubcat = decodeURIComponent(subcategory).replace(/-/g, " ");
 
-      // Decode the category and subcategory names and replace hyphens with spaces
-      const decodedCat = decodeURIComponent(category).replace(/-/g, ' ');
-      const decodedSubcat = decodeURIComponent(subcategory).replace(/-/g, ' ');
+    setDecodedCategory(decodedCat);
+    setDecodedSubcategory(decodedSubcat);
 
-      setDecodedCategory(decodedCat);
-      setDecodedSubcategory(decodedSubcat);
+    // Fetch products by category and subcategory
+    const fetchProducts = async () => {
+      try {
+        const { data, error } = await supabase
+          .from("products") // Replace with your products table name
+          .select("*")
+          .eq("category", decodedCat) // Match the category
+          .eq("subcategory", decodedSubcat); // Match the subcategory
 
-      // Fetch products by category and subcategory
-      const fetchProducts = async () => {
-        try {
-          const { data, error } = await supabase
-            .from("products") // Replace with your products table name
-            .select("*")
-            .eq("category", decodedCat) // Match the category
-            .eq("subcategory", decodedSubcat); // Match the subcategory
+        if (error) throw error;
+        setProducts(data || []);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "An unexpected error occurred.");
+      } finally {
+        setIsLoading(false);
+      }
+    };
 
-          if (error) throw error;
-          setProducts(data || []);
-        } catch (err) {
-          setError(err instanceof Error ? err.message : "An unexpected error occurred.");
-        } finally {
-          setIsLoading(false);
-        }
-      };
-
-      fetchProducts();
-    });
-  }, [params]);
+    fetchProducts();
+  }, [category, subcategory]);
 
   // Add to LocalStorage Functionality
   const addToLocalStorage = useCallback((product: Product) => {
