@@ -1,7 +1,6 @@
 "use client"; // Mark this component as a Client Component
 
 import { useEffect, useState, useRef, useCallback, useMemo } from "react";
-import { notFound } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient"; // Import Supabase client
 import Image from "next/image";
 import Link from "next/link";

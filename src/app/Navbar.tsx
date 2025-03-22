@@ -6,12 +6,6 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient"; // Import Supabase client
 
-interface Category {
-  id: string;
-  name: string;
-  subcategories: string[]; // Array of strings
-}
-
 interface MenuItem {
   id: string;
   label: string;
@@ -117,19 +111,6 @@ const Navbar: React.FC = () => {
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
     setOpenDropdownId(null);
-  };
-
-  const toggleDropdown = (id: string) => {
-    setOpenDropdownId(openDropdownId === id ? null : id);
-  };
-
-  const scrollToSection = (id: string) => {
-    const element = document.getElementById(id);
-    if (element) {
-      element.scrollIntoView({ behavior: "smooth" });
-    } else {
-      window.location.href = `/#${id}`;
-    }
   };
 
   // Handle search submission
