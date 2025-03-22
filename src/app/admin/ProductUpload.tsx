@@ -372,17 +372,17 @@ export default function Store() {
         <div className="text-center text-green-500 text-sm mb-4">{success}</div>
       )}
 
-      {/* Always Visible Add/Edit Product Form */}
+      {/* Always Visible Add/Modifier Produit Form */}
       <div ref={formRef} className="bg-white p-6 sm:p-8 rounded-lg shadow-lg w-full max-w-2xl mx-auto mb-8">
         <h2 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-6">
-          {editingProduct ? "Edit Product" : "Add Product"}
+          {editingProduct ? "Modifier Produit" : "Ajouter un produit"}
         </h2>
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Title</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Titre</label>
             <input
               type="text"
-              placeholder="Product Title"
+              placeholder="Titre du produit"
               className="w-full p-3 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
@@ -393,7 +393,7 @@ export default function Store() {
             <label className="block text-sm font-medium text-gray-700 mb-2">Prix</label>
             <input
               type="number"
-              placeholder="Product Price"
+              placeholder="Prix du produit"
               className="w-full p-3 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
               value={price ?? ""}
               onChange={(e) => setPrice(parseFloat(e.target.value))}
@@ -403,7 +403,7 @@ export default function Store() {
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">Description</label>
             <textarea
-              placeholder="Product Description"
+              placeholder="Description du produit"
               className="w-full p-3 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
@@ -416,7 +416,7 @@ export default function Store() {
               <div key={index} className="flex items-center gap-2 mb-2">
                 <input
                   type="text"
-                  placeholder="Enter a color"
+                  placeholder="Entrez une couleur"
                   className="w-full p-3 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
                   value={color}
                   onChange={(e) => handleColorChange(e, index)}
@@ -427,7 +427,7 @@ export default function Store() {
                   className="p-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors duration-300"
                   onClick={() => removeColorField(index)}
                 >
-                  Remove
+                  Supprimer
                 </button>
               </div>
             ))}
@@ -436,11 +436,11 @@ export default function Store() {
               className="w-full py-2 bg-blue-500 text-white rounded-lg font-semibold hover:bg-blue-600 transition-colors duration-300"
               onClick={addColorField}
             >
-              Add Color
+              Ajouter Couleur
             </button>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Category</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Categorie</label>
             <select
               className="w-full p-3 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
               value={selectedCategory}
@@ -459,7 +459,7 @@ export default function Store() {
           </div>
           {selectedCategory && (
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Subcategory</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Sous categorie</label>
               <select
                 className="w-full p-3 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
                 value={selectedSubcategory}
@@ -528,8 +528,8 @@ export default function Store() {
                 ? "Updating..."
                 : "Uploading..."
               : editingProduct
-              ? "Edit Product"
-              : "Add Product"}
+              ? "Modifier Produit"
+              : "Ajouter un produit"}
           </button>
           {editingProduct && (
             <button
