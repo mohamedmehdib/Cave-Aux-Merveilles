@@ -13,6 +13,7 @@ interface CartItem {
   price: number;
   quantity: number;
   image_urls: string[];
+  selectedColor?: string; // Add selectedColor field
 }
 
 const Cart = () => {
@@ -60,19 +61,19 @@ const Cart = () => {
   // Handle form submission
   const handleConfirmationSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-  
+
     // Validate form fields
     if (!name || !phoneNumber || !address) {
       setFormError("Tous les champs sont obligatoires.");
       return;
     }
-  
+
     // Clear any previous errors
     setFormError("");
-  
+
     // Simulate payment processing
     setIsPaymentLoading(true);
-  
+
     try {
       // Prepare the order data
       const orderData = {
@@ -81,30 +82,27 @@ const Cart = () => {
         address: address,
         items: JSON.stringify(cartItems),
         total_price: finalPrice,
-        status: "pending", // Default status
       };
-  
+
       console.log("Order Data:", orderData); // Debugging
-  
+
       // Insert the order into the orders table
-      const { error } = await supabase
-        .from("orders")
-        .insert([orderData]);
-  
+      const { error } = await supabase.from("orders").insert([orderData]);
+
       if (error) {
         console.error("Error inserting order:", error.message);
         setFormError("Une erreur s'est produite lors de la confirmation de la commande.");
         setIsPaymentLoading(false);
         return;
       }
-  
+
       // Clear the cart and form fields
       localStorage.removeItem("cart");
       setCartItems([]);
       setName("");
       setPhoneNumber("");
       setAddress("");
-  
+
       // Show success message
       alert("Commande confirmée avec succès!");
     } catch (error) {
@@ -154,6 +152,10 @@ const Cart = () => {
                   <div className="flex-1 text-center sm:text-left">
                     <h2 className="text-xl font-semibold text-gray-800">{item.title}</h2>
                     <p className="text-gray-600">Prix: {item.price} Dt</p>
+                    {/* Display selected color if available */}
+                    {item.selectedColor && (
+                      <p className="text-gray-600">Couleur: {item.selectedColor}</p>
+                    )}
                   </div>
                   <div className="flex items-center gap-4">
                     <input

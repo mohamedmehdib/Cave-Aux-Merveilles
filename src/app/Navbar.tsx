@@ -4,21 +4,20 @@ import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { supabase } from "@/lib/supabaseClient"; // Import Supabase client
 
-const menuItems = [
-  { id: "accueil", label: "Categorie 1" },
-  {
-    id: "services",
-    label: "Categorie 2",
-    dropdown: [
-      { href: "/", label: "Sous categorie 1" },
-      { href: "/", label: "Sous categorie 2" },
-      { href: "/", label: "Sous categorie 3" },
-      { href: "/", label: "Sous categorie 4" },
-    ],
-  },
-  { id: "projects", label: "Categorie 3" },
-];
+interface Category {
+  id: string;
+  name: string;
+  subcategories: string[]; // Array of strings
+}
+
+interface MenuItem {
+  id: string;
+  label: string;
+  href: string; // URL for the category page
+  dropdown?: { href: string; label: string }[]; // Optional dropdown items
+}
 
 const Navbar: React.FC = () => {
   const [isTopSectionVisible, setIsTopSectionVisible] = useState<boolean>(true);
@@ -27,8 +26,57 @@ const Navbar: React.FC = () => {
   const [openDropdownId, setOpenDropdownId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState<string>(""); // State for search query
   const [cartCount, setCartCount] = useState<number>(0); // State for cart count
+  const [menuItems, setMenuItems] = useState<MenuItem[]>([]); // State for menu items
   const lastScrollY = useRef<number>(0);
   const router = useRouter(); // Initialize useRouter
+
+  // Fetch categories from Supabase
+  const fetchCategories = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("categories") // Replace with your table name
+        .select("id, name, subcategories");
+
+      if (error) {
+        throw error;
+      }
+
+      console.log("Fetched data:", data); // Debugging: Log fetched data
+
+      // Transform data into the format expected by menuItems
+      const transformedData = data.map((category) => {
+        const menuItem: MenuItem = {
+          id: category.id,
+          label: category.name,
+          href: `/category/${encodeURIComponent(
+            category.name.replace(/\s+/g, "-")
+          )}`, // Set href for all categories
+        };
+
+        // If subcategories exist, add dropdown
+        if (category.subcategories && category.subcategories.length > 0) {
+          menuItem.dropdown = category.subcategories.map((subcategory) => ({
+            // Include the subcategory name in the URL and replace spaces with hyphens
+            href: `/category/${encodeURIComponent(
+              category.name.replace(/\s+/g, "-")
+            )}/${encodeURIComponent(subcategory.replace(/\s+/g, "-"))}`,
+            label: subcategory, // Use the string directly as the label
+          }));
+        }
+
+        return menuItem;
+      });
+
+      setMenuItems(transformedData);
+    } catch (err) {
+      console.error("Error fetching categories:", err);
+    }
+  };
+
+  // Fetch categories on component mount
+  useEffect(() => {
+    fetchCategories();
+  }, []);
 
   // Fetch cart count from localStorage
   const fetchCartCount = () => {
@@ -197,52 +245,42 @@ const Navbar: React.FC = () => {
               <i className="uil uil-times text-2xl"></i>
             </button>
             <ul className="mt-4 space-y-4">
-              {menuItems.map((item) => (
-                <li key={item.id} className="relative">
-                  {item.dropdown ? (
-                    <>
-                      <button
-                        onClick={() => toggleDropdown(item.id)}
-                        className="w-full text-left text-accent hover:text-indigo-300 transition-colors duration-300 ease-in-out flex items-center justify-between"
-                      >
-                        <span>{item.label}</span>
-                        <i
-                          className={`uil uil-angle-${
-                            openDropdownId === item.id ? "up" : "down"
-                          } text-xl`}
-                        ></i>
-                      </button>
-                      <ul
-                        className={`pl-4 mt-2 space-y-2 ${
-                          openDropdownId === item.id ? "block" : "hidden"
-                        }`}
-                      >
-                        {item.dropdown.map((dropdownItem, index) => (
-                          <li key={index}>
-                            <Link
-                              href={dropdownItem.href}
-                              className="block w-full text-left text-accent hover:text-indigo-300 transition-colors duration-300 ease-in-out"
-                            >
-                              {dropdownItem.label}
-                            </Link>
-                          </li>
-                        ))}
-                      </ul>
-                    </>
-                  ) : (
-                    <button
-                      onClick={() => {
-                        scrollToSection(item.id);
-                        toggleMobileMenu();
-                      }}
-                      className="w-full text-left text-accent hover:text-indigo-300 transition-colors duration-300 ease-in-out"
-                    >
-                      {item.label}
-                    </button>
-                  )}
-                </li>
-              ))}
-            </ul>
+  {menuItems.map((item) => (
+    <li key={item.id} className="relative">
+      <Link
+        href={item.href} // Redirect to the category page
+        className="w-full text-left text-accent hover:text-indigo-300 transition-colors duration-300 ease-in-out flex items-center justify-between"
+      >
+        {item.label}
+        {item.dropdown && ( // Show dropdown icon if subcategories exist
+          <i
+            className={`uil uil-angle-${
+              openDropdownId === item.id ? "up" : "down"
+            } text-xl`}
+          ></i>
+        )}
+      </Link>
+      {item.dropdown && ( // Check if dropdown exists
+        <ul
+          className={`pl-4 mt-2 space-y-2 ${
+            openDropdownId === item.id ? "block" : "hidden"
+          }`}
+        >
+          {item.dropdown.map((dropdownItem, index) => (
+            <li key={index}>
+              <Link
+                href={dropdownItem.href}
+                className="block w-full text-left text-accent hover:text-indigo-300 transition-colors duration-300 ease-in-out"
+              >
+                {dropdownItem.label}
+              </Link>
+            </li>
+          ))}
+        </ul>
+      )}
+    </li>
+  ))}
+</ul>
           </div>
         </div>
       </>
@@ -309,39 +347,34 @@ const Navbar: React.FC = () => {
           >
             {/* Menu Navigation Links */}
             <ul className="flex space-x-8 text-lg text-accent">
-              {menuItems.map((item) => (
-                <li key={item.id} className="relative group">
-                  {item.dropdown ? (
-                    <>
-                      <button className="hover:text-indigo-300 flex items-center gap-1">
-                        {item.label}
-                        <i className="uil uil-angle-down text-sm"></i>{" "}
-                        {/* Chevron Down Icon */}
-                      </button>
-                      <ul className="absolute top-10 left-1/2 transform -translate-x-1/2 bg-primary shadow-lg rounded-lg mt-2 py-2 w-72 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 ease-in-out">
-                        {item.dropdown.map((dropdownItem, index) => (
-                          <li key={index}>
-                            <Link
-                              href={dropdownItem.href}
-                              className="block w-full text-left px-4 py-2 hover:bg-accent hover:text-primary transition-colors duration-300 ease-in-out"
-                            >
-                              {dropdownItem.label}
-                            </Link>
-                          </li>
-                        ))}
-                      </ul>
-                    </>
-                  ) : (
-                    <button
-                      onClick={() => scrollToSection(item.id)}
-                      className="hover:text-indigo-300"
-                    >
-                      {item.label}
-                    </button>
-                  )}
-                </li>
-              ))}
-            </ul>
+  {menuItems.map((item) => (
+    <li key={item.id} className="relative group">
+      <Link
+        href={item.href} // Redirect to the category page
+        className="hover:text-indigo-300 flex items-center gap-1"
+      >
+        {item.label}
+        {item.dropdown && ( // Show dropdown icon if subcategories exist
+          <i className="uil uil-angle-down text-sm"></i>
+        )}
+      </Link>
+      {item.dropdown && ( // Check if dropdown exists
+        <ul className="absolute top-10 left-1/2 transform -translate-x-1/2 bg-primary shadow-lg rounded-lg mt-2 py-2 w-72 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 ease-in-out">
+          {item.dropdown.map((dropdownItem, index) => (
+            <li key={index}>
+              <Link
+                href={dropdownItem.href}
+                className="block w-full text-left px-4 py-2 hover:bg-accent hover:text-primary transition-colors duration-300 ease-in-out"
+              >
+                {dropdownItem.label}
+              </Link>
+            </li>
+          ))}
+        </ul>
+      )}
+    </li>
+  ))}
+</ul>
           </div>
         </div>
       </>

@@ -17,6 +17,8 @@ interface Product {
   description: string; // Added description field
   image_urls: string[];
   colors?: string[]; // Optional colors field
+  category?: string; // Optional category field
+  subcategory?: string; // Optional subcategory field
   created_at?: string; // Optional for new products
 }
 
@@ -33,6 +35,11 @@ export default function Store() {
   const [colors, setColors] = useState<string[]>([]); // Added colors state
   const [fileInputs, setFileInputs] = useState<(File | null)[]>([null]); // Initialize with one null value
   const [existingImageUrls, setExistingImageUrls] = useState<string[]>([]); // Store existing image URLs
+
+  // Category and Subcategory states
+  const [categories, setCategories] = useState<{ name: string; subcategories: string[] }[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState<string>("");
+  const [selectedSubcategory, setSelectedSubcategory] = useState<string>("");
 
   // Optional: Ref for scrolling to the form
   const formRef = useRef<HTMLDivElement>(null);
@@ -65,6 +72,29 @@ export default function Store() {
     fetchProducts();
   }, []);
 
+  // Fetch categories from Supabase
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const { data, error } = await supabase.from("categories").select("*");
+
+        if (error) {
+          throw error;
+        }
+
+        setCategories(data || []);
+      } catch (err) {
+        if (err instanceof Error) {
+          setError(err.message);
+        } else {
+          setError("An unexpected error occurred while fetching categories.");
+        }
+      }
+    };
+
+    fetchCategories();
+  }, []);
+
   // Sort products based on the selected criteria
   const sortedProducts = [...products].sort((a, b) => {
     switch (sortBy) {
@@ -94,6 +124,8 @@ export default function Store() {
     setColors(product.colors || []); // Set the colors (or empty array if none)
     setExistingImageUrls(product.image_urls || []); // Store existing image URLs
     setFileInputs([null]); // Reset file inputs
+    setSelectedCategory(product.category || ""); // Set category
+    setSelectedSubcategory(product.subcategory || ""); // Set subcategory
     setError(""); // Clear any previous errors
     setSuccess(""); // Clear any previous success messages
 
@@ -162,6 +194,8 @@ export default function Store() {
             description,
             image_urls: allImageUrls,
             colors: validColors.length > 0 ? validColors : null, // Set colors if provided, otherwise null
+            category: selectedCategory || null, // Add category
+            subcategory: selectedSubcategory || null, // Add subcategory
           })
           .eq("id", editingProduct.id);
 
@@ -173,12 +207,12 @@ export default function Store() {
         setProducts((prevProducts) =>
           prevProducts.map((p) =>
             p.id === editingProduct.id
-              ? { ...p, title, price, description, image_urls: allImageUrls, colors: validColors }
+              ? { ...p, title, price, description, image_urls: allImageUrls, colors: validColors, category: selectedCategory, subcategory: selectedSubcategory }
               : p
           )
         );
 
-        setSuccess("Produit mis à jour avec succès !");
+        setSuccess("Product updated successfully!");
       } else {
         // Insert new product
         const { error } = await supabase.from("products").insert([
@@ -188,6 +222,8 @@ export default function Store() {
             description,
             image_urls: allImageUrls,
             colors: validColors.length > 0 ? validColors : null, // Set colors if provided, otherwise null
+            category: selectedCategory || null, // Add category
+            subcategory: selectedSubcategory || null, // Add subcategory
             created_at: new Date().toISOString(),
           },
         ]);
@@ -200,7 +236,7 @@ export default function Store() {
         const { data } = await supabase.from("products").select("*");
         setProducts(data || []);
 
-        setSuccess("Produit ajouté avec succès !");
+        setSuccess("Product added successfully!");
       }
 
       // Reset form
@@ -210,6 +246,8 @@ export default function Store() {
       setColors([]); // Reset colors
       setFileInputs([null]); // Reset to one empty file input
       setExistingImageUrls([]); // Reset existing image URLs
+      setSelectedCategory(""); // Reset category
+      setSelectedSubcategory(""); // Reset subcategory
       setEditingProduct(null); // Reset editing mode
     } catch (error) {
       if (error instanceof Error) {
@@ -296,7 +334,7 @@ export default function Store() {
   if (loading) {
     return (
       <div className="min-h-screen py-8 px-4 sm:px-8">
-        <h1 className="text-3xl sm:text-4xl font-bold text-center text-accent mb-8">Magasin</h1>
+        <h1 className="text-3xl sm:text-4xl font-bold text-center text-accent mb-8">Store</h1>
         <div className="flex flex-wrap items-center justify-center gap-6">
           {[...Array(4)].map((_, index) => (
             <div
@@ -319,7 +357,7 @@ export default function Store() {
   if (error) {
     return (
       <div className="min-h-screen py-8 px-4 sm:px-8">
-        <h1 className="text-3xl sm:text-4xl font-bold text-center text-accent mb-8">Magasin</h1>
+        <h1 className="text-3xl sm:text-4xl font-bold text-center text-accent mb-8">Store</h1>
         <div className="text-center text-red-500">{error}</div>
       </div>
     );
@@ -327,7 +365,7 @@ export default function Store() {
 
   return (
     <div className="min-h-screen py-8 px-4 sm:px-8">
-      <h1 className="text-3xl sm:text-4xl font-bold text-center text-accent mb-8">Magasin</h1>
+      <h1 className="text-3xl sm:text-4xl font-bold text-center text-accent mb-8">Store</h1>
 
       {/* Success Message */}
       {success && (
@@ -337,11 +375,11 @@ export default function Store() {
       {/* Always Visible Add/Edit Product Form */}
       <div ref={formRef} className="bg-white p-6 sm:p-8 rounded-lg shadow-lg w-full max-w-2xl mx-auto mb-8">
         <h2 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-6">
-          {editingProduct ? "Modifier un Produit" : "Ajouter un Produit"}
+          {editingProduct ? "Edit Product" : "Add Product"}
         </h2>
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Titre</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Title</label>
             <input
               type="text"
               placeholder="Product Title"
@@ -352,7 +390,7 @@ export default function Store() {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Prix</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Price</label>
             <input
               type="number"
               placeholder="Product Price"
@@ -373,7 +411,7 @@ export default function Store() {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Couleurs</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Colors</label>
             {colors.map((color, index) => (
               <div key={index} className="flex items-center gap-2 mb-2">
                 <input
@@ -389,7 +427,7 @@ export default function Store() {
                   className="p-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors duration-300"
                   onClick={() => removeColorField(index)}
                 >
-                  Supprimer
+                  Remove
                 </button>
               </div>
             ))}
@@ -398,9 +436,46 @@ export default function Store() {
               className="w-full py-2 bg-blue-500 text-white rounded-lg font-semibold hover:bg-blue-600 transition-colors duration-300"
               onClick={addColorField}
             >
-              Ajouter Couleur
+              Add Color
             </button>
           </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Category</label>
+            <select
+              className="w-full p-3 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+              value={selectedCategory}
+              onChange={(e) => {
+                setSelectedCategory(e.target.value);
+                setSelectedSubcategory(""); // Reset subcategory when category changes
+              }}
+            >
+              <option value="">Select a category</option>
+              {categories.map((category) => (
+                <option key={category.name} value={category.name}>
+                  {category.name}
+                </option>
+              ))}
+            </select>
+          </div>
+          {selectedCategory && (
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Subcategory</label>
+              <select
+                className="w-full p-3 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+                value={selectedSubcategory}
+                onChange={(e) => setSelectedSubcategory(e.target.value)}
+              >
+                <option value="">Select a subcategory</option>
+                {categories
+                  .find((category) => category.name === selectedCategory)
+                  ?.subcategories.map((subcategory) => (
+                    <option key={subcategory} value={subcategory}>
+                      {subcategory}
+                    </option>
+                  ))}
+              </select>
+            </div>
+          )}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">Images</label>
             {/* Display existing images with remove button */}
@@ -453,8 +528,8 @@ export default function Store() {
                 ? "Updating..."
                 : "Uploading..."
               : editingProduct
-              ? "Modifier un Produit"
-              : "Ajouter un Produit"}
+              ? "Edit Product"
+              : "Add Product"}
           </button>
           {editingProduct && (
             <button
@@ -468,6 +543,8 @@ export default function Store() {
                 setColors([]); // Reset colors
                 setFileInputs([null]); // Reset to one empty file input
                 setExistingImageUrls([]); // Reset existing image URLs
+                setSelectedCategory(""); // Reset category
+                setSelectedSubcategory(""); // Reset subcategory
               }}
             >
               Cancel Edit
@@ -555,6 +632,12 @@ export default function Store() {
               <div className="p-4 text-center flex-grow">
                 <h2 className="text-xl font-semibold text-accent mb-2">{product.title}</h2>
                 <p className="text-sm text-gray-600 mb-4">{product.description}</p>
+                {product.category && (
+                  <p className="text-sm text-gray-600">
+                    Category: {product.category}
+                    {product.subcategory && ` > ${product.subcategory}`}
+                  </p>
+                )}
                 {product.colors && product.colors.length > 0 && (
                   <div className="flex flex-wrap gap-2 justify-center mb-4">
                     {product.colors.map((color, index) => (
@@ -568,7 +651,7 @@ export default function Store() {
                   </div>
                 )}
                 <p>
-                  <span className="text-xs text-gray-600">A partir de </span>
+                  <span className="text-xs text-gray-600">Starting from </span>
                   <span className="font-bold text-gray-700">{product.price.toFixed(2)} Dt</span>
                 </p>
               </div>
@@ -579,13 +662,13 @@ export default function Store() {
                   className="w-full py-2 bg-blue-500 text-white font-semibold hover:bg-blue-600 transition-colors duration-300"
                   onClick={() => handleEdit(product)}
                 >
-                  Modifier
+                  Edit
                 </button>
                 <button
                   className="w-full py-2 bg-red-500 text-white font-semibold hover:bg-red-600 transition-colors duration-300 mt-2"
                   onClick={() => handleDelete(product.id!)}
                 >
-                  Supprimer
+                  Delete
                 </button>
               </div>
             </div>

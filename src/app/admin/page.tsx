@@ -3,6 +3,7 @@ import { useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import ProductUpload from "./ProductUpload";
 import OrdersList from "./OrdersList";
+import UploadCategory from "./UploadCategory";
 
 const AdminDashboard = () => {
   const [email, setEmail] = useState("");
@@ -105,13 +106,22 @@ const AdminDashboard = () => {
             activeComponent === "OrdersList" ? "bg-accent text-white" : "bg-gray-300 text-gray-800 hover:bg-gray-400"
           }`}
         >
-          Ordres
+          Commandes
+        </button>
+        <button
+          onClick={() => setActiveComponent("Categories")}
+          className={`px-6 sm:px-10 py-3 sm:py-4 text-base sm:text-lg font-bold rounded-xl shadow-md transition-colors duration-300 ${
+            activeComponent === "Categories" ? "bg-accent text-white" : "bg-gray-300 text-gray-800 hover:bg-gray-400"
+          }`}
+        >
+          Categories
         </button>
       </div>
 
       <div className="bg-white p-6 sm:p-8 rounded-lg shadow-lg mx-auto max-w-4xl">
         {activeComponent === "ProductUpload" && <ProductUpload />}
         {activeComponent === "OrdersList" && <OrdersList />}
+        {activeComponent === "Categories" && <UploadCategory />}
       </div>
     </div>
   );

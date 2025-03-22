@@ -4,9 +4,11 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabaseClient"; // Import Supabase client
 
 interface CartItem {
+  id: number;
   title: string;
   quantity: number;
   price: number;
+  selectedColor?: string; // Add selectedColor field
 }
 
 interface Order {
@@ -93,12 +95,12 @@ const OrdersList = () => {
   }
 
   if (orders.length === 0) {
-    return <p className="text-center text-gray-600">No orders found.</p>;
+    return <p className="text-center text-gray-600">Aucune commande trouvée.</p>;
   }
 
   return (
     <div className="bg-white p-4 sm:p-6 rounded-lg shadow-md">
-      <h2 className="text-2xl font-bold text-gray-800 mb-4 sm:mb-6">Orders List</h2>
+      <h2 className="text-2xl font-bold text-gray-800 mb-4 sm:mb-6">Liste des commandes</h2>
       <div className="space-y-4">
         {orders.map((order) => (
           <div
@@ -107,33 +109,38 @@ const OrdersList = () => {
           >
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4">
               <h3 className="text-lg font-semibold text-gray-800">
-                Order #{order.id}
+                Commande #{order.id}
               </h3>
               <p className="text-gray-600 sm:text-right">
-                <strong>Order Date:</strong>{" "}
+                <strong>Date de commande:</strong>{" "}
                 {new Date(order.created_at).toLocaleString()}
               </p>
             </div>
             <div className="space-y-2 mb-4">
               <p className="text-gray-600">
-                <strong>Name:</strong> {order.name}
+                <strong>Nom:</strong> {order.name}
               </p>
               <p className="text-gray-600">
                 <strong>Phone:</strong> {order.phone}
               </p>
               <p className="text-gray-600 col-span-2">
-                <strong>Address:</strong> {order.address}
+                <strong>Addresse:</strong> {order.address}
               </p>
               <p className="text-gray-600">
-                <strong>Total Price:</strong> {order.total_price} Dt
+                <strong>Prix ​total:</strong> {order.total_price} Dt
               </p>
             </div>
             <div className="mt-4">
-              <h4 className="text-md font-semibold text-gray-800 mb-2">Items:</h4>
+              <h4 className="text-md font-semibold text-gray-800 mb-2">Articles:</h4>
               <ul className="list-disc list-inside text-gray-600">
                 {JSON.parse(order.items).map((item: CartItem, index: number) => (
                   <li key={index}>
                     {item.title} - {item.quantity} x {item.price} Dt
+                    {item.selectedColor && ( // Display selectedColor if it exists
+                      <span className="ml-2">
+                        (Couleur: <span style={{ color: item.selectedColor.toLowerCase() }}>{item.selectedColor}</span>)
+                      </span>
+                    )}
                   </li>
                 ))}
               </ul>
@@ -143,7 +150,7 @@ const OrdersList = () => {
                 onClick={() => deleteOrder(order.id)}
                 className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors duration-300"
               >
-                Delete Order
+                Supprimer la commande
               </button>
             </div>
           </div>
