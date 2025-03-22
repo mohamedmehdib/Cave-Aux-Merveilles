@@ -19,6 +19,12 @@ interface Product {
   category: string;
 }
 
+interface CategoryData {
+  id: number;
+  name: string;
+  subcategories?: string[];
+}
+
 interface CategoryPageProps {
   params: {
     category: string;
@@ -37,7 +43,7 @@ const filterOptions = [
 export default function CategoryPage({ params }: CategoryPageProps) {
   const [isLoading, setIsLoading] = useState(true);
   const [decodedCategory, setDecodedCategory] = useState("");
-  const [categoryData, setCategoryData] = useState<any>(null);
+  const [categoryData, setCategoryData] = useState<CategoryData | null>(null);
   const [products, setProducts] = useState<Product[]>([]);
   const [error, setError] = useState("");
   const [sortBy, setSortBy] = useState("recent");
@@ -70,7 +76,7 @@ export default function CategoryPage({ params }: CategoryPageProps) {
           notFound(); // Show a 404 page if the category is not found
         }
 
-        setCategoryData(data);
+        setCategoryData(data as CategoryData);
         setIsLoading(false);
       };
 

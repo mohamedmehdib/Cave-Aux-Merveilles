@@ -334,7 +334,7 @@ export default function Store() {
   if (loading) {
     return (
       <div className="min-h-screen py-8 px-4 sm:px-8">
-        <h1 className="text-3xl sm:text-4xl font-bold text-center text-accent mb-8">Store</h1>
+        <h1 className="text-3xl sm:text-4xl font-bold text-center text-accent mb-8">Magasin</h1>
         <div className="flex flex-wrap items-center justify-center gap-6">
           {[...Array(4)].map((_, index) => (
             <div
@@ -357,7 +357,7 @@ export default function Store() {
   if (error) {
     return (
       <div className="min-h-screen py-8 px-4 sm:px-8">
-        <h1 className="text-3xl sm:text-4xl font-bold text-center text-accent mb-8">Store</h1>
+        <h1 className="text-3xl sm:text-4xl font-bold text-center text-accent mb-8">Magasin</h1>
         <div className="text-center text-red-500">{error}</div>
       </div>
     );
@@ -365,7 +365,7 @@ export default function Store() {
 
   return (
     <div className="min-h-screen py-8 px-4 sm:px-8">
-      <h1 className="text-3xl sm:text-4xl font-bold text-center text-accent mb-8">Store</h1>
+      <h1 className="text-3xl sm:text-4xl font-bold text-center text-accent mb-8">Magasin</h1>
 
       {/* Success Message */}
       {success && (
@@ -390,7 +390,7 @@ export default function Store() {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Price</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Prix</label>
             <input
               type="number"
               placeholder="Product Price"
@@ -411,7 +411,7 @@ export default function Store() {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Colors</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Couleurs</label>
             {colors.map((color, index) => (
               <div key={index} className="flex items-center gap-2 mb-2">
                 <input
