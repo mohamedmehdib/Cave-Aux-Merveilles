@@ -449,7 +449,7 @@ export default function Store() {
                 setSelectedSubcategory(""); // Reset subcategory when category changes
               }}
             >
-              <option value="">Select a category</option>
+              <option value="">Sélectionnez une catégorie</option>
               {categories.map((category) => (
                 <option key={category.name} value={category.name}>
                   {category.name}
@@ -465,7 +465,7 @@ export default function Store() {
                 value={selectedSubcategory}
                 onChange={(e) => setSelectedSubcategory(e.target.value)}
               >
-                <option value="">Select a subcategory</option>
+                <option value="">Sélectionnez une sous-catégorie</option>
                 {categories
                   .find((category) => category.name === selectedCategory)
                   ?.subcategories.map((subcategory) => (
@@ -494,7 +494,7 @@ export default function Store() {
                   className="p-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors duration-300"
                   onClick={() => removeExistingImage(index)}
                 >
-                  Remove
+                  Supprimer
                 </button>
               </div>
             ))}
@@ -510,7 +510,7 @@ export default function Store() {
                 />
                 {file && (
                   <div className="mt-2 text-sm text-gray-600">
-                    Selected file: {file.name}
+                    Fichier sélectionné: {file.name}
                   </div>
                 )}
               </div>
@@ -525,8 +525,8 @@ export default function Store() {
           >
             {loading
               ? editingProduct
-                ? "Updating..."
-                : "Uploading..."
+                ? "Mise à jour..."
+                : "Téléchargement..."
               : editingProduct
               ? "Modifier Produit"
               : "Ajouter un produit"}
@@ -547,7 +547,7 @@ export default function Store() {
                 setSelectedSubcategory(""); // Reset subcategory
               }}
             >
-              Cancel Edit
+              Annuler la modification
             </button>
           )}
         </form>
@@ -555,7 +555,7 @@ export default function Store() {
 
       {/* Product List */}
       {sortedProducts.length === 0 ? (
-        <div className="text-center text-accent">No products available.</div>
+        <div className="text-center text-accent">Aucun produit disponible.</div>
       ) : (
         <div className="flex flex-wrap justify-center gap-6">
           {sortedProducts.map((product) => (
@@ -651,7 +651,7 @@ export default function Store() {
                   </div>
                 )}
                 <p>
-                  <span className="text-xs text-gray-600">Starting from </span>
+                  <span className="text-xs text-gray-600">À partir de </span>
                   <span className="font-bold text-gray-700">{product.price.toFixed(2)} Dt</span>
                 </p>
               </div>
@@ -662,13 +662,13 @@ export default function Store() {
                   className="w-full py-2 bg-blue-500 text-white font-semibold hover:bg-blue-600 transition-colors duration-300"
                   onClick={() => handleEdit(product)}
                 >
-                  Edit
+                  Modifier
                 </button>
                 <button
                   className="w-full py-2 bg-red-500 text-white font-semibold hover:bg-red-600 transition-colors duration-300 mt-2"
                   onClick={() => handleDelete(product.id!)}
                 >
-                  Delete
+                  Supprimer
                 </button>
               </div>
             </div>

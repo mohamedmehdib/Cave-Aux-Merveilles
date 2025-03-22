@@ -87,7 +87,7 @@ const OrdersList = () => {
   }, []);
 
   if (loading) {
-    return <p className="text-center text-gray-600">Loading orders...</p>;
+    return <p className="text-center text-gray-600">Chargement des commandes...</p>;
   }
 
   if (error) {
