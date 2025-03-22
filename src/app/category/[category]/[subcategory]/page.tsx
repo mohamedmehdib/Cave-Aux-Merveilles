@@ -5,6 +5,9 @@ import { notFound } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient"; // Import Supabase client
 import Image from "next/image";
 import Link from "next/link";
+import Navbar from "@/app/Navbar";
+import Informations from "@/app/Informations";
+import Footer from "@/app/Footer";
 
 interface Product {
   id: number;
@@ -158,12 +161,13 @@ export default function SubcategoryPage({ params }: PageProps) {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-primary py-8 px-4 sm:px-8">
+      <div className="min-h-screen bg-primary md:pt-48 pt-20">
+        <Navbar />
         <h1 className="text-3xl sm:text-4xl font-bold text-center text-accent mb-8">
-          Category: {decodedCategory}
+          Categorie: {decodedCategory}
         </h1>
         <h2 className="text-2xl font-semibold text-center mb-6">
-          Subcategory: {decodedSubcategory}
+          Sous categorie: {decodedSubcategory}
         </h2>
         <div className="flex flex-wrap items-center justify-center gap-6">
           {[...Array(4)].map((_, index) => (
@@ -183,12 +187,12 @@ export default function SubcategoryPage({ params }: PageProps) {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-primary py-8 px-4 sm:px-8">
+      <div className="min-h-screen bg-primary md:pt-48 pt-20">
         <h1 className="text-3xl sm:text-4xl font-bold text-center text-accent mb-8">
-          Category: {decodedCategory}
+          Categorie: {decodedCategory}
         </h1>
         <h2 className="text-2xl font-semibold text-center mb-6">
-          Subcategory: {decodedSubcategory}
+          Sous categorie: {decodedSubcategory}
         </h2>
         <div className="text-center text-red-500">{error}</div>
       </div>
@@ -196,16 +200,17 @@ export default function SubcategoryPage({ params }: PageProps) {
   }
 
   return (
-    <div ref={storeTopRef} className="min-h-screen bg-primary py-8 px-4 sm:px-8">
-      <h1 className="text-3xl sm:text-4xl font-bold text-center text-accent mb-8">
-        Category: {decodedCategory}
+    <div ref={storeTopRef} className="min-h-screen bg-primary md:pt-48 pt-20">
+      <Navbar />
+      <h1 className="text-3xl sm:text-4xl font-bold text-center text-accent my-8">
+        Categorie: {decodedCategory}
       </h1>
       <h2 className="text-2xl font-semibold text-center mb-6">
-        Subcategory: {decodedSubcategory}
+        Sous categorie: {decodedSubcategory}
       </h2>
 
       {/* Filter Button and Options */}
-      <div className="flex justify-end mb-8 relative">
+      <div className="flex justify-end m-8 relative">
         <button
           onClick={() => setIsFilterOpen(!isFilterOpen)}
           className="flex items-center justify-between px-4 py-2 bg-white border border-gray-300 rounded-lg shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-secondary focus:border-secondary transition-all duration-300"
@@ -249,9 +254,9 @@ export default function SubcategoryPage({ params }: PageProps) {
 
       {/* Product List */}
       {sortedProducts.length === 0 ? (
-        <div className="text-center text-accent">No products available.</div>
+        <div className="text-center text-accent pb-5">Aucun produit disponible.</div>
       ) : (
-        <div className="flex flex-col items-center justify-center gap-6">
+        <div className="flex flex-col items-center justify-center gap-6 pb-5">
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 w-full max-w-7xl">
             {productChunks[currentPage].map((product) => (
               <div
@@ -432,6 +437,8 @@ export default function SubcategoryPage({ params }: PageProps) {
           </div>
         </div>
       )}
+      <Informations />
+      <Footer />
     </div>
   );
 }

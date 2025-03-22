@@ -5,6 +5,9 @@ import { notFound } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient"; // Import Supabase client
 import Image from "next/image";
 import Link from "next/link";
+import Navbar from "@/app/Navbar";
+import Informations from "@/app/Informations";
+import Footer from "@/app/Footer";
 
 interface Product {
   id: number;
@@ -172,9 +175,10 @@ export default function CategoryPage({ params }: CategoryPageProps) {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-primary py-8 px-4 sm:px-8">
-        <h1 className="text-3xl sm:text-4xl font-bold text-center text-accent mb-8">
-          Category: {decodedCategory}
+      <div className="min-h-screen bg-primary md:pt-48 pt-20">
+        <Navbar />
+        <h1 className="text-3xl sm:text-4xl font-bold text-center text-accent my-8">
+          Categorie : {decodedCategory}
         </h1>
         <div className="flex flex-wrap items-center justify-center gap-6">
           {[...Array(4)].map((_, index) => (
@@ -195,8 +199,8 @@ export default function CategoryPage({ params }: CategoryPageProps) {
   if (error) {
     return (
       <div className="min-h-screen bg-primary py-8 px-4 sm:px-8">
-        <h1 className="text-3xl sm:text-4xl font-bold text-center text-accent mb-8">
-          Category: {decodedCategory}
+        <h1 className="text-3xl sm:text-4xl font-bold text-center text-accent my-8">
+          Categorie : {decodedCategory}
         </h1>
         <div className="text-center text-red-500">{error}</div>
       </div>
@@ -204,16 +208,17 @@ export default function CategoryPage({ params }: CategoryPageProps) {
   }
 
   return (
-    <div ref={storeTopRef} className="min-h-screen bg-primary py-8 px-4 sm:px-8">
-      <h1 className="text-3xl sm:text-4xl font-bold text-center text-accent mb-8">
-        Category: {decodedCategory}
+    <div ref={storeTopRef} className="min-h-screen bg-primary md:pt-48 pt-20">
+      <Navbar />
+      <h1 className="text-3xl sm:text-4xl font-bold text-center text-accent my-8">
+        Categorie : {decodedCategory}
       </h1>
 
       {/* Filter Button and Options */}
       <div className="flex justify-end mb-8 relative">
         <button
           onClick={() => setIsFilterOpen(!isFilterOpen)}
-          className="flex items-center justify-between px-4 py-2 bg-white border border-gray-300 rounded-lg shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-secondary focus:border-secondary transition-all duration-300"
+          className="flex items-center justify-between m-4 px-4 py-2 bg-white border border-gray-300 rounded-lg shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-secondary focus:border-secondary transition-all duration-300"
           aria-label="Open filter options"
         >
           <span className="text-sm font-medium text-gray-700">Trier par</span>
@@ -254,9 +259,9 @@ export default function CategoryPage({ params }: CategoryPageProps) {
 
       {/* Product List */}
       {sortedProducts.length === 0 ? (
-        <div className="text-center text-accent">No products available.</div>
+        <div className="text-center text-accent pb-5">No products available.</div>
       ) : (
-        <div className="flex flex-col items-center justify-center gap-6">
+        <div className="flex flex-col items-center justify-center gap-6 pb-5">
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 w-full max-w-7xl">
             {productChunks[currentPage].map((product) => (
               <div
@@ -437,6 +442,9 @@ export default function CategoryPage({ params }: CategoryPageProps) {
           </div>
         </div>
       )}
+
+      <Informations />
+      <Footer />
     </div>
   );
 }
