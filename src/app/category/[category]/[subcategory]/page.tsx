@@ -1,5 +1,4 @@
 "use client"; // Mark this component as a Client Component
-
 import { useEffect, useState, useRef, useCallback, useMemo } from "react";
 import { supabase } from "@/lib/supabaseClient"; // Import Supabase client
 import Image from "next/image";
@@ -56,7 +55,6 @@ export default function SubcategoryPage({ params }: PageProps) {
     // Decode the category and subcategory names and replace hyphens with spaces
     const decodedCat = decodeURIComponent(category).replace(/-/g, " ");
     const decodedSubcat = decodeURIComponent(subcategory).replace(/-/g, " ");
-
     setDecodedCategory(decodedCat);
     setDecodedSubcategory(decodedSubcat);
 
@@ -94,7 +92,6 @@ export default function SubcategoryPage({ params }: PageProps) {
 
     const cart = JSON.parse(localStorage.getItem("cart") || "[]");
     const existingProductIndex = cart.findIndex((item: Product) => item.id === product.id);
-
     if (existingProductIndex !== -1) {
       cart[existingProductIndex].quantity += 1;
     } else {
@@ -114,13 +111,20 @@ export default function SubcategoryPage({ params }: PageProps) {
   const sortedProducts = useMemo(() => {
     return [...products].sort((a, b) => {
       switch (sortBy) {
-        case "price_asc": return a.price - b.price;
-        case "price_desc": return b.price - a.price;
-        case "name_asc": return a.title.localeCompare(b.title);
-        case "name_desc": return b.title.localeCompare(a.title);
-        case "recent": return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
-        case "oldest": return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
-        default: return 0;
+        case "price_asc":
+          return a.price - b.price;
+        case "price_desc":
+          return b.price - a.price;
+        case "name_asc":
+          return a.title.localeCompare(b.title);
+        case "name_desc":
+          return b.title.localeCompare(a.title);
+        case "recent":
+          return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+        case "oldest":
+          return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+        default:
+          return 0;
       }
     });
   }, [products, sortBy]);
@@ -226,7 +230,6 @@ export default function SubcategoryPage({ params }: PageProps) {
             />
           </svg>
         </button>
-
         {isFilterOpen && (
           <div className="absolute top-full right-0 mt-2 w-64 bg-white shadow-lg rounded-lg p-4 z-50">
             <div className="text-lg font-semibold mb-4">Trier par</div>
@@ -340,7 +343,6 @@ export default function SubcategoryPage({ params }: PageProps) {
                     </svg>
                   </button>
                 </div>
-
                 {/* Product Details */}
                 <Link href={`/${product.title.replace(/\s+/g, "-").toLowerCase()}`} className="p-4 text-center">
                   <h2 className="text-lg sm:text-xl font-semibold text-gray-800 mb-2">{product.title}</h2>
@@ -349,7 +351,6 @@ export default function SubcategoryPage({ params }: PageProps) {
                     <span className="font-bold text-gray-700">{product.price.toFixed(2)} Dt</span>
                   </p>
                 </Link>
-
                 {/* Color Selection Dropdown */}
                 {product.colors && product.colors.length > 0 && (
                   <div className="p-4 relative">
@@ -376,7 +377,6 @@ export default function SubcategoryPage({ params }: PageProps) {
                         />
                       </svg>
                     </button>
-
                     {openColorDropdown === product.id && (
                       <div className="absolute top-full left-0 right-0 mt-2 bg-white shadow-lg rounded-lg p-2 z-50">
                         <div className="flex flex-col gap-2">
@@ -398,7 +398,6 @@ export default function SubcategoryPage({ params }: PageProps) {
                     )}
                   </div>
                 )}
-
                 {/* Add to Cart Button */}
                 <div className="p-4">
                   <button
@@ -413,7 +412,6 @@ export default function SubcategoryPage({ params }: PageProps) {
               </div>
             ))}
           </div>
-
           {/* Custom Pagination */}
           <div className="flex justify-center gap-2 mt-8">
             {productChunks.map((_, index) => (
