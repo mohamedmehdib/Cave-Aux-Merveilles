@@ -7,6 +7,14 @@ import Navbar from "@/app/Navbar";
 import Informations from "@/app/Informations";
 import Footer from "@/app/Footer";
 
+interface PageProps {
+  params: {
+    category: string;
+    subcategory: string;
+  };
+  searchParams?: { [key: string]: string | string[] | undefined };
+}
+
 interface Product {
   id: number;
   title: string;
@@ -16,13 +24,6 @@ interface Product {
   created_at: string;
   category: string;
   subcategory: string;
-}
-
-interface PageProps {
-  params: {
-    category: string;
-    subcategory: string;
-  };
 }
 
 const filterOptions = [
