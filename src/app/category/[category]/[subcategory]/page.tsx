@@ -101,7 +101,7 @@ export default function SubcategoryPage({
 
   useEffect(() => {
     // Sort products based on the selected filter
-    let sorted = [...products];
+    const sorted = [...products];
     switch (sortBy) {
       case "price_asc":
         sorted.sort((a, b) => a.price - b.price);
