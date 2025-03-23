@@ -7,6 +7,7 @@ import Navbar from "@/app/Navbar";
 import Informations from "@/app/Informations";
 import Footer from "@/app/Footer";
 
+// Define the PageProps interface manually
 interface PageProps {
   params: {
     category: string;
