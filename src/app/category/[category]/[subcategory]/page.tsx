@@ -14,7 +14,7 @@ interface PageProps {
     category: string;
     subcategory: string;
   };
-  searchParams?: Promise<{ [key: string]: string | string[] | undefined }>;
+  searchParams?: { [key: string]: string | string[] | undefined };
 }
 
 interface Product {
@@ -37,7 +37,7 @@ const filterOptions = [
   { value: "oldest", label: "Du + ancien au + récent" },
 ];
 
-export default function SubcategoryPage({ params, searchParams: searchParamsPromise }: PageProps) {
+export default function SubcategoryPage({ params, searchParams }: PageProps) {
   const [isLoading, setIsLoading] = useState(true);
   const [decodedCategory, setDecodedCategory] = useState("");
   const [decodedSubcategory, setDecodedSubcategory] = useState("");
@@ -72,8 +72,7 @@ export default function SubcategoryPage({ params, searchParams: searchParamsProm
         setProducts(data || []);
 
         // Handle searchParams if needed
-        if (searchParamsPromise) {
-          const searchParams = await searchParamsPromise;
+        if (searchParams) {
           console.log("Search Params:", searchParams);
           // You can use searchParams here if needed
         }
@@ -85,7 +84,7 @@ export default function SubcategoryPage({ params, searchParams: searchParamsProm
     };
 
     fetchData();
-  }, [params, searchParamsPromise]);
+  }, [params, searchParams]);
 
   // Add to LocalStorage Functionality
   const addToLocalStorage = useCallback((product: Product) => {
