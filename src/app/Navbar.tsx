@@ -49,7 +49,7 @@ const Navbar: React.FC = () => {
 
         // If subcategories exist, add dropdown
         if (category.subcategories && category.subcategories.length > 0) {
-          menuItem.dropdown = category.subcategories.map((subcategory) => ({
+          menuItem.dropdown = category.subcategories.map((subcategory: string) => ({
             // Include the subcategory name in the URL and replace spaces with hyphens
             href: `/category/${encodeURIComponent(
               category.name.replace(/\s+/g, "-")
@@ -226,42 +226,42 @@ const Navbar: React.FC = () => {
               <i className="uil uil-times text-2xl"></i>
             </button>
             <ul className="mt-4 space-y-4">
-  {menuItems.map((item) => (
-    <li key={item.id} className="relative">
-      <Link
-        href={item.href} // Redirect to the category page
-        className="w-full text-left text-accent hover:text-indigo-300 transition-colors duration-300 ease-in-out flex items-center justify-between"
-      >
-        {item.label}
-        {item.dropdown && ( // Show dropdown icon if subcategories exist
-          <i
-            className={`uil uil-angle-${
-              openDropdownId === item.id ? "up" : "down"
-            } text-xl`}
-          ></i>
-        )}
-      </Link>
-      {item.dropdown && ( // Check if dropdown exists
-        <ul
-          className={`pl-4 mt-2 space-y-2 ${
-            openDropdownId === item.id ? "block" : "hidden"
-          }`}
-        >
-          {item.dropdown.map((dropdownItem, index) => (
-            <li key={index}>
-              <Link
-                href={dropdownItem.href}
-                className="block w-full text-left text-accent hover:text-indigo-300 transition-colors duration-300 ease-in-out"
-              >
-                {dropdownItem.label}
-              </Link>
-            </li>
-          ))}
-        </ul>
-      )}
-    </li>
-  ))}
-</ul>
+              {menuItems.map((item) => (
+                <li key={item.id} className="relative">
+                  <Link
+                    href={item.href} // Redirect to the category page
+                    className="w-full text-left text-accent hover:text-indigo-300 transition-colors duration-300 ease-in-out flex items-center justify-between"
+                  >
+                    {item.label}
+                    {item.dropdown && ( // Show dropdown icon if subcategories exist
+                      <i
+                        className={`uil uil-angle-${
+                          openDropdownId === item.id ? "up" : "down"
+                        } text-xl`}
+                      ></i>
+                    )}
+                  </Link>
+                  {item.dropdown && ( // Check if dropdown exists
+                    <ul
+                      className={`pl-4 mt-2 space-y-2 ${
+                        openDropdownId === item.id ? "block" : "hidden"
+                      }`}
+                    >
+                      {item.dropdown.map((dropdownItem, index) => (
+                        <li key={index}>
+                          <Link
+                            href={dropdownItem.href}
+                            className="block w-full text-left text-accent hover:text-indigo-300 transition-colors duration-300 ease-in-out"
+                          >
+                            {dropdownItem.label}
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </li>
+              ))}
+            </ul>
           </div>
         </div>
       </>
@@ -328,34 +328,34 @@ const Navbar: React.FC = () => {
           >
             {/* Menu Navigation Links */}
             <ul className="flex space-x-8 text-lg text-accent">
-  {menuItems.map((item) => (
-    <li key={item.id} className="relative group">
-      <Link
-        href={item.href} // Redirect to the category page
-        className="hover:text-indigo-300 flex items-center gap-1"
-      >
-        {item.label}
-        {item.dropdown && ( // Show dropdown icon if subcategories exist
-          <i className="uil uil-angle-down text-sm"></i>
-        )}
-      </Link>
-      {item.dropdown && ( // Check if dropdown exists
-        <ul className="absolute top-10 left-1/2 transform -translate-x-1/2 bg-primary shadow-lg rounded-lg mt-2 py-2 w-72 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 ease-in-out">
-          {item.dropdown.map((dropdownItem, index) => (
-            <li key={index}>
-              <Link
-                href={dropdownItem.href}
-                className="block w-full text-left px-4 py-2 hover:bg-accent hover:text-primary transition-colors duration-300 ease-in-out"
-              >
-                {dropdownItem.label}
-              </Link>
-            </li>
-          ))}
-        </ul>
-      )}
-    </li>
-  ))}
-</ul>
+              {menuItems.map((item) => (
+                <li key={item.id} className="relative group">
+                  <Link
+                    href={item.href} // Redirect to the category page
+                    className="hover:text-indigo-300 flex items-center gap-1"
+                  >
+                    {item.label}
+                    {item.dropdown && ( // Show dropdown icon if subcategories exist
+                      <i className="uil uil-angle-down text-sm"></i>
+                    )}
+                  </Link>
+                  {item.dropdown && ( // Check if dropdown exists
+                    <ul className="absolute top-10 left-1/2 transform -translate-x-1/2 bg-primary shadow-lg rounded-lg mt-2 py-2 w-72 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 ease-in-out">
+                      {item.dropdown.map((dropdownItem, index) => (
+                        <li key={index}>
+                          <Link
+                            href={dropdownItem.href}
+                            className="block w-full text-left px-4 py-2 hover:bg-accent hover:text-primary transition-colors duration-300 ease-in-out"
+                          >
+                            {dropdownItem.label}
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </li>
+              ))}
+            </ul>
           </div>
         </div>
       </>

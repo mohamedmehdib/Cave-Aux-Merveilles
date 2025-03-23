@@ -27,8 +27,11 @@ export default function SubcategoryPage({
     const fetchProducts = async () => {
       try {
         // Decode the category and subcategory names
-        const decodedCategory = decodeURIComponent(category);
-        const decodedSubcategory = decodeURIComponent(subcategory);
+        const decodedCategory = decodeURIComponent(category).replace(/-/g, " ");
+        const decodedSubcategory = decodeURIComponent(subcategory).replace(/-/g, " "); // Replace "-" with spaces
+
+        console.log("Decoded Category:", decodedCategory); // Debugging
+        console.log("Decoded Subcategory:", decodedSubcategory); // Debugging
 
         // Fetch products by category and subcategory
         const { data, error } = await supabase
@@ -38,8 +41,12 @@ export default function SubcategoryPage({
           .eq("subcategory", decodedSubcategory); // Match the subcategory
 
         if (error) throw error;
+
+        console.log("Fetched Products:", data); // Debugging
+
         setProducts(data || []);
       } catch (err) {
+        console.error("Error fetching products:", err); // Debugging
         setError(err instanceof Error ? err.message : "An unexpected error occurred.");
       } finally {
         setIsLoading(false);
@@ -60,7 +67,7 @@ export default function SubcategoryPage({
   return (
     <div className="min-h-screen p-4">
       <h1 className="text-2xl font-bold mb-4">
-        Products in {decodeURIComponent(subcategory)}
+        Products in {decodeURIComponent(subcategory).replace(/-/g, " ")}
       </h1>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
         {products.map((product) => (
