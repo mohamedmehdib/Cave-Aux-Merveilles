@@ -10,11 +10,11 @@ import Footer from "@/app/Footer";
 
 // Define the PageProps interface
 interface PageProps {
-  params: {
+  params: Promise<{
     category: string;
     subcategory: string;
-  };
-  searchParams?: { [key: string]: string | string[] | undefined };
+  }>;
+  searchParams?: Promise<{ [key: string]: string | string[] | undefined }>;
 }
 
 interface Product {
@@ -37,7 +37,7 @@ const filterOptions = [
   { value: "oldest", label: "Du + ancien au + récent" },
 ];
 
-export default function SubcategoryPage({ params, searchParams }: PageProps) {
+export default function SubcategoryPage({ params: paramsPromise, searchParams: searchParamsPromise }: PageProps) {
   const [isLoading, setIsLoading] = useState(true);
   const [decodedCategory, setDecodedCategory] = useState("");
   const [decodedSubcategory, setDecodedSubcategory] = useState("");
@@ -55,7 +55,8 @@ export default function SubcategoryPage({ params, searchParams }: PageProps) {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Decode the category and subcategory names and replace hyphens with spaces
+        // Await the params Promise
+        const params = await paramsPromise;
         const decodedCat = decodeURIComponent(params.category).replace(/-/g, " ");
         const decodedSubcat = decodeURIComponent(params.subcategory).replace(/-/g, " ");
         setDecodedCategory(decodedCat);
@@ -72,7 +73,8 @@ export default function SubcategoryPage({ params, searchParams }: PageProps) {
         setProducts(data || []);
 
         // Handle searchParams if needed
-        if (searchParams) {
+        if (searchParamsPromise) {
+          const searchParams = await searchParamsPromise;
           console.log("Search Params:", searchParams);
           // You can use searchParams here if needed
         }
@@ -84,7 +86,7 @@ export default function SubcategoryPage({ params, searchParams }: PageProps) {
     };
 
     fetchData();
-  }, [params, searchParams]);
+  }, [paramsPromise, searchParamsPromise]);
 
   // Add to LocalStorage Functionality
   const addToLocalStorage = useCallback((product: Product) => {
