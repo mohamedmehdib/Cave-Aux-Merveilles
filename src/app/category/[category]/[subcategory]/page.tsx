@@ -10,11 +10,11 @@ import Footer from "@/app/Footer";
 
 // Define the PageProps interface
 interface PageProps {
-  params: Promise<{
+  params: {
     category: string;
     subcategory: string;
-  }>;
-  searchParams?: { [key: string]: string | string[] | undefined };
+  };
+  searchParams?: Promise<{ [key: string]: string | string[] | undefined }>;
 }
 
 interface Product {
@@ -37,7 +37,7 @@ const filterOptions = [
   { value: "oldest", label: "Du + ancien au + récent" },
 ];
 
-export default function SubcategoryPage({ params: paramsPromise }: PageProps) {
+export default function SubcategoryPage({ params, searchParams: searchParamsPromise }: PageProps) {
   const [isLoading, setIsLoading] = useState(true);
   const [decodedCategory, setDecodedCategory] = useState("");
   const [decodedSubcategory, setDecodedSubcategory] = useState("");
@@ -53,10 +53,9 @@ export default function SubcategoryPage({ params: paramsPromise }: PageProps) {
   const storeTopRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const fetchParamsAndProducts = async () => {
+    const fetchData = async () => {
       try {
-        // Await the params Promise
-        const params = await paramsPromise;
+        // Decode the category and subcategory names and replace hyphens with spaces
         const decodedCat = decodeURIComponent(params.category).replace(/-/g, " ");
         const decodedSubcat = decodeURIComponent(params.subcategory).replace(/-/g, " ");
         setDecodedCategory(decodedCat);
@@ -71,6 +70,13 @@ export default function SubcategoryPage({ params: paramsPromise }: PageProps) {
 
         if (error) throw error;
         setProducts(data || []);
+
+        // Handle searchParams if needed
+        if (searchParamsPromise) {
+          const searchParams = await searchParamsPromise;
+          console.log("Search Params:", searchParams);
+          // You can use searchParams here if needed
+        }
       } catch (err) {
         setError(err instanceof Error ? err.message : "An unexpected error occurred.");
       } finally {
@@ -78,8 +84,8 @@ export default function SubcategoryPage({ params: paramsPromise }: PageProps) {
       }
     };
 
-    fetchParamsAndProducts();
-  }, [paramsPromise]);
+    fetchData();
+  }, [params, searchParamsPromise]);
 
   // Add to LocalStorage Functionality
   const addToLocalStorage = useCallback((product: Product) => {
