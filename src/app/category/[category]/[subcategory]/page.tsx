@@ -1,4 +1,5 @@
 "use client"; // Mark this component as a Client Component
+
 import { useEffect, useState, useRef, useCallback, useMemo } from "react";
 import { supabase } from "@/lib/supabaseClient"; // Import Supabase client
 import Image from "next/image";
@@ -7,7 +8,7 @@ import Navbar from "@/app/Navbar";
 import Informations from "@/app/Informations";
 import Footer from "@/app/Footer";
 
-// Define the PageProps interface manually
+// Define the PageProps interface
 interface PageProps {
   params: {
     category: string;
