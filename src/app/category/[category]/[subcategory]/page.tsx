@@ -10,10 +10,10 @@ import Footer from "@/app/Footer";
 
 // Define the PageProps interface
 interface PageProps {
-  params: {
+  params: Promise<{
     category: string;
     subcategory: string;
-  };
+  }>;
   searchParams?: { [key: string]: string | string[] | undefined };
 }
 
@@ -37,7 +37,7 @@ const filterOptions = [
   { value: "oldest", label: "Du + ancien au + récent" },
 ];
 
-export default function SubcategoryPage({ params }: PageProps) {
+export default function SubcategoryPage({ params: paramsPromise }: PageProps) {
   const [isLoading, setIsLoading] = useState(true);
   const [decodedCategory, setDecodedCategory] = useState("");
   const [decodedSubcategory, setDecodedSubcategory] = useState("");
@@ -52,18 +52,17 @@ export default function SubcategoryPage({ params }: PageProps) {
   const [openColorDropdown, setOpenColorDropdown] = useState<number | null>(null);
   const storeTopRef = useRef<HTMLDivElement>(null);
 
-  const { category, subcategory } = params;
-
   useEffect(() => {
-    // Decode the category and subcategory names and replace hyphens with spaces
-    const decodedCat = decodeURIComponent(category).replace(/-/g, " ");
-    const decodedSubcat = decodeURIComponent(subcategory).replace(/-/g, " ");
-    setDecodedCategory(decodedCat);
-    setDecodedSubcategory(decodedSubcat);
-
-    // Fetch products by category and subcategory
-    const fetchProducts = async () => {
+    const fetchParamsAndProducts = async () => {
       try {
+        // Await the params Promise
+        const params = await paramsPromise;
+        const decodedCat = decodeURIComponent(params.category).replace(/-/g, " ");
+        const decodedSubcat = decodeURIComponent(params.subcategory).replace(/-/g, " ");
+        setDecodedCategory(decodedCat);
+        setDecodedSubcategory(decodedSubcat);
+
+        // Fetch products by category and subcategory
         const { data, error } = await supabase
           .from("products") // Replace with your products table name
           .select("*")
@@ -79,8 +78,8 @@ export default function SubcategoryPage({ params }: PageProps) {
       }
     };
 
-    fetchProducts();
-  }, [category, subcategory]);
+    fetchParamsAndProducts();
+  }, [paramsPromise]);
 
   // Add to LocalStorage Functionality
   const addToLocalStorage = useCallback((product: Product) => {
