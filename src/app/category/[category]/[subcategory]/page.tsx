@@ -1,6 +1,6 @@
 "use client"; // Mark this component as a Client Component
 
-import { useEffect, useState, use } from "react";
+import { useEffect, useState, use , useCallback} from "react";
 import { supabase } from "@/lib/supabaseClient"; // Import Supabase client
 import Image from "next/image";
 import Link from "next/link";
@@ -145,19 +145,34 @@ export default function SubcategoryPage({
     setOpenColorDropdown(null);
   };
 
-  const addToLocalStorage = (product: Product) => {
-    // Simulate adding to cart
-    setDisabledButtons((prev) => ({
-      ...prev,
-      [product.id]: true,
-    }));
+  // Add to LocalStorage Functionality
+  const addToLocalStorage = useCallback((product: Product) => {
+    const selectedColor = selectedColors[product.id];
+    if (product.colors && product.colors.length > 0 && !selectedColor) {
+      alert("Svp sélectionnez une couleur avant ajouter au panier.");
+      return;
+    }
+
+    // Disable the button for this specific product
+    setDisabledButtons((prev) => ({ ...prev, [product.id]: true }));
+
+    const cart = JSON.parse(localStorage.getItem("cart") || "[]");
+    const existingProductIndex = cart.findIndex((item: Product) => item.id === product.id);
+
+    if (existingProductIndex !== -1) {
+      cart[existingProductIndex].quantity += 1;
+    } else {
+      cart.push({ ...product, quantity: 1, selectedColor });
+    }
+
+    localStorage.setItem("cart", JSON.stringify(cart));
+    console.log("Product added to localStorage:", product.title);
+
+    // Re-enable the button after 3 seconds
     setTimeout(() => {
-      setDisabledButtons((prev) => ({
-        ...prev,
-        [product.id]: false,
-      }));
-    }, 2000);
-  };
+      setDisabledButtons((prev) => ({ ...prev, [product.id]: false }));
+    }, 3000);
+  }, [selectedColors]);
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
