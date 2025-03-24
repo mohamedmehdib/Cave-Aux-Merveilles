@@ -24,6 +24,12 @@ const Navbar: React.FC = () => {
   const lastScrollY = useRef<number>(0);
   const router = useRouter(); // Initialize useRouter
 
+  const toggleDropdown = (id: string, e: React.MouseEvent) => {
+    e.preventDefault(); // Prevent default link behavior
+    e.stopPropagation(); // Stop event bubbling
+    setOpenDropdownId(openDropdownId === id ? null : id);
+  };
+
   // Fetch categories from Supabase
   const fetchCategories = async () => {
     try {
@@ -214,56 +220,63 @@ const Navbar: React.FC = () => {
 
         {/* Mobile Menu Content */}
         <div
-          className={`md:hidden fixed top-0 right-0 w-3/4 h-full bg-primary border-r-2 border-accent z-50 transition-transform duration-500 ease-in-out ${
-            isMobileMenuOpen ? "translate-x-0" : "translate-x-full"
-          }`}
-        >
-          <div className="p-4">
-            <button
-              onClick={toggleMobileMenu}
-              className="text-accent hover:text-indigo-300 transition-colors duration-300 ease-in-out"
-            >
-              <i className="uil uil-times text-2xl"></i>
-            </button>
-            <ul className="mt-4 space-y-4">
-              {menuItems.map((item) => (
-                <li key={item.id} className="relative">
+        className={`md:hidden fixed top-0 right-0 w-3/4 h-full bg-primary border-r-2 border-accent z-50 transition-transform duration-500 ease-in-out ${
+          isMobileMenuOpen ? "translate-x-0" : "translate-x-full"
+        }`}
+      >
+        <div className="p-4">
+          <button
+            onClick={toggleMobileMenu}
+            className="text-accent hover:text-indigo-300 transition-colors duration-300 ease-in-out"
+          >
+            <i className="uil uil-times text-2xl"></i>
+          </button>
+          <ul className="mt-4 space-y-4">
+            {menuItems.map((item) => (
+              <li key={item.id} className="relative">
+                <div className="flex items-center justify-between">
                   <Link
-                    href={item.href} // Redirect to the category page
-                    className="w-full text-left text-accent hover:text-indigo-300 transition-colors duration-300 ease-in-out flex items-center justify-between"
+                    href={item.href}
+                    className="text-left text-accent hover:text-indigo-300 transition-colors duration-300 ease-in-out"
                   >
                     {item.label}
-                    {item.dropdown && ( // Show dropdown icon if subcategories exist
+                  </Link>
+                  {item.dropdown && (
+                    <button
+                      onClick={(e) => toggleDropdown(item.id, e)}
+                      className="text-accent hover:text-indigo-300 transition-colors duration-300 ease-in-out p-2"
+                    >
                       <i
                         className={`uil uil-angle-${
                           openDropdownId === item.id ? "up" : "down"
                         } text-xl`}
                       ></i>
-                    )}
-                  </Link>
-                  {item.dropdown && ( // Check if dropdown exists
-                    <ul
-                      className={`pl-4 mt-2 space-y-2 ${
-                        openDropdownId === item.id ? "block" : "hidden"
-                      }`}
-                    >
-                      {item.dropdown.map((dropdownItem, index) => (
-                        <li key={index}>
-                          <Link
-                            href={dropdownItem.href}
-                            className="block w-full text-left text-accent hover:text-indigo-300 transition-colors duration-300 ease-in-out"
-                          >
-                            {dropdownItem.label}
-                          </Link>
-                        </li>
-                      ))}
-                    </ul>
+                    </button>
                   )}
-                </li>
-              ))}
-            </ul>
-          </div>
+                </div>
+                {item.dropdown && (
+                  <ul
+                    className={`pl-4 mt-2 space-y-2 ${
+                      openDropdownId === item.id ? "block" : "hidden"
+                    }`}
+                  >
+                    {item.dropdown.map((dropdownItem, index) => (
+                      <li key={index}>
+                        <Link
+                          href={dropdownItem.href}
+                          className="block w-full text-left text-accent hover:text-indigo-300 transition-colors duration-300 ease-in-out"
+                        >
+                          {dropdownItem.label}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </li>
+            ))}
+          </ul>
         </div>
+      </div>
       </>
 
       {/* Desktop Navbar (visible on medium screens and above) */}
