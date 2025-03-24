@@ -249,28 +249,30 @@ const Navbar: React.FC = () => {
                       <i
                         className={`uil uil-angle-${
                           openDropdownId === item.id ? "up" : "down"
-                        } text-xl`}
+                        } text-xl transition-transform duration-300`}
                       ></i>
                     </button>
                   )}
                 </div>
                 {item.dropdown && (
-                  <ul
-                    className={`pl-4 mt-2 space-y-2 ${
-                      openDropdownId === item.id ? "block" : "hidden"
+                  <div
+                    className={`overflow-hidden transition-all duration-500 ease-in-out ${
+                      openDropdownId === item.id ? "max-h-96" : "max-h-0"
                     }`}
                   >
-                    {item.dropdown.map((dropdownItem, index) => (
-                      <li key={index}>
-                        <Link
-                          href={dropdownItem.href}
-                          className="block w-full text-left text-accent hover:text-indigo-300 transition-colors duration-300 ease-in-out"
-                        >
-                          {dropdownItem.label}
-                        </Link>
-                      </li>
-                    ))}
-                  </ul>
+                    <ul className="pl-4 mt-2 space-y-2">
+                      {item.dropdown.map((dropdownItem, index) => (
+                        <li key={index}>
+                          <Link
+                            href={dropdownItem.href}
+                            className="block w-full text-left text-accent hover:text-indigo-300 transition-colors duration-300 ease-in-out py-1"
+                          >
+                            {dropdownItem.label}
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
                 )}
               </li>
             ))}
