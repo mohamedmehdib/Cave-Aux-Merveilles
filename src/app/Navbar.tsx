@@ -210,7 +210,7 @@ const Navbar: React.FC = () => {
       <>
         {/* Dark Background Overlay */}
         <div
-          className={`md:hidden fixed top-0 left-0 w-full h-full bg-black z-40 transition-opacity duration-500 ease-in-out ${
+          className={`md:hidden fixed top-0 left-0 w-full h-full bg-black z-40 transition-opacity duration-300 ease-in-out ${
             isMobileMenuOpen ? "opacity-50" : "opacity-0"
           } ${
             isMobileMenuOpen ? "pointer-events-auto" : "pointer-events-none"
@@ -220,7 +220,7 @@ const Navbar: React.FC = () => {
 
         {/* Mobile Menu Content */}
         <div
-        className={`md:hidden fixed top-0 right-0 w-3/4 h-full bg-primary border-r-2 border-accent z-50 transition-transform duration-500 ease-in-out ${
+        className={`md:hidden fixed top-0 right-0 w-3/4 h-full bg-primary border-r-2 border-accent z-50 transition-transform duration-300 ease-in-out ${
           isMobileMenuOpen ? "translate-x-0" : "translate-x-full"
         }`}
       >
@@ -256,7 +256,7 @@ const Navbar: React.FC = () => {
                 </div>
                 {item.dropdown && (
                   <div
-                    className={`overflow-hidden transition-all duration-500 ease-in-out ${
+                    className={`overflow-hidden transition-all duration-300 ease-in-out ${
                       openDropdownId === item.id ? "max-h-96" : "max-h-0"
                     }`}
                   >
