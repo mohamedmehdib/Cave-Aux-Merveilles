@@ -4,22 +4,21 @@ import { useState, useEffect, useRef } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import Image from "next/image";
 
-// Import Swiper styles and modules
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
 
 interface Product {
-  id?: number; // Optional for new products
+  id?: number;
   title: string;
   price: number;
-  description: string; // Added description field
+  description: string;
   image_urls: string[];
-  colors?: string[]; // Optional colors field
-  category?: string; // Optional category field
-  subcategory?: string; // Optional subcategory field
-  created_at?: string; // Optional for new products
+  colors?: string[];
+  category?: string;
+  subcategory?: string;
+  created_at?: string;
 }
 
 export default function Store() {
@@ -27,24 +26,21 @@ export default function Store() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
-  const [sortBy] = useState("recent"); // Default sorting: most recent first
-  const [editingProduct, setEditingProduct] = useState<Product | null>(null); // Product being edited
+  const [sortBy] = useState("recent");
+  const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [title, setTitle] = useState("");
   const [price, setPrice] = useState<number | null>(null);
-  const [description, setDescription] = useState(""); // Added description state
-  const [colors, setColors] = useState<string[]>([]); // Added colors state
-  const [fileInputs, setFileInputs] = useState<(File | null)[]>([null]); // Initialize with one null value
-  const [existingImageUrls, setExistingImageUrls] = useState<string[]>([]); // Store existing image URLs
+  const [description, setDescription] = useState("");
+  const [colors, setColors] = useState<string[]>([]);
+  const [fileInputs, setFileInputs] = useState<(File | null)[]>([null]);
+  const [existingImageUrls, setExistingImageUrls] = useState<string[]>([]);
 
-  // Category and Subcategory states
   const [categories, setCategories] = useState<{ name: string; subcategories: string[] }[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string>("");
   const [selectedSubcategory, setSelectedSubcategory] = useState<string>("");
 
-  // Optional: Ref for scrolling to the form
   const formRef = useRef<HTMLDivElement>(null);
 
-  // Fetch products from Supabase
   useEffect(() => {
     const fetchProducts = async () => {
       try {
@@ -72,7 +68,6 @@ export default function Store() {
     fetchProducts();
   }, []);
 
-  // Fetch categories from Supabase
   useEffect(() => {
     const fetchCategories = async () => {
       try {
@@ -95,48 +90,44 @@ export default function Store() {
     fetchCategories();
   }, []);
 
-  // Sort products based on the selected criteria
   const sortedProducts = [...products].sort((a, b) => {
     switch (sortBy) {
       case "price_asc":
-        return a.price - b.price; // Du - cher au + cher
+        return a.price - b.price;
       case "price_desc":
-        return b.price - a.price; // Du + cher au - cher
+        return b.price - a.price;
       case "name_asc":
-        return a.title.localeCompare(b.title); // De A à Z
+        return a.title.localeCompare(b.title);
       case "name_desc":
-        return b.title.localeCompare(a.title); // De Z à A
+        return b.title.localeCompare(a.title);
       case "recent":
-        return new Date(b.created_at!).getTime() - new Date(a.created_at!).getTime(); // Du + récent au + ancien
+        return new Date(b.created_at!).getTime() - new Date(a.created_at!).getTime();
       case "oldest":
-        return new Date(a.created_at!).getTime() - new Date(b.created_at!).getTime(); // Du + ancien au + récent
+        return new Date(a.created_at!).getTime() - new Date(b.created_at!).getTime();
       default:
         return 0;
     }
   });
 
-  // Handle edit button click
   const handleEdit = (product: Product) => {
-    setEditingProduct(product); // Set the product to edit
+    setEditingProduct(product);
     setTitle(product.title);
     setPrice(product.price);
-    setDescription(product.description); // Set the description
-    setColors(product.colors || []); // Set the colors (or empty array if none)
-    setExistingImageUrls(product.image_urls || []); // Store existing image URLs
-    setFileInputs([null]); // Reset file inputs
-    setSelectedCategory(product.category || ""); // Set category
-    setSelectedSubcategory(product.subcategory || ""); // Set subcategory
-    setError(""); // Clear any previous errors
-    setSuccess(""); // Clear any previous success messages
+    setDescription(product.description);
+    setColors(product.colors || []);
+    setExistingImageUrls(product.image_urls || []);
+    setFileInputs([null]);
+    setSelectedCategory(product.category || "");
+    setSelectedSubcategory(product.subcategory || "");
+    setError("");
+    setSuccess("");
 
-    // Scroll to the top of the page
     window.scrollTo({
       top: 0,
-      behavior: "smooth", // Optional: Adds a smooth scrolling effect
+      behavior: "smooth",
     });
   };
 
-  // Handle form submission (for both add and edit)
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -144,20 +135,17 @@ export default function Store() {
     setSuccess("");
 
     try {
-      // Validate input
       if (!title || price === null || !description || (fileInputs.length === 0 && existingImageUrls.length === 0)) {
         setError("Please fill out all fields and upload at least one image.");
         return;
       }
 
-      // Validate colors (ensure no empty strings)
       const validColors = colors.filter((color) => color.trim() !== "");
       if (validColors.length !== colors.length) {
         alert("Please ensure all color fields are filled out.");
         return;
       }
 
-      // Filter out null values (empty file inputs)
       const validFiles = fileInputs.filter((file) => file !== null) as File[];
 
       // Upload new images to Supabase Storage
