@@ -1,14 +1,14 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { supabase } from "@/lib/supabaseClient"; // Import Supabase client
+import { supabase } from "@/lib/supabaseClient";
 
 interface CartItem {
   id: number;
   title: string;
   quantity: number;
   price: number;
-  selectedColor?: string; // Add selectedColor field
+  selectedColor?: string;
 }
 
 interface Order {
@@ -16,7 +16,7 @@ interface Order {
   name: string;
   phone: string;
   address: string;
-  items: string; // JSON string of cart items
+  items: string;
   total_price: number;
   created_at: string;
 }
@@ -26,14 +26,13 @@ const OrdersList = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Fetch orders from Supabase
   const fetchOrders = async () => {
     try {
       setLoading(true);
       const { data, error } = await supabase
         .from("orders")
         .select("*")
-        .order("created_at", { ascending: false }); // Sort by most recent orders
+        .order("created_at", { ascending: false });
 
       if (error) {
         throw error;
@@ -41,7 +40,6 @@ const OrdersList = () => {
 
       setOrders(data || []);
     } catch (error) {
-      // Type-check the error object
       if (error instanceof Error) {
         console.error("Error fetching orders:", error.message);
         setError("Failed to fetch orders. Please try again later.");
@@ -54,7 +52,6 @@ const OrdersList = () => {
     }
   };
 
-  // Delete an order
   const deleteOrder = async (orderId: number) => {
     if (window.confirm("Are you sure you want to delete this order?")) {
       try {
@@ -67,7 +64,6 @@ const OrdersList = () => {
           throw error;
         }
 
-        // Remove the order from the local state
         setOrders((prevOrders) => prevOrders.filter((order) => order.id !== orderId));
       } catch (error) {
         if (error instanceof Error) {
@@ -81,7 +77,6 @@ const OrdersList = () => {
     }
   };
 
-  // Fetch orders on component mount
   useEffect(() => {
     fetchOrders();
   }, []);
