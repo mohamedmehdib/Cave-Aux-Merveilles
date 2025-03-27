@@ -15,20 +15,19 @@ interface Product {
   price: number;
   image_urls: string[];
   description: string;
-  colors?: string[]; // Add colors field
+  colors?: string[];
 }
 
 export default function ProductPage() {
-  const { product } = useParams(); // Get the formatted product title from the URL
+  const { product } = useParams();
   const [productData, setProductData] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [selectedImageIndex, setSelectedImageIndex] = useState(0); // Track the selected image
-  const [isButtonDisabled, setIsButtonDisabled] = useState(false); // State to manage button disabled state
-  const [selectedColor, setSelectedColor] = useState<string | null>(null); // Track selected color
-  const [isColorDropdownOpen, setIsColorDropdownOpen] = useState(false); // Track color dropdown visibility
+  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+  const [isButtonDisabled, setIsButtonDisabled] = useState(false);
+  const [selectedColor, setSelectedColor] = useState<string | null>(null);
+  const [isColorDropdownOpen, setIsColorDropdownOpen] = useState(false);
 
-  // Add to LocalStorage Functionality
   const addToLocalStorage = (product: Product) => {
     if (product.colors && product.colors.length > 0 && !selectedColor) {
       alert("Svp sélectionnez une couleur avant ajouter au panier.");
@@ -36,24 +35,18 @@ export default function ProductPage() {
     }
 
     try {
-      // Disable the button
       setIsButtonDisabled(true);
 
-      // Fetch the current cart from localStorage
       const cart = JSON.parse(localStorage.getItem("cart") || "[]");
 
-      // Check if the product is already in the cart
       const existingProductIndex = cart.findIndex((item: Product) => item.id === product.id);
 
       if (existingProductIndex !== -1) {
-        // If the product is already in the cart, update its quantity
         cart[existingProductIndex].quantity += 1;
       } else {
-        // If the product is not in the cart, add it with a quantity of 1
         cart.push({ ...product, quantity: 1, selectedColor });
       }
 
-      // Update the cart in localStorage
       localStorage.setItem("cart", JSON.stringify(cart));
 
       console.log("Product added to localStorage:", product.title);
@@ -61,26 +54,22 @@ export default function ProductPage() {
       console.error("Error adding to localStorage:", error);
       alert("Failed to add product to cart.");
     } finally {
-      // Re-enable the button after 3 seconds
       setTimeout(() => {
         setIsButtonDisabled(false);
       }, 3000);
     }
   };
 
-  // Fetch product data
   useEffect(() => {
     const fetchProduct = async () => {
       try {
-        // Convert the URL parameter back to the original title format
         const originalTitle = (product as string).replace(/-/g, " ");
 
-        // Fetch the product from Supabase
         const { data, error } = await supabase
           .from("products")
           .select("*")
-          .ilike("title", originalTitle) // Use `ilike` for case-insensitive search
-          .single(); // Fetch a single product
+          .ilike("title", originalTitle)
+          .single();
 
         if (error) {
           throw error;
@@ -102,12 +91,12 @@ export default function ProductPage() {
   }, [product]);
 
   const handleThumbnailClick = (index: number) => {
-    setSelectedImageIndex(index); // Update the selected image index
+    setSelectedImageIndex(index);
   };
 
   const handleColorChange = (color: string) => {
-    setSelectedColor(color); // Set the selected color
-    setIsColorDropdownOpen(false); // Close the dropdown
+    setSelectedColor(color);
+    setIsColorDropdownOpen(false);
   };
 
   if (loading) {
@@ -140,9 +129,7 @@ export default function ProductPage() {
     <div className="min-h-screen bg-primary">
       <Navbar />
       <div className="max-w-6xl mx-auto p-6 my-8 md:pt-48 pt-20 flex flex-col md:flex-row gap-8">
-        {/* Image Slider Section */}
         <div className="flex-1 flex flex-col-reverse md:flex-row gap-4">
-          {/* Thumbnails (Left Side) */}
           <div className="flex md:flex-col gap-2 overflow-x-auto md:overflow-y-auto max-h-[500px] mx-auto">
             {productData.image_urls.map((imageUrl, index) => (
               <div
@@ -166,7 +153,6 @@ export default function ProductPage() {
             ))}
           </div>
 
-          {/* Main Image (Right Side) */}
           <div className="flex-1 relative w-full h-[300px] md:h-[500px] overflow-hidden">
             <Image
               src={productData.image_urls[selectedImageIndex]}
@@ -179,13 +165,11 @@ export default function ProductPage() {
           </div>
         </div>
 
-        {/* Product Information Section */}
         <div className="flex-1">
           <h1 className="text-3xl sm:text-4xl font-bold text-accent mb-8">
             {productData.title}
           </h1>
 
-          {/* Product Details */}
           <div className="mb-8">
             <p className="text-lg text-gray-700 mb-4">
               {productData.description}
@@ -195,7 +179,6 @@ export default function ProductPage() {
             </p>
           </div>
 
-          {/* Color Selection Dropdown */}
           {productData.colors && productData.colors.length > 0 && (
             <div className="mb-8 relative">
               <button
@@ -244,7 +227,6 @@ export default function ProductPage() {
             </div>
           )}
 
-          {/* Add to Cart Button */}
           <button
             className="w-full py-3 bg-secondary text-white font-semibold hover:bg-accent transition-colors duration-300 rounded-lg disabled:cursor-not-allowed disabled:bg-accent"
             onClick={() => addToLocalStorage(productData)}
