@@ -27,10 +27,12 @@ export default function ProductPage() {
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
   const [selectedColor, setSelectedColor] = useState<string | null>(null);
   const [isColorDropdownOpen, setIsColorDropdownOpen] = useState(false);
+  const [customizationText, setCustomizationText] = useState(""); // New state for customization text
+  const [quantity, setQuantity] = useState(1); // New state for quantity
 
   const addToLocalStorage = (product: Product) => {
     if (product.colors && product.colors.length > 0 && !selectedColor) {
-      alert("Svp sélectionnez une couleur avant ajouter au panier.");
+      alert("Svp sélectionnez une couleur de ruban avant ajouter au panier.");
       return;
     }
 
@@ -42,9 +44,14 @@ export default function ProductPage() {
       const existingProductIndex = cart.findIndex((item: Product) => item.id === product.id);
 
       if (existingProductIndex !== -1) {
-        cart[existingProductIndex].quantity += 1;
+        cart[existingProductIndex].quantity += quantity; // Use the selected quantity
       } else {
-        cart.push({ ...product, quantity: 1, selectedColor });
+        cart.push({
+          ...product,
+          quantity: quantity, // Save the selected quantity
+          selectedColor,
+          customizationText, // Save the customization text
+        });
       }
 
       localStorage.setItem("cart", JSON.stringify(cart));
@@ -129,6 +136,7 @@ export default function ProductPage() {
     <div className="min-h-screen bg-primary">
       <Navbar />
       <div className="max-w-6xl mx-auto p-6 my-8 md:pt-48 pt-20 flex flex-col md:flex-row gap-8">
+        {/* Product Images */}
         <div className="flex-1 flex flex-col-reverse md:flex-row gap-4">
           <div className="flex md:flex-col gap-2 overflow-x-auto md:overflow-y-auto max-h-[500px] mx-auto">
             {productData.image_urls.map((imageUrl, index) => (
@@ -165,6 +173,7 @@ export default function ProductPage() {
           </div>
         </div>
 
+        {/* Product Details */}
         <div className="flex-1">
           <h1 className="text-3xl sm:text-4xl font-bold text-accent mb-8">
             {productData.title}
@@ -179,6 +188,7 @@ export default function ProductPage() {
             </p>
           </div>
 
+          {/* Color Selection Dropdown */}
           {productData.colors && productData.colors.length > 0 && (
             <div className="mb-8 relative">
               <button
@@ -187,7 +197,7 @@ export default function ProductPage() {
                 aria-label="Open color options"
               >
                 <span className="text-sm font-medium text-gray-700">
-                  {selectedColor || "Sélectionnez une couleur"}
+                  {selectedColor || "Sélectionnez une couleur de ruban"}
                 </span>
                 <svg
                   className={`h-5 w-5 ml-2 text-gray-700 transform transition-transform duration-300 ${
@@ -227,10 +237,44 @@ export default function ProductPage() {
             </div>
           )}
 
+          {/* Quantity Input */}
+          <div className="mb-8">
+            <label htmlFor="quantity" className="block text-sm font-medium text-gray-700 mb-2">
+              Quantité
+            </label>
+            <input
+              type="number"
+              id="quantity"
+              value={quantity}
+              onChange={(e) => setQuantity(Number(e.target.value))}
+              min="1"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-secondary focus:border-secondary transition-all duration-300"
+            />
+          </div>
+
+          {/* Customization Textarea */}
+          <div className="mb-8">
+            <label htmlFor="customization" className="block text-sm font-medium text-gray-700 mb-2">
+              Votre personnalisation
+            </label>
+            <textarea
+              id="customization"
+              value={customizationText}
+              onChange={(e) => setCustomizationText(e.target.value)}
+              placeholder="Ajoutez ici vos instructions de personnalisation..."
+              rows={4}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-secondary focus:border-secondary transition-all duration-300 resize-none"
+            />
+          </div>
+
+          {/* Add to Cart Button */}
           <button
             className="w-full py-3 bg-secondary text-white font-semibold hover:bg-accent transition-colors duration-300 rounded-lg disabled:cursor-not-allowed disabled:bg-accent"
             onClick={() => addToLocalStorage(productData)}
-            disabled={isButtonDisabled || (productData.colors && productData.colors.length > 0 && !selectedColor)}
+            disabled={
+              isButtonDisabled ||
+              (productData.colors && productData.colors.length > 0 && !selectedColor)
+            }
           >
             {isButtonDisabled ? "Ajouté avec succès!" : "Ajouter au panier"}
           </button>

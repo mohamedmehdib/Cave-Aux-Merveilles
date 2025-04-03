@@ -14,6 +14,7 @@ interface CartItem {
   quantity: number;
   image_urls: string[];
   selectedColor?: string; // Add selectedColor field
+  customizationText?: string; // Add customizationText field
 }
 
 const Cart = () => {
@@ -154,7 +155,13 @@ const Cart = () => {
                     <p className="text-gray-600">Prix: {item.price} Dt</p>
                     {/* Display selected color if available */}
                     {item.selectedColor && (
-                      <p className="text-gray-600">Couleur: {item.selectedColor}</p>
+                      <p className="text-gray-600">Couleur de ruban: {item.selectedColor}</p>
+                    )}
+                    {/* Display personalization text if available */}
+                    {item.customizationText && (
+                      <p className="text-gray-600">
+                        Personnalisation: {item.customizationText}
+                      </p>
                     )}
                   </div>
                   <div className="flex items-center gap-4">
