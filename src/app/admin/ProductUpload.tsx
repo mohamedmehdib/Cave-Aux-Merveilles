@@ -1,9 +1,7 @@
 "use client";
-
 import { useState, useEffect, useRef } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import Image from "next/image";
-
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation } from "swiper/modules";
 import "swiper/css";
@@ -19,6 +17,7 @@ interface Product {
   category?: string;
   subcategory?: string;
   created_at?: string;
+  status?: boolean; // true = en stock, false = rupture de stock
 }
 
 export default function Store() {
@@ -34,11 +33,10 @@ export default function Store() {
   const [colors, setColors] = useState<string[]>([]);
   const [fileInputs, setFileInputs] = useState<(File | null)[]>([null]);
   const [existingImageUrls, setExistingImageUrls] = useState<string[]>([]);
-
   const [categories, setCategories] = useState<{ name: string; subcategories: string[] }[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string>("");
   const [selectedSubcategory, setSelectedSubcategory] = useState<string>("");
-
+  const [status, setStatus] = useState<boolean>(true); // Default to "en stock"
   const formRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -48,11 +46,9 @@ export default function Store() {
           .from("products")
           .select("*")
           .order("created_at", { ascending: false });
-
         if (error) {
           throw error;
         }
-
         setProducts(data || []);
       } catch (err) {
         if (err instanceof Error) {
@@ -64,7 +60,6 @@ export default function Store() {
         setLoading(false);
       }
     };
-
     fetchProducts();
   }, []);
 
@@ -72,11 +67,9 @@ export default function Store() {
     const fetchCategories = async () => {
       try {
         const { data, error } = await supabase.from("categories").select("*");
-
         if (error) {
           throw error;
         }
-
         setCategories(data || []);
       } catch (err) {
         if (err instanceof Error) {
@@ -86,7 +79,6 @@ export default function Store() {
         }
       }
     };
-
     fetchCategories();
   }, []);
 
@@ -119,9 +111,9 @@ export default function Store() {
     setFileInputs([null]);
     setSelectedCategory(product.category || "");
     setSelectedSubcategory(product.subcategory || "");
+    setStatus(product.status ?? true); // Set status with fallback to true
     setError("");
     setSuccess("");
-
     window.scrollTo({
       top: 0,
       behavior: "smooth",
@@ -133,40 +125,32 @@ export default function Store() {
     setLoading(true);
     setError("");
     setSuccess("");
-
     try {
       if (!title || price === null || !description || (fileInputs.length === 0 && existingImageUrls.length === 0)) {
         setError("Please fill out all fields and upload at least one image.");
         return;
       }
-
       const validColors = colors.filter((color) => color.trim() !== "");
       if (validColors.length !== colors.length) {
         alert("Please ensure all color fields are filled out.");
         return;
       }
-
       const validFiles = fileInputs.filter((file) => file !== null) as File[];
-
       const newImageUrls = await Promise.all(
         validFiles.map(async (file) => {
           const filePath = `products/${Date.now()}-${file.name}`;
           const { data, error } = await supabase.storage
             .from("product-images")
             .upload(filePath, file);
-
           if (error) {
             throw error;
           }
-
           const { data: urlData } = supabase.storage
             .from("product-images")
             .getPublicUrl(data.path);
-
           return urlData.publicUrl;
         })
       );
-
       const allImageUrls = [...existingImageUrls, ...newImageUrls];
 
       if (editingProduct) {
@@ -180,21 +164,19 @@ export default function Store() {
             colors: validColors.length > 0 ? validColors : null,
             category: selectedCategory || null,
             subcategory: selectedSubcategory || null,
+            status: status,
           })
           .eq("id", editingProduct.id);
-
         if (error) {
           throw error;
         }
-
         setProducts((prevProducts) =>
           prevProducts.map((p) =>
             p.id === editingProduct.id
-              ? { ...p, title, price, description, image_urls: allImageUrls, colors: validColors, category: selectedCategory, subcategory: selectedSubcategory }
+              ? { ...p, title, price, description, image_urls: allImageUrls, colors: validColors, category: selectedCategory, subcategory: selectedSubcategory, status }
               : p
           )
         );
-
         setSuccess("Product updated successfully!");
       } else {
         const { error } = await supabase.from("products").insert([
@@ -207,19 +189,16 @@ export default function Store() {
             category: selectedCategory || null,
             subcategory: selectedSubcategory || null,
             created_at: new Date().toISOString(),
+            status: status, // Use the status state which defaults to true
           },
         ]);
-
         if (error) {
           throw error;
         }
-
         const { data } = await supabase.from("products").select("*");
         setProducts(data || []);
-
         setSuccess("Product added successfully!");
       }
-
       setTitle("");
       setPrice(null);
       setDescription("");
@@ -228,6 +207,7 @@ export default function Store() {
       setExistingImageUrls([]);
       setSelectedCategory("");
       setSelectedSubcategory("");
+      setStatus(true); // Reset to "en stock" after submission
       setEditingProduct(null);
     } catch (error) {
       if (error instanceof Error) {
@@ -245,7 +225,6 @@ export default function Store() {
       const newFiles = [...fileInputs];
       newFiles[index] = e.target.files[0];
       setFileInputs(newFiles);
-
       if (index === fileInputs.length - 1) {
         setFileInputs([...newFiles, null]);
       }
@@ -285,11 +264,9 @@ export default function Store() {
           .from("products")
           .delete()
           .eq("id", productId);
-
         if (error) {
           throw error;
         }
-
         setProducts(products.filter((p) => p.id !== productId));
         setSuccess("Product deleted successfully!");
       } catch (error) {
@@ -337,11 +314,9 @@ export default function Store() {
   return (
     <div className="min-h-screen py-8 px-4 sm:px-8">
       <h1 className="text-3xl sm:text-4xl font-bold text-center text-accent mb-8">Magasin</h1>
-
       {success && (
         <div className="text-center text-green-500 text-sm mb-4">{success}</div>
       )}
-
       <div ref={formRef} className="bg-white p-6 sm:p-8 rounded-lg shadow-lg w-full max-w-2xl mx-auto mb-8">
         <h2 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-6">
           {editingProduct ? "Modifier Produit" : "Ajouter un produit"}
@@ -483,6 +458,20 @@ export default function Store() {
               </div>
             ))}
           </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Statut</label>
+            <div className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                className="w-5 h-5 accent-blue-500"
+                checked={status}
+                onChange={(e) => setStatus(e.target.checked)}
+              />
+              <span className="text-gray-700">
+                {status ? "En stock" : "Rupture de stock"}
+              </span>
+            </div>
+          </div>
           <button
             type="submit"
             className={`w-full py-3 bg-accent text-white rounded-lg font-semibold shadow-lg transition-opacity duration-300 ${
@@ -511,7 +500,8 @@ export default function Store() {
                 setFileInputs([null]);
                 setExistingImageUrls([]);
                 setSelectedCategory("");
-                setSelectedSubcategory("")
+                setSelectedSubcategory("");
+                setStatus(true); // Reset to "en stock" when canceling edit
               }}
             >
               Annuler la modification
@@ -519,7 +509,6 @@ export default function Store() {
           )}
         </form>
       </div>
-
       {sortedProducts.length === 0 ? (
         <div className="text-center text-accent">Aucun produit disponible.</div>
       ) : (
@@ -553,7 +542,6 @@ export default function Store() {
                     </SwiperSlide>
                   ))}
                 </Swiper>
-
                 <div
                   className={`swiper-button-prev-${product.id} absolute top-1/2 left-2 transform -translate-y-1/2 z-10 bg-white/80 p-2 shadow-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 cursor-pointer hover:bg-white`}
                 >
@@ -591,7 +579,6 @@ export default function Store() {
                   </svg>
                 </div>
               </div>
-
               <div className="p-4 text-center flex-grow">
                 <h2 className="text-xl font-semibold text-accent mb-2">{product.title}</h2>
                 <p className="text-sm text-gray-600 mb-4">{product.description}</p>
@@ -617,8 +604,10 @@ export default function Store() {
                   <span className="text-xs text-gray-600">À partir de </span>
                   <span className="font-bold text-gray-700">{product.price.toFixed(2)} Dt</span>
                 </p>
+                <p className="text-sm text-gray-600">
+                  Statut: {product.status ? "En stock" : "Rupture de stock"}
+                </p>
               </div>
-
               <div className="p-4">
                 <button
                   className="w-full py-2 bg-blue-500 text-white font-semibold hover:bg-blue-600 transition-colors duration-300"
