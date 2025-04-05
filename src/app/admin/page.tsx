@@ -4,6 +4,7 @@ import { supabase } from "@/lib/supabaseClient";
 import ProductUpload from "./ProductUpload";
 import OrdersList from "./OrdersList";
 import UploadCategory from "./UploadCategory";
+import UploadTestimonial from "./UploadTestimonials";
 
 const AdminDashboard = () => {
   const [email, setEmail] = useState("");
@@ -116,12 +117,21 @@ const AdminDashboard = () => {
         >
           Categories
         </button>
+        <button
+          onClick={() => setActiveComponent("AvisClients")}
+          className={`px-6 sm:px-10 py-3 sm:py-4 text-base sm:text-lg font-bold rounded-xl shadow-md transition-colors duration-300 ${
+            activeComponent === "AvisClients" ? "bg-accent text-white" : "bg-gray-300 text-gray-800 hover:bg-gray-400"
+          }`}
+        >
+          Avis Clients
+        </button>
       </div>
 
       <div className="bg-white p-6 sm:p-8 rounded-lg shadow-lg mx-auto max-w-4xl">
         {activeComponent === "ProductUpload" && <ProductUpload />}
         {activeComponent === "OrdersList" && <OrdersList />}
         {activeComponent === "Categories" && <UploadCategory />}
+        {activeComponent === "AvisClients" && <UploadTestimonial />}
       </div>
     </div>
   );
