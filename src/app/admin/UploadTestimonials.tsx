@@ -16,10 +16,6 @@ interface Testimonial {
 
 type FormData = Omit<Testimonial, "id"> & { id?: number };
 
-interface SupabaseError {
-  message: string;
-}
-
 export default function UploadTestimonial() {
   const [formData, setFormData] = useState<FormData>({
     name: "",

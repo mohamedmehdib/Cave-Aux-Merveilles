@@ -37,14 +37,12 @@ export default function Testimonials(): React.ReactElement {
         const { data, error } = await supabase.from("testimonials").select("*");
 
         if (error) {
-          throw new Error(error.message);
+          throw error;
         }
 
-        if (data) {
-          setTestimonials(data);
-        }
-      } catch (err: any) {
-        setError(err.message);
+        setTestimonials(data || []);
+      } catch (err: unknown) {
+        setError(err instanceof Error ? err.message : "Failed to fetch testimonials");
       } finally {
         setLoading(false);
       }
@@ -58,9 +56,14 @@ export default function Testimonials(): React.ReactElement {
       const updateMaxHeight = () => {
         const slides = swiperRef.current?.el?.querySelectorAll(".swiper-slide");
         let tallestHeight = 0;
+        
         slides?.forEach((slide: Element) => {
-          tallestHeight = Math.max(tallestHeight, (slide as HTMLElement).offsetHeight);
+          const height = (slide as HTMLElement).offsetHeight;
+          if (height > tallestHeight) {
+            tallestHeight = height;
+          }
         });
+        
         setMaxHeight(tallestHeight);
       };
 
