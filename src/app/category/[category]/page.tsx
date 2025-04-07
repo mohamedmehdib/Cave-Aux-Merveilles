@@ -222,7 +222,7 @@ export default function CategoryPage({
                       style={{
                         transform: `translateX(-${(activeImageIndex[product.id] || 0) * 100}%)`,
                         width: `${product.image_urls.length * 100}%`,
-                      }}
+                      }} 
                     >
                       {product.image_urls.map((imageUrl, index) => (
                         <div
