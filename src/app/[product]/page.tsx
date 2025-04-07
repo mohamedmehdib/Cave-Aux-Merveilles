@@ -1,5 +1,4 @@
 "use client";
-
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
@@ -13,6 +12,7 @@ interface Product {
   id: number;
   title: string;
   price: number;
+  promo: number;
   image_urls: string[];
   description: string;
   status: boolean;
@@ -36,14 +36,10 @@ export default function ProductPage() {
       alert("Svp sélectionnez une couleur de ruban avant ajouter au panier.");
       return;
     }
-
     try {
       setIsButtonDisabled(true);
-
       const cart = JSON.parse(localStorage.getItem("cart") || "[]");
-
       const existingProductIndex = cart.findIndex((item: Product) => item.id === product.id);
-
       if (existingProductIndex !== -1) {
         cart[existingProductIndex].quantity += quantity; // Use the selected quantity
       } else {
@@ -54,9 +50,7 @@ export default function ProductPage() {
           customizationText, // Save the customization text
         });
       }
-
       localStorage.setItem("cart", JSON.stringify(cart));
-
       console.log("Product added to localStorage:", product.title);
     } catch (error) {
       console.error("Error adding to localStorage:", error);
@@ -71,18 +65,17 @@ export default function ProductPage() {
   useEffect(() => {
     const fetchProduct = async () => {
       try {
-        const originalTitle = (product as string).replace(/-/g, " ");
-
+        // Decode the URL parameter and replace hyphens with spaces
+        const originalTitle = decodeURIComponent((product as string).replace(/-/g, " "));
         const { data, error } = await supabase
           .from("products")
           .select("*")
-          .ilike("title", originalTitle)
+          .ilike("title", `%${originalTitle}%`) // Use ILIKE with wildcards for partial matching
           .single();
 
         if (error) {
           throw error;
         }
-
         setProductData(data);
       } catch (err) {
         if (err instanceof Error) {
@@ -94,7 +87,6 @@ export default function ProductPage() {
         setLoading(false);
       }
     };
-
     fetchProduct();
   }, [product]);
 
@@ -139,7 +131,7 @@ export default function ProductPage() {
       <div className="max-w-6xl mx-auto p-6 my-8 md:pt-48 pt-20 flex flex-col md:flex-row gap-8">
         {/* Product Images */}
         <div className="flex-1 flex flex-col-reverse md:flex-row gap-4">
-          <div className="flex md:flex-col gap-2 overflow-x-auto md:overflow-y-auto max-h-[500px] mx-auto">
+          <div className="flex md:flex-col gap-2 overflow-x-auto md:overflow-y-auto max-h-[500px] mx-auto flex-wrap">
             {productData.image_urls.map((imageUrl, index) => (
               <div
                 key={index}
@@ -161,7 +153,6 @@ export default function ProductPage() {
               </div>
             ))}
           </div>
-
           <div className="flex-1 relative w-full h-[300px] md:h-[500px] overflow-hidden">
             <Image
               src={productData.image_urls[selectedImageIndex]}
@@ -173,22 +164,38 @@ export default function ProductPage() {
             />
           </div>
         </div>
-
         {/* Product Details */}
         <div className="flex-1">
           <h1 className="text-3xl sm:text-4xl font-bold text-accent mb-8">
             {productData.title}
           </h1>
-
           <div className="mb-8">
             <p className="text-lg text-gray-700 mb-4">
               {productData.description}
             </p>
-            <p className="text-xl font-bold text-gray-700">
-              {productData.price.toFixed(2)} Dt
-            </p>
+            
+                {/* Product Details */}
+                {
+                  productData.promo ? (
+                    <div className="text-lg md:text-xl">
+                      <p className="space-x-4">
+                        <span className="font-bold text-gray-700">{productData.promo.toFixed(2)} Dt</span>
+                        {
+                          productData.price && <span className="text-gray-500 line-through">{productData.price.toFixed(2)} Dt</span>
+                        }
+                      </p>
+                  </div>
+                  ):
+                  <div className="text-lg md:text-xl">
+                    <p className="space-x-4">
+                      {
+                        productData.price && <span className="font-bold text-gray-700">{productData.price.toFixed(2)} Dt</span>
+                      }
+                    </p>
+                  </div>
+                }
+                   
           </div>
-
           {
             productData.status ? (
               <div>
@@ -218,7 +225,6 @@ export default function ProductPage() {
                         />
                       </svg>
                     </button>
-
                     {isColorDropdownOpen && (
                       <div className="absolute top-full left-0 right-0 mt-2 bg-white shadow-lg rounded-lg p-2 z-50">
                         <div className="flex flex-col gap-2">
@@ -240,7 +246,6 @@ export default function ProductPage() {
                     )}
                   </div>
                 )}
-
                 {/* Quantity Input */}
                 <div className="mb-8">
                   <label htmlFor="quantity" className="block text-sm font-medium text-gray-700 mb-2">
@@ -255,7 +260,6 @@ export default function ProductPage() {
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-secondary focus:border-secondary transition-all duration-300"
                   />
                 </div>
-
                 {/* Customization Textarea */}
                 <div className="mb-8">
                   <label htmlFor="customization" className="block text-sm font-medium text-gray-700 mb-2">
@@ -270,7 +274,6 @@ export default function ProductPage() {
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-secondary focus:border-secondary transition-all duration-300 resize-none"
                   />
                 </div>
-
                 {/* Add to Cart Button */}
                 <button
                   className="w-full py-3 bg-secondary text-white font-semibold hover:bg-accent transition-colors duration-300 rounded-lg disabled:cursor-not-allowed disabled:bg-accent"

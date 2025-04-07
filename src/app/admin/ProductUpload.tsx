@@ -11,6 +11,7 @@ interface Product {
   id?: number;
   title: string;
   price: number;
+  promo?: number | null; // Promo is now optional
   description: string;
   image_urls: string[];
   colors?: string[];
@@ -29,6 +30,7 @@ export default function Store() {
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [title, setTitle] = useState("");
   const [price, setPrice] = useState<number | null>(null);
+  const [promo, setPromo] = useState<number | null>(null); // Promo can be null
   const [description, setDescription] = useState("");
   const [colors, setColors] = useState<string[]>([]);
   const [fileInputs, setFileInputs] = useState<(File | null)[]>([null]);
@@ -105,6 +107,7 @@ export default function Store() {
     setEditingProduct(product);
     setTitle(product.title);
     setPrice(product.price);
+    setPromo(product.promo || null);
     setDescription(product.description);
     setColors(product.colors || []);
     setExistingImageUrls(product.image_urls || []);
@@ -125,16 +128,26 @@ export default function Store() {
     setLoading(true);
     setError("");
     setSuccess("");
+
+    // Validate product title: Ensure it does not contain a hyphen
+    if (title.includes("-")) {
+      alert("Le nom du produit ne doit pas contenir de tiret (-).");
+      setLoading(false);
+      return;
+    }
+
     try {
       if (!title || price === null || !description || (fileInputs.length === 0 && existingImageUrls.length === 0)) {
         setError("Please fill out all fields and upload at least one image.");
         return;
       }
+
       const validColors = colors.filter((color) => color.trim() !== "");
       if (validColors.length !== colors.length) {
         alert("Please ensure all color fields are filled out.");
         return;
       }
+
       const validFiles = fileInputs.filter((file) => file !== null) as File[];
       const newImageUrls = await Promise.all(
         validFiles.map(async (file) => {
@@ -151,6 +164,7 @@ export default function Store() {
           return urlData.publicUrl;
         })
       );
+
       const allImageUrls = [...existingImageUrls, ...newImageUrls];
 
       if (editingProduct) {
@@ -159,6 +173,7 @@ export default function Store() {
           .update({
             title,
             price,
+            promo,
             description,
             image_urls: allImageUrls,
             colors: validColors.length > 0 ? validColors : null,
@@ -173,7 +188,7 @@ export default function Store() {
         setProducts((prevProducts) =>
           prevProducts.map((p) =>
             p.id === editingProduct.id
-              ? { ...p, title, price, description, image_urls: allImageUrls, colors: validColors, category: selectedCategory, subcategory: selectedSubcategory, status }
+              ? { ...p, title, price, promo, description, image_urls: allImageUrls, colors: validColors, category: selectedCategory, subcategory: selectedSubcategory, status }
               : p
           )
         );
@@ -183,6 +198,7 @@ export default function Store() {
           {
             title,
             price,
+            promo,
             description,
             image_urls: allImageUrls,
             colors: validColors.length > 0 ? validColors : null,
@@ -199,8 +215,10 @@ export default function Store() {
         setProducts(data || []);
         setSuccess("Product added successfully!");
       }
+
       setTitle("");
       setPrice(null);
+      setPromo(null);
       setDescription("");
       setColors([]);
       setFileInputs([null]);
@@ -334,7 +352,7 @@ export default function Store() {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Prix</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Prix actuel</label>
             <input
               type="number"
               placeholder="Prix du produit"
@@ -342,6 +360,16 @@ export default function Store() {
               value={price ?? ""}
               onChange={(e) => setPrice(parseFloat(e.target.value))}
               required
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Prix avant promo</label>
+            <input
+              type="number"
+              placeholder="Prix avant promo"
+              className="w-full p-3 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+              value={promo ?? ""}
+              onChange={(e) => setPromo(parseFloat(e.target.value))}
             />
           </div>
           <div>
@@ -495,6 +523,7 @@ export default function Store() {
                 setEditingProduct(null);
                 setTitle("");
                 setPrice(null);
+                setPromo(null);
                 setDescription("");
                 setColors([]);
                 setFileInputs([null]);
@@ -601,9 +630,17 @@ export default function Store() {
                   </div>
                 )}
                 <p>
-                  <span className="text-xs text-gray-600">À partir de </span>
+                  <span className="text-xs text-gray-600">Prix original </span>
                   <span className="font-bold text-gray-700">{product.price.toFixed(2)} Dt</span>
                 </p>
+                {
+                  product.promo && (
+                    <p>
+                    <span className="text-xs text-gray-600">En promo </span>
+                    <span className="font-bold text-gray-700">{product.promo?.toFixed(2)} Dt</span>
+                  </p>
+                  )
+                }
                 <p className="text-sm text-gray-600">
                   Statut: {product.status ? "En stock" : "Rupture de stock"}
                 </p>

@@ -1,12 +1,12 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { supabase } from "@/lib/supabaseClient"; // Import Supabase client
+import { supabase } from "@/lib/supabaseClient";
 
 interface Category {
   id: number;
   name: string;
-  subcategories: string[]; // Always an array
+  subcategories: string[];
 }
 
 const UploadCategory = () => {
@@ -16,12 +16,17 @@ const UploadCategory = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>("");
   const [successMessage, setSuccessMessage] = useState<string>("");
-  const [categories, setCategories] = useState<Category[]>([]); // Existing categories
-  const [editingCategoryId, setEditingCategoryId] = useState<number | null>(null); // Track which category is being edited
-  const [editedCategoryName, setEditedCategoryName] = useState<string>(""); // Edited category name
-  const [editedSubcategories, setEditedSubcategories] = useState<string[]>([]); // Edited subcategories
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [editingCategoryId, setEditingCategoryId] = useState<number | null>(null);
+  const [editedCategoryName, setEditedCategoryName] = useState<string>("");
+  const [editedSubcategories, setEditedSubcategories] = useState<string[]>([]);
 
-  // Fetch existing categories on component mount
+  // Validate input to prevent hyphens
+  const validateInput = (input: string): boolean => {
+    return !input.includes("-");
+  };
+
+  // Fetch existing categories
   const fetchCategories = async () => {
     try {
       const { data, error } = await supabase
@@ -29,25 +34,16 @@ const UploadCategory = () => {
         .select("*")
         .order("id", { ascending: true });
 
-      if (error) {
-        throw error;
-      }
+      if (error) throw error;
 
-      // Ensure `subcategories` is always an array
       const transformedData = data?.map((category) => ({
         ...category,
-        subcategories: Array.isArray(category.subcategories)
-          ? category.subcategories
-          : [], // Default to an empty array
+        subcategories: Array.isArray(category.subcategories) ? category.subcategories : [],
       }));
 
       setCategories(transformedData || []);
     } catch (err) {
-      if (err instanceof Error) {
-        setError(`Erreur lors de la récupération des catégories: ${err.message}`);
-      } else {
-        setError("Une erreur inattendue s'est produite.");
-      }
+      setError(err instanceof Error ? `Error fetching categories: ${err.message}` : "An unexpected error occurred.");
     }
   };
 
@@ -55,31 +51,49 @@ const UploadCategory = () => {
     fetchCategories();
   }, []);
 
-  // Add a subcategory to the list
+  // Add a subcategory with validation
   const addSubcategory = () => {
-    if (newSubcategory.trim() === "") return; // Don't add empty subcategories
-    setSubcategories((prev) => [...prev, newSubcategory.trim()]); // Add the new subcategory
-    setNewSubcategory(""); // Clear the input field
+    const trimmedSub = newSubcategory.trim();
+    if (!trimmedSub) return;
+    
+    if (!validateInput(trimmedSub)) {
+      setError("Les sous-catégories ne peuvent pas contenir de tirets (-)");
+      return;
+    }
+
+    setSubcategories((prev) => [...prev, trimmedSub]);
+    setNewSubcategory("");
+    setError("");
   };
 
-  // Remove a subcategory from the list
+  // Remove a subcategory
   const removeSubcategory = (index: number) => {
     setSubcategories((prev) => prev.filter((_, i) => i !== index));
   };
 
-  // Update a subcategory in the "Add Category" form
+  // Update a subcategory with validation
   const updateSubcategory = (index: number, value: string) => {
-    const updatedSubcategories = [...subcategories]; // Create a copy of the subcategories array
-    updatedSubcategories[index] = value; // Update the specific subcategory
-    setSubcategories(updatedSubcategories); // Update the state
+    if (!validateInput(value)) {
+      alert("Les sous-catégories ne peuvent pas contenir de tirets (-)");
+      return;
+    }
+    const updatedSubcategories = [...subcategories];
+    updatedSubcategories[index] = value;
+    setSubcategories(updatedSubcategories);
+    setError("");
   };
 
-  // Handle form submission for adding a new category
+  // Handle form submission with validation
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!categoryName) {
-      setError("Le nom de la catégorie est obligatoire.");
+      alert("Le nom de la catégorie est obligatoire.");
+      return;
+    }
+
+    if (!validateInput(categoryName)) {
+      alert("Le nom de la catégorie ne peut pas contenir de tirets (-)");
       return;
     }
 
@@ -90,27 +104,16 @@ const UploadCategory = () => {
     try {
       const { error } = await supabase
         .from("categories")
-        .insert([
-          {
-            name: categoryName,
-            subcategories: subcategories,
-          },
-        ]);
+        .insert([{ name: categoryName, subcategories }]);
 
-      if (error) {
-        throw new Error("Erreur lors de l'ajout de la catégorie.");
-      }
+      if (error) throw error;
 
       setSuccessMessage("Catégorie ajoutée avec succès!");
       setCategoryName("");
       setSubcategories([]);
       await fetchCategories();
     } catch (err) {
-      if (err instanceof Error) {
-        setError(err.message);
-      } else {
-        setError("Une erreur inattendue s'est produite.");
-      }
+      setError(err instanceof Error ? err.message : "Une erreur inattendue s'est produite.");
     } finally {
       setIsLoading(false);
     }
@@ -124,18 +127,12 @@ const UploadCategory = () => {
         .delete()
         .eq("id", id);
 
-      if (error) {
-        throw error;
-      }
+      if (error) throw error;
 
       await fetchCategories();
       setSuccessMessage("Catégorie supprimée avec succès!");
     } catch (err) {
-      if (err instanceof Error) {
-        setError(err.message);
-      } else {
-        setError("Une erreur inattendue s'est produite.");
-      }
+      setError(err instanceof Error ? err.message : "Une erreur inattendue s'est produite.");
     }
   };
 
@@ -144,96 +141,97 @@ const UploadCategory = () => {
     setEditingCategoryId(category.id);
     setEditedCategoryName(category.name);
     setEditedSubcategories([...category.subcategories]);
+    setError("");
   };
 
-  // Save edited category
+  // Save edited category with validation
   const saveEditedCategory = async (id: number) => {
+    if (!validateInput(editedCategoryName)) {
+      alert("Le nom de la catégorie ne peut pas contenir de tirets (-)");
+      return;
+    }
+
+    for (const sub of editedSubcategories) {
+      if (!validateInput(sub)) {
+        alert("Les sous-catégories ne peuvent pas contenir de tirets (-)");
+        return;
+      }
+    }
+
     try {
       const { error } = await supabase
         .from("categories")
-        .update({
-          name: editedCategoryName,
-          subcategories: editedSubcategories,
-        })
+        .update({ name: editedCategoryName, subcategories: editedSubcategories })
         .eq("id", id);
 
-      if (error) {
-        throw new Error("Erreur lors de la mise à jour de la catégorie.");
-      }
+      if (error) throw error;
 
       await fetchCategories();
       setEditingCategoryId(null);
       setSuccessMessage("Catégorie mise à jour avec succès!");
     } catch (err) {
-      if (err instanceof Error) {
-        setError(err.message);
-      } else {
-        setError("Une erreur inattendue s'est produite.");
-      }
+      setError(err instanceof Error ? err.message : "Une erreur inattendue s'est produite.");
     }
   };
 
-  // Add a new subcategory to the edited category
+  // Add a new subcategory to edited category
   const addEditedSubcategory = () => {
     setEditedSubcategories((prev) => [...prev, ""]);
   };
 
-  // Remove a subcategory from the edited category
+  // Remove a subcategory from edited category
   const removeEditedSubcategory = (index: number) => {
     setEditedSubcategories((prev) => prev.filter((_, i) => i !== index));
   };
 
-  // Update a subcategory in the edited category
+  // Update edited subcategory with validation
   const updateEditedSubcategory = (index: number, value: string) => {
+    if (!validateInput(value)) {
+      alert("Les sous-catégories ne peuvent pas contenir de tirets (-)");
+      return;
+    }
     const updatedSubcategories = [...editedSubcategories];
     updatedSubcategories[index] = value;
     setEditedSubcategories(updatedSubcategories);
+    setError("");
   };
 
   return (
     <div className="max-w-4xl mx-auto p-6 bg-white rounded-lg shadow-md">
       <h1 className="text-2xl font-bold text-gray-800 mb-6">Gérer les Catégories</h1>
 
-      {/* Error Message */}
       {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
+      {successMessage && <p className="text-green-500 text-sm mb-4">{successMessage}</p>}
 
-      {/* Success Message */}
-      {successMessage && (
-        <p className="text-green-500 text-sm mb-4">{successMessage}</p>
-      )}
-
-      {/* Form to Add a New Category */}
       <form onSubmit={handleSubmit} className="mb-8">
-        <h2 className="text-xl font-semibold text-gray-800 mb-4">
-          Ajouter une Catégorie
-        </h2>
-        {/* Category Name */}
+        <h2 className="text-xl font-semibold text-gray-800 mb-4">Ajouter une Catégorie</h2>
+        
         <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700">
-            Nom de la catégorie
-          </label>
+          <label className="block text-sm font-medium text-gray-700">Nom de la catégorie</label>
           <input
             type="text"
             value={categoryName}
-            onChange={(e) => setCategoryName(e.target.value)}
+            onChange={(e) => {
+              setCategoryName(e.target.value);
+              setError("");
+            }}
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-secondary"
             required
           />
         </div>
 
-        {/* Subcategories */}
         <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Sous-catégories
-          </label>
-          {/* Input for adding a new subcategory */}
+          <label className="block text-sm font-medium text-gray-700 mb-2">Sous-catégories</label>
           <div className="flex gap-2 mb-4">
             <input
               type="text"
-              placeholder="Entrez une sous-catégorie"
+              placeholder="Entrez une sous-catégorie (pas de tirets)"
               className="w-full p-3 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
               value={newSubcategory}
-              onChange={(e) => setNewSubcategory(e.target.value)}
+              onChange={(e) => {
+                setNewSubcategory(e.target.value);
+                setError("");
+              }}
             />
             <button
               type="button"
@@ -243,15 +241,15 @@ const UploadCategory = () => {
               Ajouter
             </button>
           </div>
-          {/* Display existing subcategories */}
+          
           {subcategories.map((subcategory, index) => (
             <div key={index} className="flex items-center gap-2 mb-2">
               <input
                 type="text"
-                placeholder="Entrez une sous-catégorie"
+                placeholder="Sous-catégorie (pas de tirets)"
                 className="w-full p-3 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
                 value={subcategory}
-                onChange={(e) => updateSubcategory(index, e.target.value)} // Use updateSubcategory
+                onChange={(e) => updateSubcategory(index, e.target.value)}
                 required
               />
               <button
@@ -265,7 +263,6 @@ const UploadCategory = () => {
           ))}
         </div>
 
-        {/* Submit Button */}
         <button
           type="submit"
           className={`w-full px-6 py-3 bg-secondary text-white font-semibold rounded-lg hover:bg-accent transition-colors duration-300 ${
@@ -277,43 +274,35 @@ const UploadCategory = () => {
         </button>
       </form>
 
-      {/* Display Existing Categories */}
       <div>
-        <h2 className="text-xl font-semibold text-gray-800 mb-4">
-          Catégories Existantes
-        </h2>
+        <h2 className="text-xl font-semibold text-gray-800 mb-4">Catégories Existantes</h2>
         {categories.length === 0 ? (
           <p className="text-gray-600">Aucune catégorie trouvée.</p>
         ) : (
           <div className="space-y-4">
             {categories.map((category) => (
-              <div
-                key={category.id}
-                className="flex items-center justify-between p-4 bg-gray-50 rounded-lg"
-              >
+              <div key={category.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
                 {editingCategoryId === category.id ? (
-                  // Edit Mode
                   <div className="flex-1">
                     <input
                       type="text"
                       value={editedCategoryName}
-                      onChange={(e) => setEditedCategoryName(e.target.value)}
+                      onChange={(e) => {
+                        setEditedCategoryName(e.target.value);
+                        setError("");
+                      }}
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-secondary"
                       required
                     />
                     <div className="mt-2 space-y-2">
                       {editedSubcategories.map((subcategory, index) => (
-                        <div
-                          key={index}
-                          className="flex items-center justify-between px-4 py-2 bg-gray-100 rounded-lg"
-                        >
+                        <div key={index} className="flex items-center justify-between px-4 py-2 bg-gray-100 rounded-lg">
                           <input
                             type="text"
                             value={subcategory}
-                            onChange={(e) =>
-                              updateEditedSubcategory(index, e.target.value)
-                            }
+                            onChange={(e) => updateEditedSubcategory(index, e.target.value)}
                             className="flex-1 bg-transparent focus:outline-none"
+                            placeholder="Sous-catégorie (pas de tirets)"
                             required
                           />
                           <button
@@ -341,17 +330,12 @@ const UploadCategory = () => {
                     </button>
                   </div>
                 ) : (
-                  // Display Mode
                   <div className="flex-1">
-                    <h3 className="text-lg font-semibold text-gray-800">
-                      {category.name}
-                    </h3>
+                    <h3 className="text-lg font-semibold text-gray-800">{category.name}</h3>
                     {category.subcategories.length > 0 && (
                       <ul className="mt-2 space-y-1">
                         {category.subcategories.map((subcategory, index) => (
-                          <li key={index}>
-                            - {subcategory}
-                          </li>
+                          <li key={index}>- {subcategory}</li>
                         ))}
                       </ul>
                     )}

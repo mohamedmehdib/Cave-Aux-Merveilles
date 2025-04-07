@@ -281,20 +281,39 @@ export default function Store() {
                   </button>
                 </div>
                 {/* Product Details */}
-                <div className="p-4 text-center">
-                  <h2 className="text-sm font-semibold text-gray-800 mb-2">{product.title}</h2>
-                  <p className="space-x-4">
-                    <span className="font-bold text-gray-700">{product.price.toFixed(2)} Dt</span>
-                    {
-                      product.promo && <span className="text-gray-500 line-through">{product.promo.toFixed(2)} Dt</span>
-                    }
-                  </p>
-                  <p>
-                    {
-                      product.status ? ( <span className="text-green-600">En stock</span> ) : ( <span className="text-red-600">Rupture de stock</span> )
-                    }
-                  </p>
-                </div>
+                {
+                  product.promo ? (
+                    <div className="p-4 text-center">
+                      <h2 className="text-sm font-semibold text-gray-800 mb-2">{product.title}</h2>
+                      <p className="space-x-4">
+                        <span className="font-bold text-gray-700">{product.promo.toFixed(2)} Dt</span>
+                        {
+                          product.price && <span className="text-gray-500 line-through">{product.price.toFixed(2)} Dt</span>
+                        }
+                      </p>
+                      <p>
+                        {
+                          product.status ? ( <span className="text-green-600">En stock</span> ) : ( <span className="text-red-600">Rupture de stock</span> )
+                        }
+                      </p>
+                  </div>
+                  ):
+                  <div className="p-4 text-center">
+                    <h2 className="text-sm font-semibold text-gray-800 mb-2">{product.title}</h2>
+                    <p className="space-x-4">
+                      {
+                        product.price && <span className="font-bold text-gray-700">{product.price.toFixed(2)} Dt</span>
+                      }
+                    </p>
+                    <p>
+                      {
+                        product.status ? ( <span className="text-green-600">En stock</span> ) : ( <span className="text-red-600">Rupture de stock</span> )
+                      }
+                    </p>
+                  </div>
+                }
+                                
+
               </div>
             ))}
           </div>
