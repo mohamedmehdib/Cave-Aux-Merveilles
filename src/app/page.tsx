@@ -1,5 +1,6 @@
 "use client";
 import { useState , useEffect } from "react";
+import dynamic from "next/dynamic";
 import Footer from "./Footer";
 import Hero from "./Hero";
 import Informations from "./Informations";
@@ -8,6 +9,11 @@ import PopUp from "./PopUp";
 import Store from "./Store";
 import Testimonials from "./Testimonials";
 import LoadingWebsite from "./LoadingWebsite";
+
+const Map = dynamic(() => import("./Map"), {
+  ssr: false,
+});
+
 
 export default function Home() {
   const [showSpinner, setShowSpinner] = useState(true);
@@ -28,6 +34,7 @@ export default function Home() {
         <Navbar />
         <Hero />
         <Store />
+        <Map />
         <Testimonials />
         <Informations />
         <Footer />
