@@ -14,9 +14,14 @@ interface Testimonial {
   feedback: string;
 }
 
+type FormData = Omit<Testimonial, "id"> & { id?: number };
+
+interface SupabaseError {
+  message: string;
+}
+
 export default function UploadTestimonial() {
-  const [formData, setFormData] = useState<Testimonial>({
-    id: 0, // Default ID for new testimonials
+  const [formData, setFormData] = useState<FormData>({
     name: "",
     stars: 1,
     feedback: "",
@@ -37,8 +42,8 @@ export default function UploadTestimonial() {
       const { data, error } = await supabase.from("testimonials").select("*");
       if (error) throw new Error(error.message);
       setTestimonials(data || []);
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "An unknown error occurred");
     }
   };
 
@@ -69,7 +74,7 @@ export default function UploadTestimonial() {
     setError(null);
 
     try {
-      if (editMode) {
+      if (editMode && formData.id) {
         // Update existing testimonial
         const { error } = await supabase
           .from("testimonials")
@@ -81,10 +86,10 @@ export default function UploadTestimonial() {
           .eq("id", formData.id);
 
         if (error) {
-          throw new Error(error.message);
+          throw error;
         }
       } else {
-        // Insert new testimonial (exclude `id`)
+        // Insert new testimonial
         const { error } = await supabase.from("testimonials").insert([
           {
             name: formData.name,
@@ -94,16 +99,16 @@ export default function UploadTestimonial() {
         ]);
 
         if (error) {
-          throw new Error(error.message);
+          throw error;
         }
       }
 
       setSuccess(true);
-      setFormData({ id: 0, name: "", stars: 1, feedback: "" }); // Reset form
-      setEditMode(false); // Exit edit mode
-      fetchTestimonials(); // Refresh testimonials list
-    } catch (err: any) {
-      setError(err.message);
+      setFormData({ name: "", stars: 1, feedback: "" });
+      setEditMode(false);
+      fetchTestimonials();
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "An unknown error occurred");
     } finally {
       setLoading(false);
     }
@@ -111,50 +116,41 @@ export default function UploadTestimonial() {
 
   // Edit a testimonial
   const handleEdit = (testimonial: Testimonial) => {
-    setFormData({
-      id: testimonial.id,
-      name: testimonial.name,
-      stars: testimonial.stars,
-      feedback: testimonial.feedback,
-    });
+    setFormData(testimonial);
     setEditMode(true);
-    window.scrollTo({ top: 0, behavior: "smooth" }); // Scroll to the top smoothly
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   // Delete a testimonial
   const handleDelete = async (id: number) => {
     try {
       const { error } = await supabase.from("testimonials").delete().eq("id", id);
-      if (error) throw new Error(error.message);
-      fetchTestimonials(); // Refresh testimonials list
-    } catch (err: any) {
-      setError(err.message);
+      if (error) throw error;
+      fetchTestimonials();
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "An unknown error occurred");
     }
   };
 
   return (
     <div className="max-w-md mx-auto p-6 bg-white rounded-lg shadow-lg">
       <h2 className="text-2xl font-semibold text-center text-[#305eb8] mb-6">
-        Ajouter avis d'un client
+        Ajouter avis d&apos;un client
       </h2>
 
-      {/* Success Message */}
       {success && (
         <div className="text-green-500 text-center mb-4">
           Ajouté avec succès
         </div>
       )}
 
-      {/* Error Message */}
       {error && (
         <div className="text-red-500 text-center mb-4">
           Erreur: {error}
         </div>
       )}
 
-      {/* Form */}
       <form onSubmit={handleSubmit}>
-        {/* Name */}
         <div className="mb-4">
           <label htmlFor="name" className="block text-sm font-medium text-gray-700">
             Nom
@@ -170,7 +166,6 @@ export default function UploadTestimonial() {
           />
         </div>
 
-        {/* Star Rating */}
         <div className="mb-4">
           <label className="block text-sm font-medium text-gray-700">Etoiles</label>
           <input
@@ -186,7 +181,6 @@ export default function UploadTestimonial() {
           />
         </div>
 
-        {/* Feedback */}
         <div className="mb-6">
           <label htmlFor="feedback" className="block text-sm font-medium text-gray-700">
             Avis
@@ -202,7 +196,6 @@ export default function UploadTestimonial() {
           ></textarea>
         </div>
 
-        {/* Submit Button */}
         <button
           type="submit"
           disabled={loading}
@@ -214,13 +207,12 @@ export default function UploadTestimonial() {
         </button>
       </form>
 
-      {/* Display Testimonials */}
       <div className="mt-8">
         <h3 className="text-xl font-semibold text-center text-[#305eb8] mb-4">
           Avis clients précédents
         </h3>
         {testimonials.length === 0 ? (
-          <p className="text-center text-gray-500">Pas d'avis.</p>
+          <p className="text-center text-gray-500">Pas d&apos;avis.</p>
         ) : (
           <ul className="space-y-4">
             {testimonials.map((testimonial) => (
@@ -234,14 +226,12 @@ export default function UploadTestimonial() {
                     <p className="text-gray-700 mt-2">{testimonial.feedback}</p>
                   </div>
                   <div className="flex space-x-2">
-                    {/* Edit Button */}
                     <button
                       onClick={() => handleEdit(testimonial)}
                       className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
                     >
                       Modifier
                     </button>
-                    {/* Delete Button */}
                     <button
                       onClick={() => handleDelete(testimonial.id)}
                       className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600 transition-colors"

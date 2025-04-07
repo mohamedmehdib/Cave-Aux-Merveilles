@@ -38,9 +38,6 @@ export default function SearchPage({ params }: { params: Promise<{ article: stri
   const [sortBy, setSortBy] = useState("recent");
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [activeImageIndex, setActiveImageIndex] = useState<{ [key: number]: number }>({});
-  const [disabledButtons, setDisabledButtons] = useState<{ [key: number]: boolean }>({});
-  const [selectedColors, setSelectedColors] = useState<{ [key: number]: string }>({});
-  const [openColorDropdown, setOpenColorDropdown] = useState<number | null>(null);
   const searchTopRef = useRef<HTMLDivElement>(null);
 
   const fetchProducts = useCallback(async (query: string) => {
@@ -91,39 +88,6 @@ export default function SearchPage({ params }: { params: Promise<{ article: stri
     }));
   }, []);
 
-  const addToLocalStorage = useCallback((product: Product) => {
-    const selectedColor = selectedColors[product.id];
-    if (product.colors && product.colors.length > 0 && !selectedColor) {
-      alert("Svp sélectionnez une couleur avant ajouter au panier.");
-      return;
-    }
-
-    setDisabledButtons((prev) => ({ ...prev, [product.id]: true }));
-
-    const cart = JSON.parse(localStorage.getItem("cart") || "[]");
-    const existingProductIndex = cart.findIndex((item: Product) => item.id === product.id);
-
-    if (existingProductIndex !== -1) {
-      cart[existingProductIndex].quantity += 1;
-    } else {
-      cart.push({ ...product, quantity: 1, selectedColor });
-    }
-
-    localStorage.setItem("cart", JSON.stringify(cart));
-
-    setTimeout(() => {
-      setDisabledButtons((prev) => ({ ...prev, [product.id]: false }));
-    }, 3000);
-  }, [selectedColors]);
-
-  const handleColorChange = useCallback((productId: number, color: string) => {
-    setSelectedColors((prev) => ({ ...prev, [productId]: color }));
-    setOpenColorDropdown(null);
-  }, []);
-
-  const toggleColorDropdown = useCallback((productId: number) => {
-    setOpenColorDropdown((prev) => (prev === productId ? null : productId));
-  }, []);
 
   const handleProductClick = useCallback((product: Product, e: React.MouseEvent) => {
     const target = e.target as HTMLElement;
