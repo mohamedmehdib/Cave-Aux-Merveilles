@@ -41,9 +41,6 @@ export default function CategoryPage({
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(0);
   const [activeImageIndex, setActiveImageIndex] = useState<{ [key: number]: number }>({});
-  const [selectedColors, setSelectedColors] = useState<{ [key: number]: string }>({});
-  const [disabledButtons, setDisabledButtons] = useState<{ [key: number]: boolean }>({});
-  const [openColorDropdown, setOpenColorDropdown] = useState<number | null>(null);
   const pageTopRef = useRef<HTMLDivElement>(null);
 
   const filterOptions: FilterOption[] = [
@@ -125,40 +122,6 @@ export default function CategoryPage({
       router.push(`/${product.title.replace(/\s+/g, "-").toLowerCase()}`);
     }
   }, [router]);
-
-  const toggleColorDropdown = useCallback((productId: number) => {
-    setOpenColorDropdown((prev) => (prev === productId ? null : productId));
-  }, []);
-
-  const handleColorChange = useCallback((productId: number, color: string) => {
-    setSelectedColors((prev) => ({ ...prev, [productId]: color }));
-    setOpenColorDropdown(null);
-  }, []);
-
-  const addToLocalStorage = useCallback((product: Product) => {
-    const selectedColor = selectedColors[product.id];
-    if (product.colors && product.colors.length > 0 && !selectedColor) {
-      alert("Svp sélectionnez une couleur avant ajouter au panier.");
-      return;
-    }
-
-    setDisabledButtons((prev) => ({ ...prev, [product.id]: true }));
-
-    const cart = JSON.parse(localStorage.getItem("cart") || "[]");
-    const existingProductIndex = cart.findIndex((item: Product) => item.id === product.id);
-
-    if (existingProductIndex !== -1) {
-      cart[existingProductIndex].quantity += 1;
-    } else {
-      cart.push({ ...product, quantity: 1, selectedColor });
-    }
-
-    localStorage.setItem("cart", JSON.stringify(cart));
-
-    setTimeout(() => {
-      setDisabledButtons((prev) => ({ ...prev, [product.id]: false }));
-    }, 3000);
-  }, [selectedColors]);
 
   if (loading) {
     return (
@@ -372,65 +335,6 @@ export default function CategoryPage({
                     </div>
                   )}
 
-                  {/* Color Selection Dropdown */}
-                  {product.colors && product.colors.length > 0 && (
-                    <div className="p-4 relative">
-                      <button
-                        onClick={() => toggleColorDropdown(product.id)}
-                        className="flex items-center justify-between w-full px-4 py-2 bg-white border border-gray-300 rounded-lg shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-secondary focus:border-secondary transition-all duration-300"
-                        aria-label="Open color options"
-                      >
-                        <span className="text-sm font-medium text-gray-700">
-                          {selectedColors[product.id] || "Sélectionnez une couleur"}
-                        </span>
-                        <svg
-                          className={`h-5 w-5 ml-2 text-gray-700 transform transition-transform duration-300 ${
-                            openColorDropdown === product.id ? "rotate-180" : ""
-                          }`}
-                          xmlns="http://www.w3.org/2000/svg"
-                          viewBox="0 0 20 20"
-                          fill="currentColor"
-                        >
-                          <path
-                            fillRule="evenodd"
-                            d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                            clipRule="evenodd"
-                          />
-                        </svg>
-                      </button>
-
-                      {openColorDropdown === product.id && (
-                        <div className="absolute top-full left-0 right-0 mt-2 bg-white shadow-lg rounded-lg p-2 z-50">
-                          <div className="flex flex-col gap-2">
-                            {product.colors.map((color) => (
-                              <div
-                                key={color}
-                                onClick={() => handleColorChange(product.id, color)}
-                                className={`px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer transition-colors duration-300 rounded-lg ${
-                                  selectedColors[product.id] === color
-                                    ? "bg-secondary text-white"
-                                    : "bg-gray-50"
-                                }`}
-                              >
-                                {color}
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  )}
-
-                  {/* Add to Cart Button */}
-                  <div className="p-4">
-                    <button
-                      className="w-full py-3 bg-secondary text-white font-semibold hover:bg-accent transition-colors duration-300 rounded-lg disabled:cursor-not-allowed disabled:bg-accent"
-                      onClick={() => addToLocalStorage(product)}
-                      disabled={disabledButtons[product.id] || false}
-                    >
-                      {disabledButtons[product.id] ? "Ajouté avec succès!" : "Ajouter au panier"}
-                    </button>
-                  </div>
                 </div>
               ))}
             </div>
