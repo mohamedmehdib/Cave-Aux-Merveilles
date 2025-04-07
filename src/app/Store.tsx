@@ -109,7 +109,7 @@ export default function Store() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-primary py-8 px-4 sm:px-8">
+      <div className="min-h-screen bg-primary py-8 px-4 sm:px-8 pt-28 md:pt-56">
         <h1 className="text-3xl sm:text-4xl font-bold text-center text-accent mb-8">Magasin</h1>
         <div className="flex flex-wrap items-center justify-center gap-6">
           {[...Array(4)].map((_, index) => (
@@ -129,7 +129,7 @@ export default function Store() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-primary py-8 px-4 sm:px-8">
+      <div className="min-h-screen bg-primary py-8 px-4 sm:px-8 pt-28 md:pt-56">
         <h1 className="text-3xl sm:text-4xl font-bold text-center text-accent mb-8">Magasin</h1>
         <div className="text-center text-red-500">{error}</div>
       </div>
@@ -137,7 +137,7 @@ export default function Store() {
   }
 
   return (
-    <div ref={storeTopRef} className="min-h-screen bg-primary py-8 px-4 sm:px-8">
+    <div ref={storeTopRef} className="min-h-screen bg-primary py-8 px-4 sm:px-8 pt-28 md:pt-56">
       <h1 className="text-3xl sm:text-4xl font-bold text-center text-accent mb-8">Magasin</h1>
       {/* Filter Button and Options */}
       <div className="flex justify-end mb-8 relative">

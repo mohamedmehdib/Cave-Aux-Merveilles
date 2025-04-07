@@ -1,5 +1,4 @@
 "use client";
-
 import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
@@ -35,14 +34,11 @@ const Navbar: React.FC = () => {
     try {
       const { data, error } = await supabase
         .from("categories") // Replace with your table name
-        .select("id, name, subcategories");
-
+        .select("id, name");
       if (error) {
         throw error;
       }
-
       console.log("Fetched data:", data); // Debugging: Log fetched data
-
       // Transform data into the format expected by menuItems
       const transformedData = data.map((category) => {
         const menuItem: MenuItem = {
@@ -52,21 +48,8 @@ const Navbar: React.FC = () => {
             category.name.replace(/\s+/g, "-")
           )}`, // Set href for all categories
         };
-
-        // If subcategories exist, add dropdown
-        if (category.subcategories && category.subcategories.length > 0) {
-          menuItem.dropdown = category.subcategories.map((subcategory: string) => ({
-            // Include the subcategory name in the URL and replace spaces with hyphens
-            href: `/category/${encodeURIComponent(
-              category.name.replace(/\s+/g, "-")
-            )}/${encodeURIComponent(subcategory.replace(/\s+/g, "-"))}`,
-            label: subcategory, // Use the string directly as the label
-          }));
-        }
-
         return menuItem;
       });
-
       setMenuItems(transformedData);
     } catch (err) {
       console.error("Error fetching categories:", err);
@@ -88,7 +71,6 @@ const Navbar: React.FC = () => {
   useEffect(() => {
     fetchCartCount(); // Initial fetch
     const interval = setInterval(fetchCartCount, 500); // Refresh every 3 seconds
-
     // Cleanup interval on component unmount
     return () => clearInterval(interval);
   }, []);
@@ -96,16 +78,13 @@ const Navbar: React.FC = () => {
   useEffect(() => {
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
-
       if (currentScrollY < lastScrollY.current) {
         setIsTopSectionVisible(true);
       } else if (currentScrollY > lastScrollY.current) {
         setIsTopSectionVisible(false);
       }
-
       lastScrollY.current = currentScrollY;
     };
-
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
@@ -133,7 +112,6 @@ const Navbar: React.FC = () => {
         rel="stylesheet"
         href="https://unicons.iconscout.com/release/v4.0.8/css/line.css"
       />
-
       {/* Mobile Navbar (visible on small screens) */}
       <div className="md:hidden fixed top-0 left-0 w-full h-20 bg-primary z-50 shadow-lg">
         <div className="flex justify-between items-center h-20 px-4">
@@ -149,7 +127,6 @@ const Navbar: React.FC = () => {
               />
             </div>
           </Link>
-
           {/* Icons */}
           <div className="flex items-center space-x-4 justify-end flex-1">
             {/* Hamburger Menu Icon */}
@@ -159,7 +136,6 @@ const Navbar: React.FC = () => {
             >
               <i className="uil uil-bars text-2xl"></i>
             </button>
-
             {/* Search Icon */}
             <button
               onClick={toggleSearch}
@@ -167,7 +143,6 @@ const Navbar: React.FC = () => {
             >
               <i className="uil uil-search text-2xl"></i>
             </button>
-
             {/* Cart Icon */}
             <Link href="/Votre-Panier" className="text-accent relative">
               <i className="uil uil-shopping-cart text-2xl"></i>
@@ -178,7 +153,6 @@ const Navbar: React.FC = () => {
           </div>
         </div>
       </div>
-
       {/* Search Box (Mobile) */}
       {isSearchOpen && (
         <div className="md:hidden fixed top-0 left-0 w-full z-50 h-20 bg-white shadow-lg">
@@ -205,7 +179,6 @@ const Navbar: React.FC = () => {
           </form>
         </div>
       )}
-
       {/* Mobile Menu Overlay */}
       <>
         {/* Dark Background Overlay */}
@@ -217,70 +190,100 @@ const Navbar: React.FC = () => {
           }`}
           onClick={toggleMobileMenu}
         />
-
         {/* Mobile Menu Content */}
         <div
-        className={`md:hidden fixed top-0 right-0 w-3/4 h-full bg-primary border-r-2 border-accent z-50 transition-transform duration-300 ease-in-out ${
-          isMobileMenuOpen ? "translate-x-0" : "translate-x-full"
-        }`}
-      >
-        <div className="p-4">
-          <button
-            onClick={toggleMobileMenu}
-            className="text-accent hover:text-indigo-300 transition-colors duration-300 ease-in-out"
-          >
-            <i className="uil uil-times text-2xl"></i>
-          </button>
-          <ul className="mt-4 space-y-4">
-            {menuItems.map((item) => (
-              <li key={item.id} className="relative">
+          className={`md:hidden fixed top-0 right-0 w-3/4 h-full bg-primary border-r-2 border-accent z-50 transition-transform duration-300 ease-in-out ${
+            isMobileMenuOpen ? "translate-x-0" : "translate-x-full"
+          }`}
+        >
+          <div className="p-4">
+            <button
+              onClick={toggleMobileMenu}
+              className="text-accent hover:text-indigo-300 transition-colors duration-300 ease-in-out"
+            >
+              <i className="uil uil-times text-2xl"></i>
+            </button>
+            <ul className="mt-4 space-y-4">
+              <li>
+                <Link href="/">Acceuil</Link>
+              </li>
+              <li>
+                <Link href="/Magasin">Magasin</Link>
+              </li>
+              <li className="relative">
                 <div className="flex items-center justify-between">
-                  <Link
-                    href={item.href}
-                    className="text-left text-accent hover:text-indigo-300 transition-colors duration-300 ease-in-out"
+                  <span
+                    className="text-left text-accent hover:text-indigo-300 transition-colors duration-300 ease-in-out cursor-pointer"
+                    onClick={(e) => toggleDropdown("nos-collections", e)}
                   >
-                    {item.label}
-                  </Link>
-                  {item.dropdown && (
-                    <button
-                      onClick={(e) => toggleDropdown(item.id, e)}
-                      className="text-accent hover:text-indigo-300 transition-colors duration-300 ease-in-out p-2"
-                    >
-                      <i
-                        className={`uil uil-angle-${
-                          openDropdownId === item.id ? "up" : "down"
-                        } text-xl transition-transform duration-300`}
-                      ></i>
-                    </button>
-                  )}
+                    Nos collections
+                  </span>
+                  <button
+                    onClick={(e) => toggleDropdown("nos-collections", e)}
+                    className="text-accent hover:text-indigo-300 transition-colors duration-300 ease-in-out p-2"
+                  >
+                    <i
+                      className={`uil uil-angle-${
+                        openDropdownId === "nos-collections" ? "up" : "down"
+                      } text-xl transition-transform duration-300`}
+                    ></i>
+                  </button>
                 </div>
-                {item.dropdown && (
-                  <div
-                    className={`overflow-hidden transition-all duration-300 ease-in-out ${
-                      openDropdownId === item.id ? "max-h-96" : "max-h-0"
-                    }`}
-                  >
+                {openDropdownId === "nos-collections" && (
+                  <div className="overflow-hidden transition-all duration-300 ease-in-out max-h-96">
                     <ul className="pl-4 mt-2 space-y-2">
-                      {item.dropdown.map((dropdownItem, index) => (
-                        <li key={index}>
-                          <Link
-                            href={dropdownItem.href}
-                            className="block w-full text-left text-accent hover:text-indigo-300 transition-colors duration-300 ease-in-out py-1"
-                          >
-                            {dropdownItem.label}
-                          </Link>
+                      {menuItems.map((item) => (
+                        <li key={item.id} className="relative">
+                          <div className="flex items-center justify-between">
+                            <Link
+                              href={item.href}
+                              className="text-left text-accent hover:text-indigo-300 transition-colors duration-300 ease-in-out"
+                            >
+                              {item.label}
+                            </Link>
+                            {item.dropdown && (
+                              <button
+                                onClick={(e) => toggleDropdown(item.id, e)}
+                                className="text-accent hover:text-indigo-300 transition-colors duration-300 ease-in-out p-2"
+                              >
+                                <i
+                                  className={`uil uil-angle-${
+                                    openDropdownId === item.id ? "up" : "down"
+                                  } text-xl transition-transform duration-300`}
+                                ></i>
+                              </button>
+                            )}
+                          </div>
+                          {item.dropdown && (
+                            <div
+                              className={`overflow-hidden transition-all duration-300 ease-in-out ${
+                                openDropdownId === item.id ? "max-h-96" : "max-h-0"
+                              }`}
+                            >
+                              <ul className="pl-4 mt-2 space-y-2">
+                                {item.dropdown.map((dropdownItem, index) => (
+                                  <li key={index}>
+                                    <Link
+                                      href={dropdownItem.href}
+                                      className="block w-full text-left text-accent hover:text-indigo-300 transition-colors duration-300 ease-in-out py-1"
+                                    >
+                                      {dropdownItem.label}
+                                    </Link>
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
+                          )}
                         </li>
                       ))}
                     </ul>
                   </div>
                 )}
               </li>
-            ))}
-          </ul>
+            </ul>
+          </div>
         </div>
-      </div>
       </>
-
       {/* Desktop Navbar (visible on medium screens and above) */}
       <>
         {/* Top Part */}
@@ -308,7 +311,6 @@ const Navbar: React.FC = () => {
                 </button>
               </form>
             </div>
-
             {/* Center: Logo */}
             <Link href="/" className="flex items-center justify-center flex-1">
               <div className="relative h-24 w-24">
@@ -321,7 +323,6 @@ const Navbar: React.FC = () => {
                 />
               </div>
             </Link>
-
             {/* Right: Account and Cart */}
             <div className="flex items-center space-x-4 justify-end flex-1">
               <Link href="/Votre-Panier" className="text-accent relative">
@@ -333,7 +334,6 @@ const Navbar: React.FC = () => {
             </div>
           </div>
         </div>
-
         {/* Second Part: Fixed Navbar */}
         <div className="hidden md:block bg-primary z-20 w-full fixed top-0 shadow-lg">
           <div
@@ -343,33 +343,49 @@ const Navbar: React.FC = () => {
           >
             {/* Menu Navigation Links */}
             <ul className="flex space-x-8 text-lg text-accent">
-              {menuItems.map((item) => (
-                <li key={item.id} className="relative group">
-                  <Link
-                    href={item.href} // Redirect to the category page
-                    className="hover:text-indigo-300 flex items-center gap-1"
-                  >
-                    {item.label}
-                    {item.dropdown && ( // Show dropdown icon if subcategories exist
-                      <i className="uil uil-angle-down text-sm"></i>
-                    )}
-                  </Link>
-                  {item.dropdown && ( // Check if dropdown exists
-                    <ul className="absolute top-10 left-1/2 transform -translate-x-1/2 bg-primary shadow-lg rounded-lg mt-2 py-2 w-72 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 ease-in-out">
-                      {item.dropdown.map((dropdownItem, index) => (
-                        <li key={index}>
-                          <Link
-                            href={dropdownItem.href}
-                            className="block w-full text-left px-4 py-2 hover:bg-accent hover:text-primary transition-colors duration-300 ease-in-out"
-                          >
-                            {dropdownItem.label}
-                          </Link>
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-                </li>
-              ))}
+              <li>
+                <Link href="/">Acceuil</Link>
+              </li>
+              <li>
+                <Link href="/Magasin">Magasin</Link>
+              </li>
+              <li className="relative group">
+                <span
+                  className="hover:text-indigo-300 flex items-center gap-1 cursor-pointer"
+                  onClick={(e) => toggleDropdown("nos-collections", e)}
+                >
+                  Nos collections
+                  <i className="uil uil-angle-down text-sm"></i>
+                </span>
+                <ul
+                  className={`absolute top-10 left-1/2 transform -translate-x-1/2 bg-primary shadow-lg rounded-lg mt-2 py-2 w-72 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 ease-in-out`}
+                >
+                  {menuItems.map((item) => (
+                    <li key={item.id} className="relative">
+                      <Link
+                        href={item.href}
+                        className="block w-full text-left px-4 py-2 hover:bg-accent hover:text-primary transition-colors duration-300 ease-in-out"
+                      >
+                        {item.label}
+                      </Link>
+                      {item.dropdown && (
+                        <ul className="pl-4 mt-2 space-y-2">
+                          {item.dropdown.map((dropdownItem, index) => (
+                            <li key={index}>
+                              <Link
+                                href={dropdownItem.href}
+                                className="block w-full text-left px-4 py-2 hover:bg-accent hover:text-primary transition-colors duration-300 ease-in-out"
+                              >
+                                {dropdownItem.label}
+                              </Link>
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              </li>
             </ul>
           </div>
         </div>

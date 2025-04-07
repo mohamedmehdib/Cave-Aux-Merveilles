@@ -1,17 +1,10 @@
 "use client";
 import { useState , useEffect } from "react";
-import dynamic from "next/dynamic";
-import Footer from "./Footer";
-import Hero from "./Hero";
-import Informations from "./Informations";
-import Navbar from "./Navbar";
-import PopUp from "./PopUp";
-import Testimonials from "./Testimonials";
-import LoadingWebsite from "./LoadingWebsite";
-
-const Map = dynamic(() => import("./Map"), {
-  ssr: false,
-});
+import Footer from "../Footer";
+import Informations from "../Informations";
+import Navbar from "../Navbar";
+import LoadingWebsite from "../LoadingWebsite";
+import Store from "../Store";
 
 export default function Home() {
   const [showSpinner, setShowSpinner] = useState(true);
@@ -30,12 +23,9 @@ export default function Home() {
 
       <div className={`transition-opacity duration-500 ${!showSpinner ? 'opacity-100' : 'opacity-0'}`}>
         <Navbar />
-        <Hero />
-        <Map />
-        <Testimonials />
+        <Store />
         <Informations />
         <Footer />
-        <PopUp />
       </div>
     </div>
   );
