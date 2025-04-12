@@ -5,7 +5,7 @@ import Footer from "./Footer";
 import Hero from "./Hero";
 import Informations from "./Informations";
 import Navbar from "./Navbar";
-import PopUp from "./PopUp";
+import Welcome from "./Welcome";
 import Testimonials from "./Testimonials";
 import LoadingWebsite from "./LoadingWebsite";
 
@@ -31,11 +31,11 @@ export default function Home() {
       <div className={`transition-opacity duration-500 ${!showSpinner ? 'opacity-100' : 'opacity-0'}`}>
         <Navbar />
         <Hero />
+        <Welcome />
         <Map />
         <Testimonials />
         <Informations />
         <Footer />
-        <PopUp />
       </div>
     </div>
   );
