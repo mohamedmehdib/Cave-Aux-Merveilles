@@ -82,7 +82,7 @@ export default function Testimonials(): React.ReactElement {
   }
 
   return (
-    <div className="pt-10 sm:pt-20">
+    <div className="pt-10">
       <link
         rel="stylesheet"
         href="https://unicons.iconscout.com/release/v4.0.8/css/solid.css"

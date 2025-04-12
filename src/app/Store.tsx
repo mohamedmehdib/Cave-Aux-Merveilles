@@ -8,10 +8,10 @@ interface Product {
   id: number;
   title: string;
   price: number;
-  promo:number;
+  promo: number;
   image_urls: string[];
   colors?: string[];
-  status:boolean;
+  status: boolean;
   created_at: string;
 }
 
@@ -43,7 +43,10 @@ export default function Store() {
           .select("*")
           .order("created_at", { ascending: false });
         if (error) throw error;
-        setProducts(data || []);
+
+        // Filter products to only include items with a promo
+        const filteredData = (data || []).filter((product) => product.promo > 0);
+        setProducts(filteredData);
       } catch (err) {
         setError(err instanceof Error ? err.message : "An unexpected error occurred.");
       } finally {
@@ -96,12 +99,8 @@ export default function Store() {
 
   const handleProductClick = useCallback((product: Product, e: React.MouseEvent) => {
     const target = e.target as HTMLElement;
-
-    // Check if the click is on the image slider or navigation arrows
-    const isImageSlider =
-      target.closest(".image-slider") || target.tagName === "IMG"; // Ensure the correct class name
+    const isImageSlider = target.closest(".image-slider") || target.tagName === "IMG";
     const isArrowButton = target.closest('button[aria-label*="image"]');
-
     if (!isImageSlider && !isArrowButton) {
       router.push(`/${product.title.replace(/\s+/g, "-").toLowerCase()}`);
     }
@@ -110,7 +109,7 @@ export default function Store() {
   if (loading) {
     return (
       <div className="min-h-screen bg-primary py-8 px-4 sm:px-8 pt-28 md:pt-56">
-        <h1 className="text-3xl sm:text-4xl font-bold text-center text-accent mb-8">Magasin</h1>
+        <h1 className="text-3xl sm:text-4xl font-bold text-center text-accent mb-8">Produit en Promo</h1>
         <div className="flex flex-wrap items-center justify-center gap-6">
           {[...Array(4)].map((_, index) => (
             <div key={index} className="bg-white shadow-md overflow-hidden animate-pulse w-72">
@@ -130,7 +129,7 @@ export default function Store() {
   if (error) {
     return (
       <div className="min-h-screen bg-primary py-8 px-4 sm:px-8 pt-28 md:pt-56">
-        <h1 className="text-3xl sm:text-4xl font-bold text-center text-accent mb-8">Magasin</h1>
+        <h1 className="text-3xl sm:text-4xl font-bold text-center text-accent mb-8">Produit en Promo</h1>
         <div className="text-center text-red-500">{error}</div>
       </div>
     );
@@ -138,7 +137,7 @@ export default function Store() {
 
   return (
     <div ref={storeTopRef} className="min-h-screen bg-primary py-8 px-4 sm:px-8 pt-28 md:pt-56">
-      <h1 className="text-3xl sm:text-4xl font-bold text-center text-accent mb-8">Magasin</h1>
+      <h1 className="text-3xl sm:text-4xl font-bold text-center text-accent mb-8">Produit en Promo</h1>
       {/* Filter Button and Options */}
       <div className="flex justify-end mb-8 relative">
         <button
@@ -281,39 +280,22 @@ export default function Store() {
                   </button>
                 </div>
                 {/* Product Details */}
-                {
-                  product.promo ? (
-                    <div className="p-4 text-center">
-                      <h2 className="text-sm font-semibold text-gray-800 mb-2">{product.title}</h2>
-                      <p className="space-x-4">
-                        <span className="font-bold text-gray-700">{product.promo.toFixed(2)} Dt</span>
-                        {
-                          product.price && <span className="text-gray-500 line-through">{product.price.toFixed(2)} Dt</span>
-                        }
-                      </p>
-                      <p>
-                        {
-                          product.status ? ( <span className="text-green-600">En stock</span> ) : ( <span className="text-red-600">Rupture de stock</span> )
-                        }
-                      </p>
-                  </div>
-                  ):
-                  <div className="p-4 text-center">
-                    <h2 className="text-sm font-semibold text-gray-800 mb-2">{product.title}</h2>
-                    <p className="space-x-4">
-                      {
-                        product.price && <span className="font-bold text-gray-700">{product.price.toFixed(2)} Dt</span>
-                      }
-                    </p>
-                    <p>
-                      {
-                        product.status ? ( <span className="text-green-600">En stock</span> ) : ( <span className="text-red-600">Rupture de stock</span> )
-                      }
-                    </p>
-                  </div>
-                }
-                                
-
+                <div className="p-4 text-center">
+                  <h2 className="text-sm font-semibold text-gray-800 mb-2">{product.title}</h2>
+                  <p className="space-x-4">
+                    <span className="font-bold text-gray-700">{product.promo.toFixed(2)} Dt</span>
+                    {product.price && (
+                      <span className="text-gray-500 line-through">{product.price.toFixed(2)} Dt</span>
+                    )}
+                  </p>
+                  <p>
+                    {product.status ? (
+                      <span className="text-green-600">En stock</span>
+                    ) : (
+                      <span className="text-red-600">Rupture de stock</span>
+                    )}
+                  </p>
+                </div>
               </div>
             ))}
           </div>
@@ -338,4 +320,4 @@ export default function Store() {
       )}
     </div>
   );
-} 
+}

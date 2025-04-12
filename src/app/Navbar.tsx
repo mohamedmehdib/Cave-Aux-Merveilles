@@ -207,16 +207,13 @@ const Navbar: React.FC = () => {
               <li>
                 <Link href="/">Acceuil</Link>
               </li>
-              <li>
-                <Link href="/Magasin">Magasin</Link>
-              </li>
               <li className="relative">
                 <div className="flex items-center justify-between">
                   <span
                     className="text-left text-accent hover:text-indigo-300 transition-colors duration-300 ease-in-out cursor-pointer"
                     onClick={(e) => toggleDropdown("nos-collections", e)}
                   >
-                    Nos collections
+                    Collections
                   </span>
                   <button
                     onClick={(e) => toggleDropdown("nos-collections", e)}
@@ -279,6 +276,9 @@ const Navbar: React.FC = () => {
                     </ul>
                   </div>
                 )}
+              </li>
+              <li>
+                <Link href="/Promo">Promo</Link>
               </li>
             </ul>
           </div>
@@ -346,15 +346,12 @@ const Navbar: React.FC = () => {
               <li>
                 <Link href="/">Acceuil</Link>
               </li>
-              <li>
-                <Link href="/Magasin">Magasin</Link>
-              </li>
               <li className="relative group">
                 <span
                   className="hover:text-indigo-300 flex items-center gap-1 cursor-pointer"
                   onClick={(e) => toggleDropdown("nos-collections", e)}
                 >
-                  Nos collections
+                  Collections
                   <i className="uil uil-angle-down text-sm"></i>
                 </span>
                 <ul
@@ -385,6 +382,9 @@ const Navbar: React.FC = () => {
                     </li>
                   ))}
                 </ul>
+              </li>
+              <li>
+                <Link href="/Promo">Promo</Link>
               </li>
             </ul>
           </div>

@@ -7,7 +7,6 @@ import { useEffect } from 'react';
 import Link from 'next/link';
 
 export default function Map() {
-  // Create a simple SVG marker (no external images)
   useEffect(() => {
     const svgIcon = L.divIcon({
       html: `
@@ -22,31 +21,42 @@ export default function Map() {
     L.Marker.prototype.options.icon = svgIcon;
   }, []);
 
-  // Default location (Eiffel Tower)
-  const defaultPosition = [48.8584, 2.2945] as [number, number];
+  const defaultPosition = [36.824654221987934, 10.097077147779267] as [number, number];
 
   if (typeof window === 'undefined') {
     return <div className="h-[400px] w-full bg-gray-100" />;
   }
 
   return (
-    <div className="h-[400px] w-full">
-      <MapContainer
-        center={defaultPosition}
-        zoom={13}
-        scrollWheelZoom={true}
-        className="h-full w-full"
-      >
-        <TileLayer
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        />
-        <Marker position={defaultPosition}>
-          <Popup>
-            <Link href="">Cave aux Merveilleux</Link>
-          </Popup>
-        </Marker>
-      </MapContainer>
+    <div className="py-10">
+      {/* Responsive Title Section */}
+      <div className="flex items-center justify-center py-10 space-x-4">
+        <hr className="bg-accent h-1 w-10 sm:w-14" />
+        <span className="text-accent text-2xl sm:text-4xl font-semibold">
+          Visitez nous
+        </span>
+        <hr className="bg-accent h-1 w-10 sm:w-14" />
+      </div>
+
+      {/* Responsive Map Container */}
+      <div className="w-3/4 md:w-1/2 mx-auto relative z-0">
+        <MapContainer
+          center={defaultPosition}
+          zoom={13}
+          scrollWheelZoom={window.innerWidth > 640} // Disable scroll zoom on small screens
+          className="h-full w-full rounded-xl"
+        >
+          <TileLayer
+            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          />
+          <Marker position={defaultPosition}>
+            <Popup>
+              <Link href="https://maps.app.goo.gl/w4e5tsjLE7SJbis17">Cave aux Merveilleux</Link>
+            </Popup>
+          </Marker>
+        </MapContainer>
+      </div>
     </div>
   );
 }
