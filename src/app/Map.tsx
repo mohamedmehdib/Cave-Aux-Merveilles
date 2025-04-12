@@ -52,7 +52,7 @@ export default function Map() {
           />
           <Marker position={defaultPosition}>
             <Popup>
-              <Link href="https://maps.app.goo.gl/w4e5tsjLE7SJbis17">Cave aux Merveilleux</Link>
+              <Link target='_blank' href="https://maps.app.goo.gl/w4e5tsjLE7SJbis17">Cave aux Merveilleux</Link>
             </Popup>
           </Marker>
         </MapContainer>
