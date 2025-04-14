@@ -17,6 +17,7 @@ interface Product {
   colors?: string[];
   status: boolean;
   created_at: string;
+  sales?: number; // Added sales field
 }
 
 const filterOptions = [
@@ -26,6 +27,7 @@ const filterOptions = [
   { value: "name_desc", label: "De Z à A" },
   { value: "recent", label: "Du + récent au + ancien" },
   { value: "oldest", label: "Du + ancien au + récent" },
+  { value: "best_selling", label: "Meilleures ventes" }, // Added best selling option
 ];
 
 export default function SearchPage({ params }: { params: Promise<{ article: string }> }) {
@@ -75,6 +77,8 @@ export default function SearchPage({ params }: { params: Promise<{ article: stri
           return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
         case "oldest":
           return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+        case "best_selling":
+          return (b.sales || 0) - (a.sales || 0); // Sort by sales descending
         default:
           return 0;
       }
@@ -87,7 +91,6 @@ export default function SearchPage({ params }: { params: Promise<{ article: stri
       [productId]: newIndex,
     }));
   }, []);
-
 
   const handleProductClick = useCallback((product: Product, e: React.MouseEvent) => {
     const target = e.target as HTMLElement;

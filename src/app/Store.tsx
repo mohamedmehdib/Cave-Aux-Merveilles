@@ -13,6 +13,7 @@ interface Product {
   colors?: string[];
   status: boolean;
   created_at: string;
+  sales: number; // Added sales field
 }
 
 const filterOptions = [
@@ -22,6 +23,7 @@ const filterOptions = [
   { value: "name_desc", label: "De Z à A" },
   { value: "recent", label: "Du + récent au + ancien" },
   { value: "oldest", label: "Du + ancien au + récent" },
+  { value: "best_selling", label: "Meilleures ventes" }, // Added best selling option
 ];
 
 export default function Store() {
@@ -70,6 +72,8 @@ export default function Store() {
           return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
         case "oldest":
           return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+        case "best_selling":
+          return (b.sales || 0) - (a.sales || 0);
         default:
           return 0;
       }
@@ -192,6 +196,7 @@ export default function Store() {
                 className="group hover:shadow-lg transition-colors duration-300 relative w-full hover:bg-white cursor-pointer"
                 onClick={(e) => handleProductClick(product, e)}
               >
+                
                 {/* Product Images Slider */}
                 <div
                   className="relative w-full h-64 sm:h-72 md:h-80 lg:h-96 flex items-center justify-center pt-4 overflow-hidden image-slider"
