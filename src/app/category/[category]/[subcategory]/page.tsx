@@ -158,7 +158,6 @@ export default function SubcategoryPage({
           {decodedSubcategory}
         </h1>
 
-        {/* Filter Button and Options */}
         <div className="flex justify-end mb-8 relative">
           <button
             onClick={() => setIsFilterOpen(!isFilterOpen)}
@@ -203,7 +202,6 @@ export default function SubcategoryPage({
           )}
         </div>
 
-        {/* Product List */}
         {sortedProducts.length === 0 ? (
           <div className="text-center text-accent">Aucun produit disponible.</div>
         ) : (
@@ -215,7 +213,6 @@ export default function SubcategoryPage({
                   className="group hover:shadow-lg transition-colors duration-300 relative w-full hover:bg-white cursor-pointer"
                   onClick={(e) => handleProductClick(product, e)}
                 >
-                  {/* Product Images Slider */}
                   <div
                     className="relative w-full h-64 sm:h-72 md:h-80 lg:h-96 flex items-center justify-center pt-4 overflow-hidden image-slider"
                     onClick={(e) => e.stopPropagation()}
@@ -243,7 +240,6 @@ export default function SubcategoryPage({
                         </div>
                       ))}
                     </div>
-                    {/* Image Navigation Arrows */}
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
@@ -302,7 +298,6 @@ export default function SubcategoryPage({
                     </button>
                   </div>
 
-                  {/* Product Details */}
                   {product.promo ? (
                     <div className="p-4 text-center">
                       <h2 className="text-sm font-semibold text-gray-800 mb-2">{product.title}</h2>
@@ -341,7 +336,6 @@ export default function SubcategoryPage({
               ))}
             </div>
 
-            {/* Custom Pagination */}
             <div className="flex justify-center gap-2 mt-8">
               {productChunks.map((_, index) => (
                 <button

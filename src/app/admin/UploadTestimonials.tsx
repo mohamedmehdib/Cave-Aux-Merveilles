@@ -2,7 +2,6 @@
 import React, { useState, useEffect } from "react";
 import { createClient } from "@supabase/supabase-js";
 
-// Initialize Supabase client
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
 const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
 const supabase = createClient(supabaseUrl, supabaseKey);
@@ -28,7 +27,6 @@ export default function UploadTestimonial() {
   const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
   const [editMode, setEditMode] = useState<boolean>(false);
 
-  // Fetch testimonials on component mount
   useEffect(() => {
     fetchTestimonials();
   }, []);
@@ -43,7 +41,6 @@ export default function UploadTestimonial() {
     }
   };
 
-  // Handle form input changes
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
@@ -54,7 +51,6 @@ export default function UploadTestimonial() {
     }));
   };
 
-  // Handle star rating change
   const handleStarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = parseInt(e.target.value, 10);
     setFormData((prevData) => ({
@@ -63,7 +59,6 @@ export default function UploadTestimonial() {
     }));
   };
 
-  // Handle form submission (create or update)
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
@@ -71,7 +66,6 @@ export default function UploadTestimonial() {
 
     try {
       if (editMode && formData.id) {
-        // Update existing testimonial
         const { error } = await supabase
           .from("testimonials")
           .update({
@@ -85,7 +79,6 @@ export default function UploadTestimonial() {
           throw error;
         }
       } else {
-        // Insert new testimonial
         const { error } = await supabase.from("testimonials").insert([
           {
             name: formData.name,
@@ -110,14 +103,12 @@ export default function UploadTestimonial() {
     }
   };
 
-  // Edit a testimonial
   const handleEdit = (testimonial: Testimonial) => {
     setFormData(testimonial);
     setEditMode(true);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  // Delete a testimonial
   const handleDelete = async (id: number) => {
     try {
       const { error } = await supabase.from("testimonials").delete().eq("id", id);

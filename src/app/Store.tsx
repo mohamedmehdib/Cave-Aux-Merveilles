@@ -44,7 +44,6 @@ export default function Store() {
           .order("created_at", { ascending: false });
         if (error) throw error;
 
-        // Filter products to only include items with a promo
         const filteredData = (data || []).filter((product) => product.promo > 0);
         setProducts(filteredData);
       } catch (err) {

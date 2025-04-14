@@ -5,7 +5,7 @@ import Link from "next/link";
 import Navbar from "../Navbar";
 import Footer from "../Footer";
 import Image from "next/image";
-import { supabase } from "@/lib/supabaseClient"; // Import Supabase client
+import { supabase } from "@/lib/supabaseClient";
 
 interface CartItem {
   id: number;
@@ -13,8 +13,8 @@ interface CartItem {
   price: number;
   quantity: number;
   image_urls: string[];
-  selectedColor?: string; // Add selectedColor field
-  customizationText?: string; // Add customizationText field
+  selectedColor?: string;
+  customizationText?: string;
 }
 
 const Cart = () => {
@@ -25,7 +25,6 @@ const Cart = () => {
   const [address, setAddress] = useState<string>("");
   const [formError, setFormError] = useState<string>("");
 
-  // Fetch cart items from localStorage
   useEffect(() => {
     const cart = JSON.parse(localStorage.getItem("cart") || "[]");
     setCartItems(cart);
@@ -46,7 +45,6 @@ const Cart = () => {
     updateCartInLocalStorage(updatedCart);
   };
 
-  // Update cart in localStorage
   const updateCartInLocalStorage = (updatedCart: CartItem[]) => {
     localStorage.setItem("cart", JSON.stringify(updatedCart));
   };
@@ -59,24 +57,19 @@ const Cart = () => {
   const deliveryFee = 8;
   const finalPrice = totalPrice + deliveryFee;
 
-  // Handle form submission
   const handleConfirmationSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Validate form fields
     if (!name || !phoneNumber || !address) {
       setFormError("Tous les champs sont obligatoires.");
       return;
     }
 
-    // Clear any previous errors
     setFormError("");
 
-    // Simulate payment processing
     setIsPaymentLoading(true);
 
     try {
-      // Prepare the order data
       const orderData = {
         name: name,
         phone: phoneNumber,
@@ -85,9 +78,8 @@ const Cart = () => {
         total_price: finalPrice,
       };
 
-      console.log("Order Data:", orderData); // Debugging
+      console.log("Order Data:", orderData);
 
-      // Insert the order into the orders table
       const { error } = await supabase.from("orders").insert([orderData]);
 
       if (error) {
@@ -97,14 +89,12 @@ const Cart = () => {
         return;
       }
 
-      // Clear the cart and form fields
       localStorage.removeItem("cart");
       setCartItems([]);
       setName("");
       setPhoneNumber("");
       setAddress("");
 
-      // Show success message
       alert("Commande confirmée avec succès!");
     } catch (error) {
       console.error("Unexpected error:", error);
@@ -153,11 +143,9 @@ const Cart = () => {
                   <div className="flex-1 text-center sm:text-left">
                     <h2 className="text-xl font-semibold text-gray-800">{item.title}</h2>
                     <p className="text-gray-600">Prix: {item.price} Dt</p>
-                    {/* Display selected color if available */}
                     {item.selectedColor && (
                       <p className="text-gray-600">Couleur de ruban: {item.selectedColor}</p>
                     )}
-                    {/* Display personalization text if available */}
                     {item.customizationText && (
                       <p className="text-gray-600">
                         Personnalisation: {item.customizationText}
@@ -204,7 +192,6 @@ const Cart = () => {
               <p>{finalPrice.toFixed(2)} Dt</p>
             </div>
 
-            {/* Confirmation Form (Always Visible) */}
             <div className="mt-6 bg-white p-6 rounded-lg shadow-md">
               <h2 className="text-xl font-semibold text-gray-800 mb-4">
                 Informations de livraison

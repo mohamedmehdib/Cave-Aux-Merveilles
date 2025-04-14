@@ -28,8 +28,8 @@ export default function ProductPage() {
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
   const [selectedColor, setSelectedColor] = useState<string | null>(null);
   const [isColorDropdownOpen, setIsColorDropdownOpen] = useState(false);
-  const [customizationText, setCustomizationText] = useState(""); // New state for customization text
-  const [quantity, setQuantity] = useState(1); // New state for quantity
+  const [customizationText, setCustomizationText] = useState("");
+  const [quantity, setQuantity] = useState(1);
 
   const addToLocalStorage = (product: Product) => {
     if (product.colors && product.colors.length > 0 && !selectedColor) {
@@ -41,13 +41,13 @@ export default function ProductPage() {
       const cart = JSON.parse(localStorage.getItem("cart") || "[]");
       const existingProductIndex = cart.findIndex((item: Product) => item.id === product.id);
       if (existingProductIndex !== -1) {
-        cart[existingProductIndex].quantity += quantity; // Use the selected quantity
+        cart[existingProductIndex].quantity += quantity;
       } else {
         cart.push({
           ...product,
-          quantity: quantity, // Save the selected quantity
+          quantity: quantity,
           selectedColor,
-          customizationText, // Save the customization text
+          customizationText,
         });
       }
       localStorage.setItem("cart", JSON.stringify(cart));
@@ -65,12 +65,11 @@ export default function ProductPage() {
   useEffect(() => {
     const fetchProduct = async () => {
       try {
-        // Decode the URL parameter and replace hyphens with spaces
         const originalTitle = decodeURIComponent((product as string).replace(/-/g, " "));
         const { data, error } = await supabase
           .from("products")
           .select("*")
-          .ilike("title", `%${originalTitle}%`) // Use ILIKE with wildcards for partial matching
+          .ilike("title", `%${originalTitle}%`)
           .single();
 
         if (error) {
@@ -129,7 +128,6 @@ export default function ProductPage() {
     <div className="min-h-screen bg-primary">
       <Navbar />
       <div className="max-w-6xl mx-auto p-6 my-8 md:pt-48 pt-20 flex flex-col md:flex-row gap-8">
-        {/* Product Images */}
         <div className="flex-1 flex flex-col-reverse md:flex-row gap-4">
           <div className="flex md:flex-col gap-2 overflow-x-auto md:overflow-y-auto max-h-[500px] mx-auto flex-wrap">
             {productData.image_urls.map((imageUrl, index) => (
@@ -164,7 +162,6 @@ export default function ProductPage() {
             />
           </div>
         </div>
-        {/* Product Details */}
         <div className="flex-1">
           <h1 className="text-3xl sm:text-4xl font-bold text-accent mb-8">
             {productData.title}
@@ -174,7 +171,6 @@ export default function ProductPage() {
               {productData.description}
             </p>
             
-                {/* Product Details */}
                 {
                   productData.promo ? (
                     <div className="text-lg md:text-xl">
@@ -199,7 +195,6 @@ export default function ProductPage() {
           {
             productData.status ? (
               <div>
-                {/* Color Selection Dropdown */}
                 {productData.colors && productData.colors.length > 0 && (
                   <div className="mb-8 relative">
                     <button
@@ -246,7 +241,6 @@ export default function ProductPage() {
                     )}
                   </div>
                 )}
-                {/* Quantity Input */}
                 <div className="mb-8">
                   <label htmlFor="quantity" className="block text-sm font-medium text-gray-700 mb-2">
                     Quantité
@@ -260,7 +254,6 @@ export default function ProductPage() {
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-secondary focus:border-secondary transition-all duration-300"
                   />
                 </div>
-                {/* Customization Textarea */}
                 <div className="mb-8">
                   <label htmlFor="customization" className="block text-sm font-medium text-gray-700 mb-2">
                     Votre personnalisation
@@ -274,7 +267,6 @@ export default function ProductPage() {
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-secondary focus:border-secondary transition-all duration-300 resize-none"
                   />
                 </div>
-                {/* Add to Cart Button */}
                 <button
                   className="w-full py-3 bg-secondary text-white font-semibold hover:bg-accent transition-colors duration-300 rounded-lg disabled:cursor-not-allowed disabled:bg-accent"
                   onClick={() => addToLocalStorage(productData)}

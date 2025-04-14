@@ -11,14 +11,14 @@ interface Product {
   id?: number;
   title: string;
   price: number;
-  promo?: number | null; // Promo is now optional
+  promo?: number | null;
   description: string;
   image_urls: string[];
   colors?: string[];
   category?: string;
   subcategory?: string;
   created_at?: string;
-  status?: boolean; // true = en stock, false = rupture de stock
+  status?: boolean;
 }
 
 export default function Store() {
@@ -30,7 +30,7 @@ export default function Store() {
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [title, setTitle] = useState("");
   const [price, setPrice] = useState<number | null>(null);
-  const [promo, setPromo] = useState<number | null>(null); // Promo can be null
+  const [promo, setPromo] = useState<number | null>(null);
   const [description, setDescription] = useState("");
   const [colors, setColors] = useState<string[]>([]);
   const [fileInputs, setFileInputs] = useState<(File | null)[]>([null]);
@@ -38,7 +38,7 @@ export default function Store() {
   const [categories, setCategories] = useState<{ name: string; subcategories: string[] }[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string>("");
   const [selectedSubcategory, setSelectedSubcategory] = useState<string>("");
-  const [status, setStatus] = useState<boolean>(true); // Default to "en stock"
+  const [status, setStatus] = useState<boolean>(true);
   const formRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -114,7 +114,7 @@ export default function Store() {
     setFileInputs([null]);
     setSelectedCategory(product.category || "");
     setSelectedSubcategory(product.subcategory || "");
-    setStatus(product.status ?? true); // Set status with fallback to true
+    setStatus(product.status ?? true);
     setError("");
     setSuccess("");
     window.scrollTo({
@@ -129,7 +129,6 @@ export default function Store() {
     setError("");
     setSuccess("");
 
-    // Validate product title: Ensure it does not contain a hyphen
     if (title.includes("-")) {
       alert("Le nom du produit ne doit pas contenir de tiret (-).");
       setLoading(false);
@@ -205,7 +204,7 @@ export default function Store() {
             category: selectedCategory || null,
             subcategory: selectedSubcategory || null,
             created_at: new Date().toISOString(),
-            status: status, // Use the status state which defaults to true
+            status: status,
           },
         ]);
         if (error) {
@@ -225,7 +224,7 @@ export default function Store() {
       setExistingImageUrls([]);
       setSelectedCategory("");
       setSelectedSubcategory("");
-      setStatus(true); // Reset to "en stock" after submission
+      setStatus(true);
       setEditingProduct(null);
     } catch (error) {
       if (error instanceof Error) {
@@ -530,7 +529,7 @@ export default function Store() {
                 setExistingImageUrls([]);
                 setSelectedCategory("");
                 setSelectedSubcategory("");
-                setStatus(true); // Reset to "en stock" when canceling edit
+                setStatus(true);
               }}
             >
               Annuler la modification

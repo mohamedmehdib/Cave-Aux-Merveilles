@@ -131,7 +131,7 @@ const OrdersList = () => {
                 {JSON.parse(order.items).map((item: CartItem, index: number) => (
                   <li key={index}>
                     {item.title} - {item.quantity} x {item.price} Dt
-                    {item.selectedColor && ( // Display selectedColor if it exists
+                    {item.selectedColor && (
                       <span className="ml-2">
                         (Couleur: <span style={{ color: item.selectedColor.toLowerCase() }}>{item.selectedColor}</span>)
                       </span>

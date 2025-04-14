@@ -15,7 +15,6 @@ export default function Hero() {
           className="object-cover blur-sm"
           quality={80}
         />
-        {/* Overlay for better text readability */}
         <div className="absolute inset-0 bg-black/20"></div>
       </div>
       

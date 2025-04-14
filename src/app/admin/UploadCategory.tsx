@@ -21,12 +21,10 @@ const UploadCategory = () => {
   const [editedCategoryName, setEditedCategoryName] = useState<string>("");
   const [editedSubcategories, setEditedSubcategories] = useState<string[]>([]);
 
-  // Validate input to prevent hyphens
   const validateInput = (input: string): boolean => {
     return !input.includes("-");
   };
 
-  // Fetch existing categories
   const fetchCategories = async () => {
     try {
       const { data, error } = await supabase
@@ -51,7 +49,6 @@ const UploadCategory = () => {
     fetchCategories();
   }, []);
 
-  // Add a subcategory with validation
   const addSubcategory = () => {
     const trimmedSub = newSubcategory.trim();
     if (!trimmedSub) return;
@@ -66,12 +63,10 @@ const UploadCategory = () => {
     setError("");
   };
 
-  // Remove a subcategory
   const removeSubcategory = (index: number) => {
     setSubcategories((prev) => prev.filter((_, i) => i !== index));
   };
 
-  // Update a subcategory with validation
   const updateSubcategory = (index: number, value: string) => {
     if (!validateInput(value)) {
       alert("Les sous-catégories ne peuvent pas contenir de tirets (-)");
@@ -83,7 +78,6 @@ const UploadCategory = () => {
     setError("");
   };
 
-  // Handle form submission with validation
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -119,7 +113,6 @@ const UploadCategory = () => {
     }
   };
 
-  // Delete a category
   const deleteCategory = async (id: number) => {
     try {
       const { error } = await supabase
@@ -136,7 +129,6 @@ const UploadCategory = () => {
     }
   };
 
-  // Start editing a category
   const startEditingCategory = (category: Category) => {
     setEditingCategoryId(category.id);
     setEditedCategoryName(category.name);
@@ -144,7 +136,6 @@ const UploadCategory = () => {
     setError("");
   };
 
-  // Save edited category with validation
   const saveEditedCategory = async (id: number) => {
     if (!validateInput(editedCategoryName)) {
       alert("Le nom de la catégorie ne peut pas contenir de tirets (-)");
@@ -174,17 +165,14 @@ const UploadCategory = () => {
     }
   };
 
-  // Add a new subcategory to edited category
   const addEditedSubcategory = () => {
     setEditedSubcategories((prev) => [...prev, ""]);
   };
 
-  // Remove a subcategory from edited category
   const removeEditedSubcategory = (index: number) => {
     setEditedSubcategories((prev) => prev.filter((_, i) => i !== index));
   };
 
-  // Update edited subcategory with validation
   const updateEditedSubcategory = (index: number, value: string) => {
     if (!validateInput(value)) {
       alert("Les sous-catégories ne peuvent pas contenir de tirets (-)");

@@ -29,7 +29,6 @@ export default function Map() {
 
   return (
     <div className="py-10">
-      {/* Responsive Title Section */}
       <div className="flex items-center justify-center py-10 space-x-4">
         <hr className="bg-accent h-1 w-10 sm:w-14" />
         <span className="text-accent text-2xl sm:text-4xl font-semibold">
@@ -38,12 +37,11 @@ export default function Map() {
         <hr className="bg-accent h-1 w-10 sm:w-14" />
       </div>
 
-      {/* Responsive Map Container */}
       <div className="w-3/4 md:w-1/2 mx-auto relative z-0">
         <MapContainer
           center={defaultPosition}
           zoom={13}
-          scrollWheelZoom={window.innerWidth > 640} // Disable scroll zoom on small screens
+          scrollWheelZoom={window.innerWidth > 640}
           className="h-full w-full rounded-xl"
         >
           <TileLayer

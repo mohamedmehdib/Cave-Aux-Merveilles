@@ -3,13 +3,13 @@ import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { supabase } from "@/lib/supabaseClient"; // Import Supabase client
+import { supabase } from "@/lib/supabaseClient";
 
 interface MenuItem {
   id: string;
   label: string;
-  href: string; // URL for the category page
-  dropdown?: { href: string; label: string }[]; // Optional dropdown items
+  href: string;
+  dropdown?: { href: string; label: string }[];
 }
 
 const Navbar: React.FC = () => {
@@ -17,36 +17,34 @@ const Navbar: React.FC = () => {
   const [isSearchOpen, setIsSearchOpen] = useState<boolean>(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
   const [openDropdownId, setOpenDropdownId] = useState<string | null>(null);
-  const [searchQuery, setSearchQuery] = useState<string>(""); // State for search query
-  const [cartCount, setCartCount] = useState<number>(0); // State for cart count
-  const [menuItems, setMenuItems] = useState<MenuItem[]>([]); // State for menu items
+  const [searchQuery, setSearchQuery] = useState<string>("");
+  const [cartCount, setCartCount] = useState<number>(0);
+  const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
   const lastScrollY = useRef<number>(0);
-  const router = useRouter(); // Initialize useRouter
+  const router = useRouter();
 
   const toggleDropdown = (id: string, e: React.MouseEvent) => {
-    e.preventDefault(); // Prevent default link behavior
-    e.stopPropagation(); // Stop event bubbling
+    e.preventDefault();
+    e.stopPropagation();
     setOpenDropdownId(openDropdownId === id ? null : id);
   };
 
-  // Fetch categories from Supabase
   const fetchCategories = async () => {
     try {
       const { data, error } = await supabase
-        .from("categories") // Replace with your table name
+        .from("categories")
         .select("id, name");
       if (error) {
         throw error;
       }
-      console.log("Fetched data:", data); // Debugging: Log fetched data
-      // Transform data into the format expected by menuItems
+      console.log("Fetched data:", data);
       const transformedData = data.map((category) => {
         const menuItem: MenuItem = {
           id: category.id,
           label: category.name,
           href: `/category/${encodeURIComponent(
             category.name.replace(/\s+/g, "-")
-          )}`, // Set href for all categories
+          )}`,
         };
         return menuItem;
       });
@@ -56,22 +54,18 @@ const Navbar: React.FC = () => {
     }
   };
 
-  // Fetch categories on component mount
   useEffect(() => {
     fetchCategories();
   }, []);
 
-  // Fetch cart count from localStorage
   const fetchCartCount = () => {
     const cart = JSON.parse(localStorage.getItem("cart") || "[]");
     setCartCount(cart.length);
   };
 
-  // Fetch cart count every 3 seconds
   useEffect(() => {
-    fetchCartCount(); // Initial fetch
-    const interval = setInterval(fetchCartCount, 500); // Refresh every 3 seconds
-    // Cleanup interval on component unmount
+    fetchCartCount();
+    const interval = setInterval(fetchCartCount, 500);
     return () => clearInterval(interval);
   }, []);
 
@@ -98,11 +92,10 @@ const Navbar: React.FC = () => {
     setOpenDropdownId(null);
   };
 
-  // Handle search submission
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
-      router.push(`/search/${encodeURIComponent(searchQuery.trim())}`); // Redirect to search/article
+      router.push(`/search/${encodeURIComponent(searchQuery.trim())}`);
     }
   };
 
@@ -112,7 +105,6 @@ const Navbar: React.FC = () => {
         rel="stylesheet"
         href="https://unicons.iconscout.com/release/v4.0.8/css/line.css"
       />
-      {/* Mobile Navbar (visible on small screens) */}
       <div className="md:hidden fixed top-0 left-0 w-full h-20 bg-primary z-50 shadow-lg">
         <div className="flex justify-between items-center h-20 px-4">
           {/* Logo */}

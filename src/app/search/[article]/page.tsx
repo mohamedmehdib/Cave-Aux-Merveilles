@@ -30,7 +30,7 @@ const filterOptions = [
 
 export default function SearchPage({ params }: { params: Promise<{ article: string }> }) {
   const router = useRouter();
-  const { article } = use(params); // Properly unwrap the params Promise
+  const { article } = use(params);
   const decodedQuery = decodeURIComponent(article);
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
@@ -114,7 +114,6 @@ export default function SearchPage({ params }: { params: Promise<{ article: stri
             Résultats de la recherche pour: <span className="text-accent">{decodedQuery}</span>
           </h1>
 
-          {/* Filter Button and Options */}
           <div className="flex justify-end mb-8 relative">
             <button
               onClick={() => setIsFilterOpen(!isFilterOpen)}
@@ -166,7 +165,6 @@ export default function SearchPage({ params }: { params: Promise<{ article: stri
                   className="group hover:shadow-lg transition-colors duration-300 relative w-full hover:bg-white"
                   onClick={(e) => handleProductClick(product, e)}
                 >
-                  {/* Product Images Slider */}
                   <div
                     className="relative w-full h-64 sm:h-72 md:h-80 lg:h-96 flex items-center justify-center pt-4 overflow-hidden image-slider"
                     onClick={(e) => e.stopPropagation()}
@@ -194,7 +192,6 @@ export default function SearchPage({ params }: { params: Promise<{ article: stri
                         </div>
                       ))}
                     </div>
-                    {/* Image Navigation Arrows */}
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
@@ -253,7 +250,6 @@ export default function SearchPage({ params }: { params: Promise<{ article: stri
                     </button>
                   </div>
 
-                  {/* Product Details */}
                   {product.promo ? (
                     <div className="p-4 text-center">
                       <h2 className="text-sm font-semibold text-gray-800 mb-2">{product.title}</h2>
