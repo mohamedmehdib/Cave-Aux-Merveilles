@@ -9,6 +9,7 @@ interface CartItem {
   quantity: number;
   price: number;
   selectedColor?: string;
+  customizationText?: string;
 }
 
 interface Order {
@@ -135,6 +136,9 @@ const OrdersList = () => {
                       <span className="ml-2">
                         (Couleur: <span style={{ color: item.selectedColor.toLowerCase() }}>{item.selectedColor}</span>)
                       </span>
+                    )}
+                    {item.customizationText && (
+                      <span> - (Personnalisation: {item.customizationText})</span>
                     )}
                   </li>
                 ))}

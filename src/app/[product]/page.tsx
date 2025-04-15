@@ -12,11 +12,23 @@ interface Product {
   id: number;
   title: string;
   price: number;
-  promo: number;
+  promo: number | null;
   image_urls: string[];
   description: string;
   status: boolean;
   colors?: string[];
+}
+
+interface CartItem {
+  id: number;
+  title: string;
+  price: number;
+  image_urls: string[];
+  quantity: number;
+  selectedColor: string | null;
+  customizationText: string;
+  originalPrice: number;
+  promoPrice: number | null;
 }
 
 export default function ProductPage() {
@@ -38,22 +50,42 @@ export default function ProductPage() {
     }
     try {
       setIsButtonDisabled(true);
-      const cart = JSON.parse(localStorage.getItem("cart") || "[]");
-      const existingProductIndex = cart.findIndex((item: Product) => item.id === product.id);
-      if (existingProductIndex !== -1) {
-        cart[existingProductIndex].quantity += quantity;
+      const cart: CartItem[] = JSON.parse(localStorage.getItem("cart") || "[]");
+      
+      const finalPrice = product.promo ? product.promo : product.price;
+      
+      const existingItemIndex = cart.findIndex(item => 
+        item.id === product.id && 
+        item.selectedColor === selectedColor && 
+        item.customizationText === customizationText
+      );
+
+      if (existingItemIndex !== -1) {
+        cart[existingItemIndex].quantity += quantity;
       } else {
         cart.push({
-          ...product,
+          id: product.id,
+          title: product.title,
+          price: finalPrice,
+          image_urls: product.image_urls,
           quantity: quantity,
           selectedColor,
           customizationText,
+          originalPrice: product.price,
+          promoPrice: product.promo
         });
       }
+      
       localStorage.setItem("cart", JSON.stringify(cart));
-      console.log("Product added to localStorage:", product.title);
+      console.log("Product added to cart:", {
+        title: product.title,
+        price: finalPrice,
+        quantity,
+        selectedColor,
+        customizationText
+      });
     } catch (error) {
-      console.error("Error adding to localStorage:", error);
+      console.error("Error adding to cart:", error);
       alert("Failed to add product to cart.");
     } finally {
       setTimeout(() => {
@@ -171,119 +203,111 @@ export default function ProductPage() {
               {productData.description}
             </p>
             
-                {
-                  productData.promo ? (
-                    <div className="text-lg md:text-xl">
-                      <p className="space-x-4">
-                        <span className="font-bold text-gray-700">{productData.promo.toFixed(2)} Dt</span>
-                        {
-                          productData.price && <span className="text-gray-500 line-through">{productData.price.toFixed(2)} Dt</span>
-                        }
-                      </p>
-                  </div>
-                  ):
-                  <div className="text-lg md:text-xl">
-                    <p className="space-x-4">
-                      {
-                        productData.price && <span className="font-bold text-gray-700">{productData.price.toFixed(2)} Dt</span>
-                      }
-                    </p>
-                  </div>
-                }
-                   
-          </div>
-          {
-            productData.status ? (
-              <div>
-                {productData.colors && productData.colors.length > 0 && (
-                  <div className="mb-8 relative">
-                    <button
-                      onClick={() => setIsColorDropdownOpen(!isColorDropdownOpen)}
-                      className="flex items-center justify-between w-full px-4 py-2 bg-white border border-gray-300 rounded-lg shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-secondary focus:border-secondary transition-all duration-300"
-                      aria-label="Open color options"
-                    >
-                      <span className="text-sm font-medium text-gray-700">
-                        {selectedColor || "Sélectionnez une couleur de ruban"}
-                      </span>
-                      <svg
-                        className={`h-5 w-5 ml-2 text-gray-700 transform transition-transform duration-300 ${
-                          isColorDropdownOpen ? "rotate-180" : ""
-                        }`}
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 20 20"
-                        fill="currentColor"
-                      >
-                        <path
-                          fillRule="evenodd"
-                          d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                          clipRule="evenodd"
-                        />
-                      </svg>
-                    </button>
-                    {isColorDropdownOpen && (
-                      <div className="absolute top-full left-0 right-0 mt-2 bg-white shadow-lg rounded-lg p-2 z-50">
-                        <div className="flex flex-col gap-2">
-                          {productData.colors.map((color) => (
-                            <div
-                              key={color}
-                              onClick={() => handleColorChange(color)}
-                              className={`px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer transition-colors duration-300 rounded-lg ${
-                                selectedColor === color
-                                  ? "bg-secondary text-white"
-                                  : "bg-gray-50"
-                              }`}
-                            >
-                              {color}
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                )}
-                <div className="mb-8">
-                  <label htmlFor="quantity" className="block text-sm font-medium text-gray-700 mb-2">
-                    Quantité
-                  </label>
-                  <input
-                    type="number"
-                    id="quantity"
-                    value={quantity}
-                    onChange={(e) => setQuantity(Number(e.target.value))}
-                    min="1"
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-secondary focus:border-secondary transition-all duration-300"
-                  />
-                </div>
-                <div className="mb-8">
-                  <label htmlFor="customization" className="block text-sm font-medium text-gray-700 mb-2">
-                    Votre personnalisation
-                  </label>
-                  <textarea
-                    id="customization"
-                    value={customizationText}
-                    onChange={(e) => setCustomizationText(e.target.value)}
-                    placeholder="Ajoutez ici vos instructions de personnalisation..."
-                    rows={4}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-secondary focus:border-secondary transition-all duration-300 resize-none"
-                  />
-                </div>
-                <button
-                  className="w-full py-3 bg-secondary text-white font-semibold hover:bg-accent transition-colors duration-300 rounded-lg disabled:cursor-not-allowed disabled:bg-accent"
-                  onClick={() => addToLocalStorage(productData)}
-                  disabled={
-                    isButtonDisabled ||
-                    (productData.colors && productData.colors.length > 0 && !selectedColor)
-                  }
-                >
-                  {isButtonDisabled ? "Ajouté avec succès!" : "Ajouter au panier"}
-                </button>
+            {productData.promo ? (
+              <div className="text-lg md:text-xl">
+                <p className="space-x-4">
+                  <span className="font-bold text-gray-700">{productData.promo.toFixed(2)} Dt</span>
+                  <span className="text-gray-500 line-through">{productData.price.toFixed(2)} Dt</span>
+                </p>
               </div>
             ) : (
-              <div className="text-red-600 md:text-lg">
-                En rupture de stock
+              <div className="text-lg md:text-xl">
+                <p className="space-x-4">
+                  <span className="font-bold text-gray-700">{productData.price.toFixed(2)} Dt</span>
+                </p>
               </div>
-            )
-          }
+            )}
+          </div>
+          {productData.status ? (
+            <div>
+              {productData.colors && productData.colors.length > 0 && (
+                <div className="mb-8 relative">
+                  <button
+                    onClick={() => setIsColorDropdownOpen(!isColorDropdownOpen)}
+                    className="flex items-center justify-between w-full px-4 py-2 bg-white border border-gray-300 rounded-lg shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-secondary focus:border-secondary transition-all duration-300"
+                    aria-label="Open color options"
+                  >
+                    <span className="text-sm font-medium text-gray-700">
+                      {selectedColor || "Sélectionnez une couleur de ruban"}
+                    </span>
+                    <svg
+                      className={`h-5 w-5 ml-2 text-gray-700 transform transition-transform duration-300 ${
+                        isColorDropdownOpen ? "rotate-180" : ""
+                      }`}
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                  </button>
+                  {isColorDropdownOpen && (
+                    <div className="absolute top-full left-0 right-0 mt-2 bg-white shadow-lg rounded-lg p-2 z-50">
+                      <div className="flex flex-col gap-2">
+                        {productData.colors.map((color) => (
+                          <div
+                            key={color}
+                            onClick={() => handleColorChange(color)}
+                            className={`px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer transition-colors duration-300 rounded-lg ${
+                              selectedColor === color
+                                ? "bg-secondary text-white"
+                                : "bg-gray-50"
+                            }`}
+                          >
+                            {color}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+              <div className="mb-8">
+                <label htmlFor="quantity" className="block text-sm font-medium text-gray-700 mb-2">
+                  Quantité
+                </label>
+                <input
+                  type="number"
+                  id="quantity"
+                  value={quantity}
+                  onChange={(e) => setQuantity(Math.max(1, Number(e.target.value)))}
+                  min="1"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-secondary focus:border-secondary transition-all duration-300"
+                />
+              </div>
+              <div className="mb-8">
+                <label htmlFor="customization" className="block text-sm font-medium text-gray-700 mb-2">
+                  Votre personnalisation
+                </label>
+                <textarea
+                  id="customization"
+                  value={customizationText}
+                  onChange={(e) => setCustomizationText(e.target.value)}
+                  placeholder="Ajoutez ici vos instructions de personnalisation..."
+                  rows={4}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-secondary focus:border-secondary transition-all duration-300 resize-none"
+                />
+              </div>
+              <button
+                className="w-full py-3 bg-secondary text-white font-semibold hover:bg-accent transition-colors duration-300 rounded-lg disabled:cursor-not-allowed disabled:bg-accent"
+                onClick={() => addToLocalStorage(productData)}
+                disabled={
+                  isButtonDisabled ||
+                  (productData.colors && productData.colors.length > 0 && !selectedColor)
+                }
+              >
+                {isButtonDisabled ? "Ajouté avec succès!" : "Ajouter au panier"}
+              </button>
+            </div>
+          ) : (
+            <div className="text-red-600 md:text-lg">
+              En rupture de stock
+            </div>
+          )}
         </div>
       </div>
       <Informations />

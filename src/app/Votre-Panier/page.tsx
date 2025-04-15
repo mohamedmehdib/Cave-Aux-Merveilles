@@ -57,6 +57,35 @@ const Cart = () => {
   const deliveryFee = 8;
   const finalPrice = totalPrice + deliveryFee;
 
+  const updateProductSales = async (productId: number, quantity: number) => {
+    try {
+      // First get the current sales value
+      const { data: productData, error: fetchError } = await supabase
+        .from("products")
+        .select("sales")
+        .eq("id", productId)
+        .single();
+
+      if (fetchError) throw fetchError;
+
+      const currentSales = productData?.sales || 0;
+      const newSales = currentSales + quantity;
+
+      // Then update the sales field
+      const { error: updateError } = await supabase
+        .from("products")
+        .update({ sales: newSales })
+        .eq("id", productId);
+
+      if (updateError) throw updateError;
+
+      console.log(`Updated sales for product ${productId} by ${quantity}`);
+    } catch (error) {
+      console.error("Error updating product sales:", error);
+      throw error;
+    }
+  };
+
   const handleConfirmationSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -70,6 +99,13 @@ const Cart = () => {
     setIsPaymentLoading(true);
 
     try {
+      // 1. Update sales for each product in the cart
+      const updatePromises = cartItems.map((item) =>
+        updateProductSales(item.id, item.quantity)
+      );
+      await Promise.all(updatePromises);
+
+      // 2. Create the order record
       const orderData = {
         name: name,
         phone: phoneNumber,
@@ -78,17 +114,18 @@ const Cart = () => {
         total_price: finalPrice,
       };
 
-      console.log("Order Data:", orderData);
+      const { error: orderError } = await supabase
+        .from("orders")
+        .insert([orderData]);
 
-      const { error } = await supabase.from("orders").insert([orderData]);
-
-      if (error) {
-        console.error("Error inserting order:", error.message);
+      if (orderError) {
+        console.error("Error inserting order:", orderError.message);
         setFormError("Une erreur s'est produite lors de la confirmation de la commande.");
         setIsPaymentLoading(false);
         return;
       }
 
+      // 3. Clear the cart and form
       localStorage.removeItem("cart");
       setCartItems([]);
       setName("");
