@@ -99,7 +99,7 @@ const AdminDashboard = () => {
             activeComponent === "ProductUpload" ? "bg-accent text-white" : "bg-gray-300 text-gray-800 hover:bg-gray-400"
           }`}
         >
-          Projets
+          Produits
         </button>
         <button
           onClick={() => setActiveComponent("OrdersList")}
