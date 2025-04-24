@@ -1,5 +1,5 @@
-import { Rouge_Script } from "next/font/google";
-const font = Rouge_Script({ subsets: ["latin"], weight: "400" });
+import { Allura } from "next/font/google";
+const font = Allura({ subsets: ["latin"], weight: "400" });
 
 export default function Welcome() {
 
