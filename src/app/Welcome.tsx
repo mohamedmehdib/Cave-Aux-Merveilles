@@ -1,3 +1,6 @@
+import { Rouge_Script } from "next/font/google";
+const font = Rouge_Script({ subsets: ["latin"], weight: "400" });
+
 export default function Welcome() {
 
   return (
@@ -11,7 +14,7 @@ export default function Welcome() {
         <hr className="bg-accent h-1 w-10 sm:w-14" />
       </div>
 
-      <p className="text-base sm:text-xl w-3/4 md:w-1/2 px-4 mx-auto">
+      <p className={`${font.className} text-lg sm:text-3xl w-3/4 md:w-1/2 px-4 mx-auto`}>
         Nous sommes ravis de vous accueillir. Explorez nos services et découvrez tout ce que nous avons à offrir. Si vous avez des questions ou besoin d’aide, n’hésitez pas à nous contacter. Bonne navigation !
       </p>
     </div>
